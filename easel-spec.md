@@ -12,7 +12,7 @@ Easel is a Python-based CLI tool providing programmatic access to Canvas LMS via
 ### Technical Requirements
 
 - **Runtime:** Python 3.8+
-- **Dependencies:** Click, requests/httpx, rich, PyYAML
+- **Dependencies:** Click, httpx, rich, PyYAML
 - **Distribution:** PyPI package with optional Docker container
 - **Architecture:** Plugin-based modular design
 - **API:** Canvas REST API v1
@@ -21,7 +21,7 @@ Easel is a Python-based CLI tool providing programmatic access to Canvas LMS via
 
 - Complete read-only Canvas API coverage
 - Sub-second response for cached operations
-- Zero-downtime multi-institution support
+- Simplified single-institution setup
 - Shell integration (completion, exit codes, piping)
 
 ---
@@ -48,7 +48,7 @@ CLI Input → Validation → API Client → Canvas API → Response Processing �
 
 ### Authentication Flow
 
-- Multi-profile configuration storage (`~/.easel/config.yaml`)
+- Configuration storage (`~/.easel/config.yaml` or `~/.config/easel/config.yaml`)
 - Token-based authentication with refresh capability
 - OAuth2 support (future enhancement)
 
@@ -65,12 +65,13 @@ CLI Input → Validation → API Client → Canvas API → Response Processing �
 - [ ] Configuration management system
 - [ ] Canvas API client with rate limiting
 - [ ] Basic authentication flow
+- [ ] Configuration validation command (`easel doctor`)
 
 **Acceptance Criteria:**
 
-- `easel init` successfully configures first institution
+- `easel init` invokes an interactive configuration wizard to set up the institution
 - API client handles rate limits and pagination
-- Configuration supports multiple named profiles
+- Configuration stores credentials for a single institution
 
 ### Phase 2: Read-Only Commands
 
@@ -79,7 +80,7 @@ CLI Input → Validation → API Client → Canvas API → Response Processing �
 - [ ] Course operations (`list`, `show`, `modules`)
 - [ ] Assignment operations (`list`, `show`, `submissions`)
 - [ ] User operations (`profile`, `courses`, `roster`)
-- [ ] Output formatting (table, JSON, CSV)
+- [ ] Output formatting (table, JSON, CSV, YAML)
 
 **Acceptance Criteria:**
 
@@ -160,7 +161,6 @@ easel [global-options] <resource> <action> [resource-id] [action-options]
 ### Global Options
 
 - `--config PATH`: Configuration file path
-- `--profile NAME`: Institution profile
 - `--format FORMAT`: Output format (table|json|csv|yaml)
 - `--verbose`: Detailed logging
 - `--dry-run`: Preview mode (future)
@@ -181,7 +181,7 @@ easel course modules <course-id>       # Module structure
 # Assignments
 easel assignment list <course-id>      # List assignments
 easel assignment show <course-id> <assignment-id>
-easel assignment submissions <course-id> <assignment-id> [--since DATE]
+easel assignment submissions <course-id> <assignment-id> [--since DATE] [--download-all] [--output PATH]
 
 # Grades
 easel grade export <course-id> [--format csv]
@@ -237,7 +237,7 @@ easel course list --format json | jq -r '.[].id' | \
 
 ### Token Management
 
-- Tokens stored in `~/.easel/` with 600 permissions
+- Tokens stored in `~/.easel/` or `~/.config/easel/` with 600 permissions
 - Support for environment variable override
 - Automatic token rotation (when Canvas supports it)
 
@@ -253,7 +253,7 @@ easel course list --format json | jq -r '.[].id' | \
 
 ### Unit Tests (pytest)
 
-- API client mocking with responses library
+- API client mocking with respx library
 - Command testing with Click's testing utilities
 - Configuration management edge cases
 
@@ -261,7 +261,7 @@ easel course list --format json | jq -r '.[].id' | \
 
 - Mock Canvas API with realistic responses
 - End-to-end command workflows
-- Multi-profile configuration scenarios
+- Configuration management scenarios
 
 ### Performance Tests
 
@@ -319,10 +319,10 @@ eval "$(easel --completion bash)"
 
 - Command execution: < 2s for uncached operations
 - Memory usage: < 50MB for typical workflows
-- Test coverage: > 90%
+- Test coverage: > 95%
 
 ### User Experience Goals
 
-- Zero-configuration for single institution
+- Simplified setup for single institution
 - Self-documenting help system
 - Consistent output formatting across commands
