@@ -189,7 +189,9 @@ def _check_network_connectivity(canvas_url: str) -> Tuple[bool, str]:
     try:
         with httpx.Client(timeout=10.0) as client:
             response = client.get(canvas_url)
-            if response.status_code == 200:
+            # Accept successful responses and redirects as valid
+            success_codes = (200, 301, 302, 303, 307, 308)
+            if response.status_code in success_codes:
                 return True, f"Successfully connected to {canvas_url}"
             else:
                 return False, f"HTTP {response.status_code} from {canvas_url}"
