@@ -59,7 +59,7 @@ Create a GitHub issue for this milestone:
 Based on the milestone specification you just reviewed:
 
 1. **Identify all deliverables** and acceptance criteria
-2. **Map dependencies** between tasks  
+2. **Map dependencies** between tasks
 3. **Plan implementation order** (foundational components first)
 4. **Identify testing requirements** and coverage targets
 5. **Note any architectural decisions** that need to be followed

@@ -167,7 +167,7 @@ Verify each item before proceeding to submission:
 
 - [ ] **CLI Help Text** updated for all new commands
 - [ ] **Configuration Options** documented
-- [ ] **API Documentation** current 
+- [ ] **API Documentation** current
 - [ ] **Docstrings** comprehensive for all new code
 - [ ] **End-to-End Workflows** tested and functional
 - [ ] **Error Handling** validated

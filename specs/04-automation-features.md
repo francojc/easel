@@ -2,9 +2,9 @@
 
 **Goal:** Enable seamless integration with automation tools, scripts, and CI/CD pipelines
 
-**Duration:** 2 weeks  
-**Priority:** Medium  
-**Dependencies:** Milestone 3 (Data Export & Analytics)  
+**Duration:** 2 weeks
+**Priority:** Medium
+**Dependencies:** Milestone 3 (Data Export & Analytics)
 
 ## Overview
 
@@ -21,7 +21,7 @@ This milestone transforms Easel from an interactive tool into a automation-frien
 ## Acceptance Criteria
 
 - Commands integrate cleanly with shell scripts and pipelines
-- JSON output pipes correctly to `jq` and other JSON processors  
+- JSON output pipes correctly to `jq` and other JSON processors
 - Exit codes follow UNIX conventions and enable proper error handling
 - Time-based filters support various date formats and relative expressions
 - All filtering operations are composable and predictable
@@ -31,7 +31,7 @@ This milestone transforms Easel from an interactive tool into a automation-frien
 ### Temporal Filtering System
 
 - [ ] Implement `--since` flag with flexible date parsing
-- [ ] Add `--until` flag for upper bound time filtering  
+- [ ] Add `--until` flag for upper bound time filtering
 - [ ] Create relative date support (e.g., "7 days ago", "last Monday")
 - [ ] Add ISO 8601 date format support with timezone handling
 - [ ] Implement natural language date parsing ("yesterday", "last week")
@@ -186,10 +186,10 @@ mkdir -p "$OUTPUT_DIR"
 # Export grades with error handling
 if easel grade export "$COURSE_ID" --format csv --output "$OUTPUT_DIR/grades_$DATE.csv"; then
     echo "Grade export completed successfully"
-    
+
     # Get analytics summary
     easel grade analytics "$COURSE_ID" --format json > "$OUTPUT_DIR/analytics_$DATE.json"
-    
+
     # Alert if any students are at risk
     if easel grade analytics "$COURSE_ID" --at-risk --format json | jq -e '.students | length > 0' >/dev/null; then
         echo "WARNING: At-risk students detected. Check analytics report."
@@ -225,15 +225,15 @@ automation:
   default_timeout: 300
   retry_attempts: 3
   retry_delay: 5
-  
+
   batch_size: 50
   parallel_requests: 5
-  
+
   notifications:
     webhook_url: "https://hooks.slack.com/..."
     alert_on_errors: true
     alert_on_warnings: true
-    
+
   scheduling:
     grade_backup: "0 2 * * *"  # Daily at 2 AM
     analytics_report: "0 8 * * 1"  # Weekly on Monday at 8 AM
@@ -257,7 +257,7 @@ automation:
 ## Integration Points
 
 - **Configuration:** Extends existing config with automation-specific settings
-- **Authentication:** Maintains token management for long-running processes  
+- **Authentication:** Maintains token management for long-running processes
 - **Logging:** Enhanced logging for automation debugging and monitoring
 - **Caching:** Leverages caching for repeated automation operations
 
@@ -279,7 +279,7 @@ name: Canvas Data Sync
 on:
   schedule:
     - cron: '0 6 * * *'  # Daily at 6 AM
-    
+
 jobs:
   sync:
     runs-on: ubuntu-latest

@@ -2,9 +2,9 @@
 
 **Goal:** Enable easy installation and deployment across multiple platforms and environments
 
-**Duration:** 2-3 weeks  
-**Priority:** High  
-**Dependencies:** Milestone 5 (Production Readiness)  
+**Duration:** 2-3 weeks
+**Priority:** High
+**Dependencies:** Milestone 5 (Production Readiness)
 
 ## Overview
 
@@ -207,7 +207,7 @@ _easel_completion() {
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    
+
     case ${prev} in
         course|assignment|user)
             opts="list show"
@@ -222,7 +222,7 @@ _easel_completion() {
             opts="course assignment user grade config doctor init"
             ;;
     esac
-    
+
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
 }
@@ -247,7 +247,7 @@ log() {
 
 install_via_pip() {
     log "Installing easel-cli via pip..."
-    
+
     if command -v python3 >/dev/null 2>&1; then
         python3 -m pip install --user easel-cli
     elif command -v python >/dev/null 2>&1; then
@@ -256,31 +256,31 @@ install_via_pip() {
         log "ERROR: Python not found. Please install Python 3.8+ first."
         exit 1
     fi
-    
+
     log "Installation complete. Run 'easel init' to get started."
 }
 
 install_via_docker() {
     log "Setting up Docker-based installation..."
-    
+
     if ! command -v docker >/dev/null 2>&1; then
         log "ERROR: Docker not found. Please install Docker first."
         exit 1
     fi
-    
+
     # Create wrapper script
     cat > /usr/local/bin/easel << 'EOF'
 #!/bin/bash
 docker run --rm -v ~/.easel:/root/.easel easel-cli:latest "$@"
 EOF
     chmod +x /usr/local/bin/easel
-    
+
     log "Docker installation complete. Run 'easel init' to get started."
 }
 
 setup_completion() {
     log "Setting up shell completion..."
-    
+
     # Detect shell and install completion
     case "${SHELL}" in
         */bash)
@@ -300,7 +300,7 @@ setup_completion() {
 
 main() {
     log "Starting Easel CLI installation..."
-    
+
     case "${INSTALL_METHOD}" in
         pip)
             install_via_pip
@@ -313,7 +313,7 @@ main() {
             exit 1
             ;;
     esac
-    
+
     setup_completion
     log "Installation successful!"
 }
@@ -351,7 +351,7 @@ docs/
 ├── index.md                    # Project overview and quickstart
 ├── installation/
 │   ├── pip.md                 # PyPI installation
-│   ├── docker.md              # Container deployment  
+│   ├── docker.md              # Container deployment
 │   ├── packages.md            # Package managers
 │   └── source.md              # Building from source
 ├── tutorials/

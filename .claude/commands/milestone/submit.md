@@ -50,7 +50,7 @@ Run one final validation to ensure everything is ready:
 !MILESTONE_NAME=$(basename "$MILESTONE_FILE" .md | cut -d'-' -f2-)
 
 !echo "Milestone: $MILESTONE_NUM"
-!echo "Issue: $ISSUE_NUMBER" 
+!echo "Issue: $ISSUE_NUMBER"
 !echo "Name: $MILESTONE_NAME"
 
 #### 5. Create Commit
@@ -106,7 +106,7 @@ $(git diff --name-only HEAD~1 2>/dev/null | grep -E '\.(py|md)$' | head -5 | sed
 
 ### Architecture Compliance
 - ✅ Follows all ADR decisions
-- ✅ Uses established project structure  
+- ✅ Uses established project structure
 - ✅ Maintains consistent code patterns
 - ✅ Implements security best practices
 
@@ -124,7 +124,7 @@ $(grep -E '^- \[[ x]\]' specs/$MILESTONE_NUM-*.md 2>/dev/null | head -5 || echo 
 
 ## Security Considerations
 - ✅ No sensitive data logged or committed
-- ✅ Token management follows security best practices  
+- ✅ Token management follows security best practices
 - ✅ Input validation implemented per specifications
 - ✅ Security scans pass without critical issues
 
@@ -200,7 +200,7 @@ Closes #$ISSUE_NUMBER"
 !echo "Branch can remain active until PR is merged"
 !echo "To start next milestone:"
 !echo "1. Return to main branch: git checkout main"
-!echo "2. Pull latest changes: git pull origin main"  
+!echo "2. Pull latest changes: git pull origin main"
 !echo "3. Run /milestone:analyze <next-milestone-number>"
 
 ## Submission Checklist Verification

@@ -1,8 +1,8 @@
 # Milestone Development Plan
 
-**Project:** Easel CLI - Canvas LMS Automation Tool  
-**Created:** 2025-07-31  
-**Author:** Jerid Francom  
+**Project:** Easel CLI - Canvas LMS Automation Tool
+**Created:** 2025-07-31
+**Author:** Jerid Francom
 
 ## Overview
 

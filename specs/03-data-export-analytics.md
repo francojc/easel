@@ -2,9 +2,9 @@
 
 **Goal:** Implement comprehensive data export capabilities and basic analytics for Canvas data
 
-**Duration:** 2-3 weeks  
-**Priority:** High  
-**Dependencies:** Milestone 2 (Read-Only Commands)  
+**Duration:** 2-3 weeks
+**Priority:** High
+**Dependencies:** Milestone 2 (Read-Only Commands)
 
 ## Overview
 
@@ -189,19 +189,19 @@ class DataExporter:
     def __init__(self, canvas_client, config):
         self.client = canvas_client
         self.config = config
-        
+
     async def stream_grades(self, course_id: int) -> AsyncIterator[GradeRecord]:
         """Stream grades without loading all into memory"""
         async for assignment in self.client.get_assignments(course_id):
             async for submission in self.client.get_submissions(assignment.id):
                 yield GradeRecord.from_submission(submission)
-                
+
     def export_to_csv(self, records: AsyncIterator[GradeRecord], output_path: Path):
         """Export with progress tracking and memory efficiency"""
         with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
             writer = csv.DictWriter(f, fieldnames=self.get_headers())
             writer.writeheader()
-            
+
             with progress_bar() as progress:
                 async for record in records:
                     writer.writerow(record.to_dict())

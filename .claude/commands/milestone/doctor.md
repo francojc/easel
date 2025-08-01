@@ -16,7 +16,7 @@ You are running comprehensive diagnostics to verify the health and readiness of 
 #### Prerequisites Check
 !echo "1. Checking prerequisites..."
 !python --version 2>/dev/null || echo "❌ Python not found"
-!poetry --version 2>/dev/null || echo "❌ Poetry not found"  
+!poetry --version 2>/dev/null || echo "❌ Poetry not found"
 !git --version 2>/dev/null || echo "❌ Git not found"
 !gh --version 2>/dev/null || echo "❌ GitHub CLI not found"
 
@@ -60,7 +60,7 @@ You are running comprehensive diagnostics to verify the health and readiness of 
 !echo ""
 !echo "6. Code quality tools validation..."
 !poetry run black --version 2>/dev/null || echo "❌ black not available"
-!poetry run flake8 --version 2>/dev/null || echo "❌ flake8 not available"  
+!poetry run flake8 --version 2>/dev/null || echo "❌ flake8 not available"
 !poetry run mypy --version 2>/dev/null || echo "❌ mypy not available"
 !poetry run pre-commit --version 2>/dev/null || echo "❌ pre-commit not available"
 
@@ -121,7 +121,7 @@ fi
   echo "✅ Active milestone development detected"
   echo "   Issue: #$ISSUE_NUM"
   echo "   Milestone: $MILESTONE_NUM"
-  
+
   echo "GitHub issue status:"
   gh issue view $ISSUE_NUM --json state,title | jq -r '"State: " + .state + ", Title: " + .title' 2>/dev/null || echo "Could not fetch issue status"
 else
@@ -191,21 +191,21 @@ fi
 
 !if [ $HEALTH_SCORE -lt 100 ]; then
   echo "To improve environment health:"
-  
+
   !command -v python >/dev/null 2>&1 || echo "- Install Python 3.8+"
   !command -v poetry >/dev/null 2>&1 || echo "- Install Poetry"
   !command -v git >/dev/null 2>&1 || echo "- Install Git"
   !command -v gh >/dev/null 2>&1 || echo "- Install GitHub CLI"
-  
+
   !test -f "pyproject.toml" || echo "- Initialize Poetry project: poetry init"
   !test -d "easel" || echo "- Create easel/ package directory"
   !test -d "tests" || echo "- Create tests/ directory"
-  
+
   !poetry run pytest --version >/dev/null 2>&1 || echo "- Install dev dependencies: poetry install --with dev"
   !test -f ".gitignore" || echo "- Create .gitignore file"
-  
+
   !test $(git status --porcelain | wc -l) -eq 0 || echo "- Commit or stash uncommitted changes"
-  
+
   echo ""
   echo "After addressing issues, re-run /milestone:doctor to verify improvements"
 else

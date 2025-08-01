@@ -106,7 +106,7 @@ Sub-agents can be invoked directly by name:
 ```
 @doctor - for environment health checks
 @implementation-specialist - for complex implementation tasks
-@qa-specialist - for comprehensive quality validation  
+@qa-specialist - for comprehensive quality validation
 @troubleshooting-specialist - for error recovery and troubleshooting
 ```
 

@@ -96,7 +96,7 @@ After implementing each major component:
 
 - **Never log or commit secrets**
 - **Validate all user inputs**
-- **Use secure token management**  
+- **Use secure token management**
 - **Follow principle of least privilege**
 
 ### Error Handling Patterns

@@ -35,7 +35,7 @@ Run specific test categories to ensure comprehensive validation:
 !echo "Running unit tests..."
 !poetry run pytest tests/unit/ -v || echo "No unit tests directory found"
 
-!echo "Running integration tests..."  
+!echo "Running integration tests..."
 !poetry run pytest tests/integration/ -v || echo "No integration tests directory found"
 
 !echo "Running CLI tests..."

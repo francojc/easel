@@ -1,9 +1,9 @@
 # ADR 004: Output Formatting Architecture
 
-**Status:** Accepted  
-**Date:** 2025-07-31  
-**Deciders:** Jerid Francom, Development Team  
-**Technical Story:** Flexible and extensible output formatting system for multiple data presentation needs  
+**Status:** Accepted
+**Date:** 2025-07-31
+**Deciders:** Jerid Francom, Development Team
+**Technical Story:** Flexible and extensible output formatting system for multiple data presentation needs
 
 ## Context and Problem Statement
 
@@ -161,51 +161,51 @@ import io
 
 class OutputFormatter(ABC):
     """Base class for all output formatters"""
-    
+
     @property
     @abstractmethod
     def name(self) -> str:
         """Formatter name for CLI selection"""
         pass
-    
+
     @property
     @abstractmethod
     def file_extension(self) -> str:
         """Default file extension for this format"""
         pass
-    
+
     @abstractmethod
     def format(self, data: List[Dict[str, Any]], **kwargs) -> str:
         """Format data and return string representation"""
         pass
-    
+
     def format_stream(self, data: Iterator[Dict[str, Any]], **kwargs) -> Iterator[str]:
         """Stream formatting for large datasets (optional override)"""
         # Default implementation - collect all data then format
         collected_data = list(data)
         yield self.format(collected_data, **kwargs)
-    
+
     def validate_data(self, data: List[Dict[str, Any]]) -> None:
         """Validate data structure (optional override)"""
         pass
 
 class FormatterRegistry:
     """Registry for managing output formatters"""
-    
+
     def __init__(self):
         self._formatters: Dict[str, OutputFormatter] = {}
-    
+
     def register(self, formatter: OutputFormatter) -> None:
         """Register a new formatter"""
         self._formatters[formatter.name] = formatter
-    
+
     def get(self, name: str) -> OutputFormatter:
         """Get formatter by name"""
         if name not in self._formatters:
             available = ", ".join(self._formatters.keys())
             raise ValueError(f"Unknown formatter '{name}'. Available: {available}")
         return self._formatters[name]
-    
+
     def list_formatters(self) -> List[str]:
         """List all available formatter names"""
         return list(self._formatters.keys())
@@ -224,32 +224,32 @@ import io
 
 class TableFormatter(OutputFormatter):
     """Rich table formatter for terminal output"""
-    
+
     @property
     def name(self) -> str:
         return "table"
-    
+
     @property
     def file_extension(self) -> str:
         return "txt"
-    
+
     def format(self, data: List[Dict[str, Any]], **kwargs) -> str:
         if not data:
             return "No data to display."
-        
+
         # Create Rich table
         table = Table(show_header=True, header_style="bold blue")
-        
+
         # Add columns from first row
         first_row = data[0]
         for column in first_row.keys():
             table.add_column(column.replace('_', ' ').title())
-        
+
         # Add rows
         for row in data:
             values = [str(value) if value is not None else "-" for value in row.values()]
             table.add_row(*values)
-        
+
         # Render to string
         console = Console(file=io.StringIO(), width=120, legacy_windows=False)
         console.print(table)
@@ -267,15 +267,15 @@ from typing import List, Dict, Any
 
 class JSONFormatter(OutputFormatter):
     """JSON formatter optimized for jq compatibility"""
-    
+
     @property
     def name(self) -> str:
         return "json"
-    
+
     @property
     def file_extension(self) -> str:
         return "json"
-    
+
     def format(self, data: List[Dict[str, Any]], **kwargs) -> str:
         # Ensure consistent field ordering for predictable jq queries
         if data:
@@ -285,9 +285,9 @@ class JSONFormatter(OutputFormatter):
                 sorted_item = {k: item[k] for k in sorted(item.keys())}
                 sorted_data.append(sorted_item)
             data = sorted_data
-        
+
         return json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True)
-    
+
     def format_stream(self, data: Iterator[Dict[str, Any]], **kwargs) -> Iterator[str]:
         """Stream JSON objects for large datasets"""
         yield "[\n"
@@ -311,21 +311,21 @@ from typing import List, Dict, Any, Iterator
 
 class CSVFormatter(OutputFormatter):
     """CSV formatter with Excel compatibility"""
-    
+
     @property
     def name(self) -> str:
         return "csv"
-    
+
     @property
     def file_extension(self) -> str:
         return "csv"
-    
+
     def format(self, data: List[Dict[str, Any]], **kwargs) -> str:
         if not data:
             return ""
-        
+
         output = io.StringIO()
-        
+
         # Use Excel dialect for maximum compatibility
         writer = csv.DictWriter(
             output,
@@ -333,32 +333,32 @@ class CSVFormatter(OutputFormatter):
             dialect='excel',
             lineterminator='\n'
         )
-        
+
         writer.writeheader()
         writer.writerows(data)
-        
+
         # Add BOM for Excel UTF-8 compatibility
         content = output.getvalue()
         return '\ufeff' + content
-    
+
     def format_stream(self, data: Iterator[Dict[str, Any]], **kwargs) -> Iterator[str]:
         """Stream CSV for large datasets"""
         first_item = next(data, None)
         if first_item is None:
             return
-        
+
         # Yield header with BOM
         output = io.StringIO()
         writer = csv.DictWriter(output, fieldnames=first_item.keys(), dialect='excel')
         writer.writeheader()
         yield '\ufeff' + output.getvalue()
-        
+
         # Yield first row
         output = io.StringIO()
         writer = csv.DictWriter(output, fieldnames=first_item.keys(), dialect='excel')
         writer.writerow(first_item)
         yield output.getvalue()
-        
+
         # Yield remaining rows
         for item in data:
             output = io.StringIO()
@@ -376,37 +376,37 @@ from typing import List, Dict, Any, Optional, Set
 
 class FieldSelector:
     """Handle field selection and filtering for output"""
-    
+
     @staticmethod
     def select_fields(data: List[Dict[str, Any]], fields: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """Select specific fields from data"""
         if not fields or not data:
             return data
-        
+
         # Validate fields exist
         available_fields = set(data[0].keys()) if data else set()
         invalid_fields = set(fields) - available_fields
         if invalid_fields:
             raise ValueError(f"Invalid fields: {', '.join(invalid_fields)}. "
                            f"Available: {', '.join(available_fields)}")
-        
+
         return [{field: row.get(field) for field in fields} for row in data]
-    
+
     @staticmethod
     def exclude_fields(data: List[Dict[str, Any]], exclude: List[str]) -> List[Dict[str, Any]]:
         """Exclude specific fields from data"""
         if not exclude or not data:
             return data
-        
+
         exclude_set = set(exclude)
         return [{k: v for k, v in row.items() if k not in exclude_set} for row in data]
-    
+
     @staticmethod
     def rename_fields(data: List[Dict[str, Any]], field_mapping: Dict[str, str]) -> List[Dict[str, Any]]:
         """Rename fields in data"""
         if not field_mapping or not data:
             return data
-        
+
         return [{field_mapping.get(k, k): v for k, v in row.items()} for row in data]
 ```
 
@@ -417,37 +417,37 @@ import click
 from typing import List, Dict, Any, Optional
 
 @click.command()
-@click.option('--format', 'output_format', 
+@click.option('--format', 'output_format',
               type=click.Choice(formatter_registry.list_formatters()),
               default='table',
               help='Output format')
-@click.option('--fields', 
+@click.option('--fields',
               help='Comma-separated list of fields to include')
 @click.option('--exclude',
               help='Comma-separated list of fields to exclude')
 @click.option('--output', 'output_file',
               type=click.Path(),
               help='Output file (default: stdout)')
-def format_and_output(data: List[Dict[str, Any]], 
+def format_and_output(data: List[Dict[str, Any]],
                      output_format: str,
                      fields: Optional[str] = None,
                      exclude: Optional[str] = None,
                      output_file: Optional[str] = None):
     """Format and output data using specified formatter"""
-    
+
     # Apply field selection
     if fields:
         field_list = [f.strip() for f in fields.split(',')]
         data = FieldSelector.select_fields(data, field_list)
-    
+
     if exclude:
         exclude_list = [f.strip() for f in exclude.split(',')]
         data = FieldSelector.exclude_fields(data, exclude_list)
-    
+
     # Get formatter and format data
     formatter = formatter_registry.get(output_format)
     formatted_output = formatter.format(data)
-    
+
     # Output to file or stdout
     if output_file:
         with open(output_file, 'w', encoding='utf-8') as f:

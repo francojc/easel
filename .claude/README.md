@@ -26,7 +26,7 @@ This directory contains a comprehensive set of slash commands and sub-agents des
                 ▼               ▼               ▼
         ┌───────────────┐ ┌───────────────┐ ┌─────────────────┐
         │   UTILITIES   │ │  SPECIALISTS  │ │   TROUBLESHOOT  │
-        │               │ │               │ │                 │  
+        │               │ │               │ │                 │
         │ /easel:test   │ │ @analytics-   │ │ @doctor         │
         │ /easel:docs   │ │  specialist   │ │ @troubleshooting│
         │ /easel:release│ │ @security-    │ │  -specialist    │
@@ -54,7 +54,7 @@ Phase 1: SETUP                     Phase 2: ANALYZE
        available                          Issue created
                                          Context set
 
-Phase 3: IMPLEMENT                 Phase 4: VALIDATE  
+Phase 3: IMPLEMENT                 Phase 4: VALIDATE
 ┌─────────────────┐                ┌─────────────────┐
 │@implementation- │───────────────▶│  @qa-specialist │
 │   specialist    │                │                 │
@@ -103,7 +103,7 @@ Phase 5: INTEGRATE                 Phase 6: SUBMIT
 │ • Milestone readiness   │      │ • Iterative refinement │
 └─────────────────────────┘      └─────────────────────────┘
 
-@qa-specialist                   @troubleshooting-specialist  
+@qa-specialist                   @troubleshooting-specialist
 ┌─────────────────────────┐      ┌─────────────────────────┐
 │ 🧪 QUALITY ASSURANCE    │      │ 🔧 ERROR RECOVERY       │
 │                         │      │                         │
@@ -179,7 +179,7 @@ Development Utilities Workflow
 # One-time setup
 /milestone:setup
 
-# Health check anytime  
+# Health check anytime
 @doctor
 
 # Begin milestone work
@@ -303,7 +303,7 @@ Phase Failure Detected
 
 ### Compliance & Security
 - **FERPA**: Educational record protection and access controls
-- **COPPA**: Age-appropriate data collection where applicable  
+- **COPPA**: Age-appropriate data collection where applicable
 - **GDPR**: Data subject rights and privacy by design
 - **Institutional**: Custom security and governance requirements
 

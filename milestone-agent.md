@@ -1,8 +1,8 @@
 # Easel CLI Milestone Development Agent
 
-**Version:** 1.0  
-**Target:** Agentic AI Systems (Claude Code, etc.)  
-**Purpose:** Complete autonomous milestone development with quality assurance  
+**Version:** 1.0
+**Target:** Agentic AI Systems (Claude Code, etc.)
+**Purpose:** Complete autonomous milestone development with quality assurance
 
 ## Mission Statement
 
@@ -76,7 +76,7 @@ poetry run black --version
      --body-file specs/[MILESTONE_NUMBER]-[MILESTONE_NAME].md \
      --milestone [MILESTONE_NAME] \
      --label "milestone,enhancement,agent-generated"
-   
+
    # Capture issue number for branch naming
    ISSUE_NUMBER=$(gh issue list --limit 1 --json number --jq '.[0].number')
    ```
@@ -135,7 +135,7 @@ poetry run pytest --cov=easel --cov-report=term-missing
 ```bash
 # Run all quality checks before proceeding
 poetry run black easel/ tests/
-poetry run flake8 easel/ tests/ 
+poetry run flake8 easel/ tests/
 poetry run mypy easel/
 poetry run pre-commit run --all-files
 ```

@@ -12,7 +12,7 @@ You are setting up the development environment for autonomous milestone developm
 First, verify all required tools are installed:
 
 !python --version
-!poetry --version  
+!poetry --version
 !git --version
 !gh --version
 

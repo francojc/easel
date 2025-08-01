@@ -8,7 +8,7 @@ This directory contains custom Claude Code slash commands for autonomous milesto
 
 **Converted to Sub-Agents:**
 - `/milestone:doctor` → `@doctor` sub-agent
-- `/milestone:implement` → `@implementation-specialist` sub-agent  
+- `/milestone:implement` → `@implementation-specialist` sub-agent
 - `/milestone:validate` → `@qa-specialist` sub-agent
 - `/milestone:recover` → `@troubleshooting-specialist` sub-agent
 
@@ -154,7 +154,7 @@ This creates:
 Each phase has **mandatory quality gates** that must pass:
 
 - **Setup**: All tools available and configured
-- **Analyze**: Issue created, branch ready, specs understood  
+- **Analyze**: Issue created, branch ready, specs understood
 - **Implement**: Code follows patterns, tests written, security validated
 - **Validate**: Coverage targets met, all quality checks pass
 - **Integrate**: Documentation current, integration tests pass
@@ -293,7 +293,7 @@ easel/
 
 If recovery attempts fail after 3 tries:
 1. Document the specific failure
-2. Create draft PR with current progress  
+2. Create draft PR with current progress
 3. Add comment requesting human review
 4. Tag issue with "needs-review" label
 

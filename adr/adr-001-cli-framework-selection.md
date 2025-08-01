@@ -1,9 +1,9 @@
 # ADR 001: CLI Framework Selection
 
-**Status:** Accepted  
-**Date:** 2025-07-31  
-**Deciders:** Jerid Francom, Development Team  
-**Technical Story:** Foundation for Easel CLI command structure and user interface  
+**Status:** Accepted
+**Date:** 2025-07-31
+**Deciders:** Jerid Francom, Development Team
+**Technical Story:** Foundation for Easel CLI command structure and user interface
 
 ## Context and Problem Statement
 

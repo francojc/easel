@@ -2,9 +2,9 @@
 
 **Goal:** Implement core read-only Canvas operations with consistent output formatting
 
-**Duration:** 3-4 weeks  
-**Priority:** High  
-**Dependencies:** Milestone 1 (Core Infrastructure)  
+**Duration:** 3-4 weeks
+**Priority:** High
+**Dependencies:** Milestone 1 (Core Infrastructure)
 
 ## Overview
 
@@ -123,7 +123,7 @@ easel course list [--active] [--format json|csv|yaml|table]
 easel course show <course-id> [--format json]
 easel course modules <course-id> [--format table]
 
-# Assignment operations  
+# Assignment operations
 easel assignment list <course-id> [--status published|unpublished] [--format csv]
 easel assignment show <course-id> <assignment-id> [--format json]
 easel assignment submissions <course-id> <assignment-id> [--status submitted|graded]
@@ -149,7 +149,7 @@ Course ID | Name                    | Code     | Status | Students
 [
   {
     "id": 12345,
-    "name": "Introduction to Python", 
+    "name": "Introduction to Python",
     "course_code": "CS101",
     "workflow_state": "available",
     "total_students": 45,

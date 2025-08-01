@@ -1,9 +1,9 @@
 # ADR 002: HTTP Client Selection
 
-**Status:** Accepted  
-**Date:** 2025-07-31  
-**Deciders:** Jerid Francom, Development Team  
-**Technical Story:** Foundation for Canvas API communication and request handling  
+**Status:** Accepted
+**Date:** 2025-07-31
+**Deciders:** Jerid Francom, Development Team
+**Technical Story:** Foundation for Canvas API communication and request handling
 
 ## Context and Problem Statement
 
@@ -148,7 +148,7 @@ class CanvasAPIClient:
     def __init__(self, base_url: str, token: str):
         self.base_url = base_url.rstrip('/')
         self.token = token
-        
+
         # Configure httpx client with sensible defaults
         self.client = httpx.AsyncClient(
             base_url=f"{self.base_url}/api/v1",
@@ -156,25 +156,25 @@ class CanvasAPIClient:
             timeout=httpx.Timeout(30.0, connect=10.0),
             limits=httpx.Limits(max_connections=20, max_keepalive_connections=5)
         )
-    
+
     async def get(self, endpoint: str, params: Optional[Dict] = None) -> Dict[str, Any]:
         """Make authenticated GET request to Canvas API"""
         response = await self.client.get(endpoint, params=params)
         response.raise_for_status()
         return response.json()
-    
+
     async def get_paginated(self, endpoint: str, params: Optional[Dict] = None):
         """Handle Canvas API pagination automatically"""
         url = endpoint
         while url:
             response = await self.client.get(url, params=params)
             response.raise_for_status()
-            
+
             # Yield page results
             data = response.json()
             for item in data:
                 yield item
-            
+
             # Check for next page
             links = response.headers.get('Link', '')
             url = self._parse_next_link(links)
@@ -192,22 +192,22 @@ class RateLimiter:
         self.max_requests = max_requests
         self.time_window = time_window
         self.requests = []
-    
+
     async def acquire(self):
         """Acquire permission to make a request"""
         now = time()
-        
+
         # Remove old requests outside time window
-        self.requests = [req_time for req_time in self.requests 
+        self.requests = [req_time for req_time in self.requests
                         if now - req_time < self.time_window]
-        
+
         # Wait if we've hit the limit
         if len(self.requests) >= self.max_requests:
             oldest_request = min(self.requests)
             wait_time = self.time_window - (now - oldest_request)
             if wait_time > 0:
                 await asyncio.sleep(wait_time)
-        
+
         self.requests.append(now)
 
 # Integration with httpx
@@ -215,7 +215,7 @@ class RateLimitedClient:
     def __init__(self, *args, **kwargs):
         self.client = httpx.AsyncClient(*args, **kwargs)
         self.rate_limiter = RateLimiter()
-    
+
     async def request(self, method: str, url: str, **kwargs):
         await self.rate_limiter.acquire()
         return await self.client.request(method, url, **kwargs)
@@ -237,15 +237,15 @@ async def make_request_with_retry(
     **kwargs
 ) -> httpx.Response:
     """Make HTTP request with exponential backoff retry"""
-    
+
     for attempt in range(max_retries + 1):
         try:
             response = await client.request(method, url, **kwargs)
-            
+
             # Don't retry on client errors (4xx)
             if 400 <= response.status_code < 500:
                 response.raise_for_status()
-            
+
             # Retry on server errors (5xx) and specific client errors
             if response.status_code >= 500 or response.status_code == 429:
                 if attempt < max_retries:
@@ -253,17 +253,17 @@ async def make_request_with_retry(
                     delay = (2 ** attempt) + random.uniform(0, 1)
                     await asyncio.sleep(delay)
                     continue
-            
+
             response.raise_for_status()
             return response
-            
+
         except (httpx.ConnectError, httpx.TimeoutException) as e:
             if attempt < max_retries:
                 delay = (2 ** attempt) + random.uniform(0, 1)
                 await asyncio.sleep(delay)
                 continue
             raise
-    
+
     # This should never be reached, but just in case
     raise httpx.RequestError("Max retries exceeded")
 ```
@@ -275,11 +275,11 @@ async def make_request_with_retry(
 class CanvasAPI:
     def __init__(self, base_url: str, token: str):
         self.async_client = AsyncCanvasAPI(base_url, token)
-    
+
     def get_courses(self) -> List[Dict]:
         """Synchronous interface for simple usage"""
         return asyncio.run(self.async_client.get_courses())
-    
+
     async def get_courses_async(self) -> List[Dict]:
         """Async interface for advanced usage"""
         return await self.async_client.get_courses()

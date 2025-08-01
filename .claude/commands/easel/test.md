@@ -60,7 +60,7 @@ Generate comprehensive test report:
 !echo ""
 !echo "Quality Status:"
 !poetry run black --check easel/ tests/ > /dev/null 2>&1 && echo "✓ Code formatting: PASS" || echo "✗ Code formatting: FAIL"
-!poetry run flake8 easel/ tests/ > /dev/null 2>&1 && echo "✓ Code linting: PASS" || echo "✗ Code linting: FAIL"  
+!poetry run flake8 easel/ tests/ > /dev/null 2>&1 && echo "✓ Code linting: PASS" || echo "✗ Code linting: FAIL"
 !poetry run mypy easel/ > /dev/null 2>&1 && echo "✓ Type checking: PASS" || echo "✗ Type checking: FAIL"
 !poetry run bandit -r easel/ > /dev/null 2>&1 && echo "✓ Security scan: PASS" || echo "✗ Security scan: FAIL"
 

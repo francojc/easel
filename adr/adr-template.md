@@ -1,9 +1,9 @@
 # ADR Template
 
-**Status:** [Proposed | Accepted | Deprecated | Superseded]  
-**Date:** YYYY-MM-DD  
-**Deciders:** [List of people involved in the decision]  
-**Technical Story:** [Link to GitHub issue or description]  
+**Status:** [Proposed | Accepted | Deprecated | Superseded]
+**Date:** YYYY-MM-DD
+**Deciders:** [List of people involved in the decision]
+**Technical Story:** [Link to GitHub issue or description]
 
 ## Context and Problem Statement
 

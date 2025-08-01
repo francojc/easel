@@ -2,9 +2,9 @@
 
 **Goal:** Establish the foundational architecture and tooling for the Easel CLI
 
-**Duration:** 2-3 weeks  
-**Priority:** Critical  
-**Dependencies:** None  
+**Duration:** 2-3 weeks
+**Priority:** Critical
+**Dependencies:** None
 
 ## Overview
 

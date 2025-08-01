@@ -1,9 +1,9 @@
 # Easel CLI Technical Specification
 
-**Version:** 0.1  
-**Status:** Draft  
-**Author:** Jerid Francom 
-**Date:** 2025-07-31 
+**Version:** 0.1
+**Status:** Draft
+**Author:** Jerid Francom
+**Date:** 2025-07-31
 
 ## Overview
 

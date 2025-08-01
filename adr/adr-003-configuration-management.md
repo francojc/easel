@@ -1,9 +1,9 @@
 # ADR 003: Configuration Management Approach
 
-**Status:** Accepted  
-**Date:** 2025-07-31  
-**Deciders:** Jerid Francom, Development Team  
-**Technical Story:** Secure and user-friendly configuration system for Canvas credentials and application settings  
+**Status:** Accepted
+**Date:** 2025-07-31
+**Deciders:** Jerid Francom, Development Team
+**Technical Story:** Secure and user-friendly configuration system for Canvas credentials and application settings
 
 ## Context and Problem Statement
 
@@ -161,7 +161,7 @@ class CanvasInstance(BaseModel):
     name: str = Field(..., description="Human-readable name for this Canvas instance")
     url: str = Field(..., description="Canvas base URL (e.g., https://university.instructure.com)")
     api_token: Optional[str] = Field(None, description="Canvas API token (stored separately)")
-    
+
     @validator('url')
     def validate_url(cls, v):
         if not v.startswith(('http://', 'https://')):
@@ -190,7 +190,7 @@ class EaselConfig(BaseModel):
     api: APISettings = APISettings()
     cache: CacheSettings = CacheSettings()
     logging: LoggingSettings = LoggingSettings()
-    
+
     class Config:
         env_prefix = "EASEL_"
         env_nested_delimiter = "__"
@@ -205,18 +205,18 @@ from typing import Optional
 
 def get_config_dir() -> Path:
     """Get configuration directory following XDG Base Directory Specification"""
-    
+
     # Explicit override
     if config_home := os.environ.get("EASEL_CONFIG_DIR"):
         return Path(config_home)
-    
+
     # XDG Base Directory Specification
     if config_home := os.environ.get("XDG_CONFIG_HOME"):
         return Path(config_home) / "easel"
-    
+
     # Platform-specific defaults
     home = Path.home()
-    
+
     if os.name == "nt":  # Windows
         return home / "AppData" / "Local" / "easel"
     elif os.name == "posix":
@@ -248,7 +248,7 @@ class CredentialManager:
     def __init__(self, config_dir: Path):
         self.config_dir = config_dir
         self.keyring_service = "easel-cli"
-    
+
     def _get_encryption_key(self) -> bytes:
         """Get or create encryption key for credentials"""
         try:
@@ -258,7 +258,7 @@ class CredentialManager:
                 return key_str.encode()
         except Exception:
             pass
-        
+
         # Generate new key
         key = Fernet.generate_key()
         try:
@@ -268,45 +268,45 @@ class CredentialManager:
             key_file = self.config_dir / ".key"
             key_file.write_bytes(key)
             key_file.chmod(0o600)  # User read/write only
-        
+
         return key
-    
+
     def store_token(self, instance_name: str, token: str) -> None:
         """Store Canvas API token securely"""
         key = self._get_encryption_key()
         fernet = Fernet(key)
         encrypted_token = fernet.encrypt(token.encode())
-        
+
         credentials_file = self.config_dir / "credentials.yaml"
-        
+
         # Load existing credentials
         credentials = {}
         if credentials_file.exists():
             with open(credentials_file, 'r') as f:
                 credentials = yaml.safe_load(f) or {}
-        
+
         # Update credentials
         credentials[instance_name] = encrypted_token.decode()
-        
+
         # Save with secure permissions
         credentials_file.parent.mkdir(parents=True, exist_ok=True)
         with open(credentials_file, 'w') as f:
             yaml.dump(credentials, f)
         credentials_file.chmod(0o600)
-    
+
     def get_token(self, instance_name: str) -> Optional[str]:
         """Retrieve Canvas API token"""
         credentials_file = self.config_dir / "credentials.yaml"
         if not credentials_file.exists():
             return None
-        
+
         with open(credentials_file, 'r') as f:
             credentials = yaml.safe_load(f) or {}
-        
+
         encrypted_token = credentials.get(instance_name)
         if not encrypted_token:
             return None
-        
+
         key = self._get_encryption_key()
         fernet = Fernet(key)
         try:
@@ -328,30 +328,30 @@ class ConfigManager:
         self.config_dir = get_config_dir()
         self.config_file = get_config_file()
         self.credential_manager = CredentialManager(self.config_dir)
-    
+
     def load_config(self) -> EaselConfig:
         """Load and validate configuration"""
         if not self.config_file.exists():
             raise ConfigError(f"Configuration file not found: {self.config_file}")
-        
+
         with open(self.config_file, 'r') as f:
             config_data = yaml.safe_load(f)
-        
+
         # Environment variable substitution
         config_data = self._substitute_env_vars(config_data)
-        
+
         try:
             config = EaselConfig(**config_data)
         except ValidationError as e:
             raise ConfigError(f"Configuration validation failed: {e}")
-        
+
         # Load API token separately
         api_token = self.credential_manager.get_token(config.canvas.name)
         if api_token:
             config.canvas.api_token = api_token
-        
+
         return config
-    
+
     def _substitute_env_vars(self, data):
         """Recursively substitute environment variables in config"""
         if isinstance(data, dict):
@@ -373,11 +373,11 @@ def interactive_setup() -> EaselConfig:
     """Interactive configuration setup wizard"""
     click.echo("🎨 Welcome to Easel CLI Setup!")
     click.echo("Let's configure your Canvas connection.\n")
-    
+
     # Canvas instance configuration
     canvas_name = click.prompt("Canvas instance name", default="My University")
     canvas_url = click.prompt("Canvas URL (e.g., https://university.instructure.com)")
-    
+
     # API token setup
     click.echo("\n📝 Canvas API Token Setup:")
     click.echo("1. Go to your Canvas Account Settings")
@@ -385,9 +385,9 @@ def interactive_setup() -> EaselConfig:
     click.echo("3. Click '+ New Access Token'")
     click.echo("4. Give it a purpose like 'Easel CLI Access'")
     click.echo("5. Copy the generated token\n")
-    
+
     api_token = click.prompt("Canvas API token", hide_input=True)
-    
+
     # Create configuration
     config_data = {
         "version": "1.0",
@@ -396,17 +396,17 @@ def interactive_setup() -> EaselConfig:
             "url": canvas_url
         }
     }
-    
+
     config = EaselConfig(**config_data)
-    
+
     # Save configuration and credentials
     config_manager = ConfigManager()
     config_manager.save_config(config)
     config_manager.credential_manager.store_token(canvas_name, api_token)
-    
+
     click.echo(f"\n✅ Configuration saved to {config_manager.config_file}")
     click.echo("Run 'easel doctor' to validate your setup!")
-    
+
     return config
 ```
 
