@@ -60,12 +60,12 @@ CLI Input → Validation → API Client → Canvas API → Response Processing �
 
 **Deliverables:**
 
-- [ ] Project scaffolding with Poetry
-- [ ] Click-based command framework
-- [ ] Configuration management system
-- [ ] Canvas API client with rate limiting
-- [ ] Basic authentication flow
-- [ ] Configuration validation command (`easel doctor`)
+- [x] Project scaffolding with Poetry
+- [x] Click-based command framework
+- [x] Configuration management system
+- [x] Canvas API client with rate limiting
+- [x] Basic authentication flow
+- [x] Configuration validation command (`easel doctor`)
 
 **Acceptance Criteria:**
 
