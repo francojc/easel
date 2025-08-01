@@ -138,3 +138,4 @@ easel.log
 .DS_Store
 Thumbs.db
 EOF < /dev/null
+.aider*
