@@ -1,8 +1,7 @@
 """Canvas API client implementation."""
 
 import asyncio
-from typing import Optional, Dict, Any, List, Union, TypeVar, Type
-from urllib.parse import urljoin, urlparse
+from typing import Optional, Dict, Any, List, TypeVar
 
 import httpx
 from pydantic import BaseModel
@@ -18,8 +17,8 @@ from .exceptions import (
     CanvasValidationError,
     CanvasPermissionError,
 )
-from .models import Course, User, Assignment, Discussion, Page, Submission
-from .pagination import PaginatedResponse, PaginatedIterator
+from .models import Course, User, Assignment, Discussion, Page
+from .pagination import PaginatedResponse
 from .rate_limit import RateLimiter
 
 T = TypeVar("T", bound=BaseModel)
@@ -55,12 +54,12 @@ class CanvasClient:
         self.per_page = per_page
         self._client: Optional[httpx.AsyncClient] = None
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "CanvasClient":
         """Async context manager entry."""
         await self._ensure_client()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         """Async context manager exit."""
         if self._client:
             await self._client.aclose()
@@ -239,7 +238,7 @@ class CanvasClient:
         Returns:
             Paginated course response
         """
-        params = {}
+        params: Dict[str, Any] = {}
         if include:
             params["include[]"] = include
         if state:
@@ -294,7 +293,7 @@ class CanvasClient:
         Returns:
             Paginated assignment response
         """
-        params = {"per_page": per_page or self.per_page}
+        params: Dict[str, Any] = {"per_page": per_page or self.per_page}
         if include:
             params["include[]"] = include
 
@@ -419,7 +418,7 @@ class CanvasClient:
         Returns:
             Paginated user response
         """
-        params = {"per_page": per_page or self.per_page}
+        params: Dict[str, Any] = {"per_page": per_page or self.per_page}
         if enrollment_type:
             params["enrollment_type[]"] = enrollment_type
 

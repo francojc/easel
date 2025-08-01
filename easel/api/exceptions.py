@@ -36,7 +36,7 @@ class CanvasRateLimitError(CanvasAPIError):
         self,
         message: str,
         retry_after: Optional[int] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(message, **kwargs)
         self.retry_after = retry_after

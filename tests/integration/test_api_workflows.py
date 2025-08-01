@@ -88,7 +88,7 @@ class TestAPIClientWorkflows:
             # Mock successful response
             mock_response = AsyncMock()
             mock_response.is_success = True
-            mock_response.json.return_value = mock_user_response
+            mock_response.json = lambda: mock_user_response
             mock_client.request = AsyncMock(return_value=mock_response)
 
             async with client:
@@ -102,16 +102,18 @@ class TestAPIClientWorkflows:
     @pytest.mark.asyncio
     async def test_verify_connection_auth_failure(self, client):
         """Test API connection verification with authentication failure."""
-        with patch("httpx.AsyncClient") as mock_client_class:
+        with patch("easel.api.client.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client_class.return_value = mock_client
+            mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client.__aexit__ = AsyncMock()
 
             # Mock auth failure response
             mock_response = AsyncMock()
             mock_response.is_success = False
             mock_response.status_code = 401
-            mock_response.json.return_value = {"message": "Invalid access token"}
-            mock_client.request.return_value = mock_response
+            mock_response.json = lambda: {"message": "Invalid access token"}
+            mock_client.request = AsyncMock(return_value=mock_response)
 
             async with client:
                 with pytest.raises(CanvasAuthError) as exc_info:
@@ -123,21 +125,23 @@ class TestAPIClientWorkflows:
     @pytest.mark.asyncio
     async def test_get_courses_success(self, client, mock_course_response):
         """Test successful course retrieval."""
-        with patch("httpx.AsyncClient") as mock_client_class:
+        with patch("easel.api.client.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client_class.return_value = mock_client
+            mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client.__aexit__ = AsyncMock()
 
             # Mock successful response with pagination headers
             mock_response = AsyncMock()
             mock_response.is_success = True
-            mock_response.json.return_value = [mock_course_response]
+            mock_response.json = lambda: [mock_course_response]
             mock_response.headers = {
                 "Link": '<https://test.instructure.com/api/v1/courses?page=2>; rel="next"'
             }
             mock_response.request.url = (
                 "https://test.instructure.com/api/v1/courses?page=1"
             )
-            mock_client.request.return_value = mock_response
+            mock_client.request = AsyncMock(return_value=mock_response)
 
             async with client:
                 courses_response = await client.get_courses()
@@ -154,19 +158,21 @@ class TestAPIClientWorkflows:
     @pytest.mark.asyncio
     async def test_get_assignments_success(self, client, mock_assignment_response):
         """Test successful assignment retrieval."""
-        with patch("httpx.AsyncClient") as mock_client_class:
+        with patch("easel.api.client.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client_class.return_value = mock_client
+            mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client.__aexit__ = AsyncMock()
 
             # Mock successful response
             mock_response = AsyncMock()
             mock_response.is_success = True
-            mock_response.json.return_value = [mock_assignment_response]
+            mock_response.json = lambda: [mock_assignment_response]
             mock_response.headers = {}
             mock_response.request.url = (
                 "https://test.instructure.com/api/v1/courses/456/assignments"
             )
-            mock_client.request.return_value = mock_response
+            mock_client.request = AsyncMock(return_value=mock_response)
 
             async with client:
                 assignments_response = await client.get_assignments(course_id=456)
@@ -237,7 +243,7 @@ class TestAPIClientWorkflows:
             mock_response = AsyncMock()
             mock_response.is_success = False
             mock_response.status_code = 500
-            mock_response.json.return_value = {"message": "Internal server error"}
+            mock_response.json = lambda: {"message": "Internal server error"}
             mock_client.request.return_value = mock_response
 
             async with client:
@@ -258,7 +264,7 @@ class TestAPIClientWorkflows:
             mock_response = AsyncMock()
             mock_response.is_success = False
             mock_response.status_code = 404
-            mock_response.json.return_value = {"message": "Not found"}
+            mock_response.json = lambda: {"message": "Not found"}
             mock_client.request.return_value = mock_response
 
             async with client:
@@ -281,7 +287,7 @@ class TestPaginationWorkflows:
     def client(self, auth):
         """Create test API client."""
         return CanvasClient(
-            url="https://test.instructure.com",
+            base_url="https://test.instructure.com",
             auth=auth,
             per_page=2,  # Small page size for testing
         )
@@ -370,7 +376,7 @@ class TestPaginationWorkflows:
             # Mock empty response
             mock_response = AsyncMock()
             mock_response.is_success = True
-            mock_response.json.return_value = []
+            mock_response.json = lambda: []
             mock_response.headers = {}
             mock_response.request.url = "https://test.instructure.com/api/v1/courses"
             mock_client.request.return_value = mock_response
@@ -400,7 +406,7 @@ class TestAPIAuthenticationWorkflows:
         """Test authentication integration with client."""
         auth = CanvasAuth("test_token_123")
         client = CanvasClient(
-            url="https://test.instructure.com",
+            base_url="https://test.instructure.com",
             auth=auth,
         )
 
@@ -444,7 +450,7 @@ class TestErrorRecoveryWorkflows:
     def client(self, auth):
         """Create test API client."""
         return CanvasClient(
-            url="https://test.instructure.com",
+            base_url="https://test.instructure.com",
             auth=auth,
             max_retries=2,  # Lower for faster tests
         )
@@ -459,7 +465,7 @@ class TestErrorRecoveryWorkflows:
             # Mock network failure then success
             mock_response = AsyncMock()
             mock_response.is_success = True
-            mock_response.json.return_value = {"id": 123, "name": "Test User"}
+            mock_response.json = lambda: {"id": 123, "name": "Test User"}
 
             mock_client.request.side_effect = [
                 httpx.ConnectError("Connection failed"),
@@ -520,7 +526,7 @@ class TestConcurrentAPIWorkflows:
     def client(self, auth):
         """Create test API client."""
         return CanvasClient(
-            url="https://test.instructure.com",
+            base_url="https://test.instructure.com",
             auth=auth,
             rate_limit=5.0,  # Lower rate limit for testing
         )
@@ -535,7 +541,7 @@ class TestConcurrentAPIWorkflows:
             # Mock successful responses
             mock_response = AsyncMock()
             mock_response.is_success = True
-            mock_response.json.return_value = {"id": 123, "name": "Test User"}
+            mock_response.json = lambda: {"id": 123, "name": "Test User"}
             mock_client.request.return_value = mock_response
 
             async with client:

@@ -38,8 +38,10 @@ def config_list(ctx: EaselContext, show_sensitive: bool) -> None:
             raise ConfigError("Configuration manager not initialized")
 
         if not ctx.config_manager.config_exists():
-            click.echo("No configuration found. Run 'easel init' to create one.")
-            return
+            click.echo(
+                "No configuration found. Run 'easel init' to create one.", err=True
+            )
+            ctx.exit(1)
 
         if show_sensitive:
             # Load full config (including tokens)
@@ -58,11 +60,16 @@ def config_list(ctx: EaselContext, show_sensitive: bool) -> None:
             _display_config_table(config_dict)
 
     except ConfigNotFoundError:
-        click.echo("Configuration file not found. Run 'easel init' to create one.")
+        click.echo(
+            "Configuration file not found. Run 'easel init' to create one.", err=True
+        )
+        ctx.exit(1)
     except ConfigValidationError as e:
         click.echo(f"Configuration validation error: {e}", err=True)
+        ctx.exit(1)
     except ConfigError as e:
         click.echo(f"Configuration error: {e}", err=True)
+        ctx.exit(1)
 
 
 @cli.command()

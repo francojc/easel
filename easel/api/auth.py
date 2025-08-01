@@ -1,6 +1,6 @@
 """Canvas API authentication."""
 
-from typing import Dict, Optional
+from typing import Dict
 
 import httpx
 

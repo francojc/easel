@@ -33,6 +33,7 @@ black = "^23.0.0"
 flake8 = "^6.0.0"
 mypy = "^1.0.0"
 pre-commit = "^4.2.0"
+types-pyyaml = "^6.0.12.20250516"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

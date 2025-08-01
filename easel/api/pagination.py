@@ -1,7 +1,17 @@
 """Pagination support for Canvas API responses."""
 
 import re
-from typing import Optional, Dict, Any, List, AsyncIterator, TypeVar, Generic
+from typing import (
+    Optional,
+    Dict,
+    Any,
+    List,
+    AsyncIterator,
+    TypeVar,
+    Generic,
+    Iterator,
+    Callable,
+)
 from urllib.parse import parse_qs, urlparse
 
 import httpx
@@ -144,11 +154,11 @@ class PaginatedResponse(Generic[T]):
         """Number of items in current page."""
         return len(self.items)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[T]:
         """Iterate over items in current page."""
         return iter(self.items)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> T:
         """Get item by index."""
         return self.items[index]
 
@@ -160,7 +170,7 @@ class PaginatedIterator(Generic[T]):
         self,
         client,  # CanvasClient
         initial_response: PaginatedResponse[T],
-        item_parser: callable,
+        item_parser: Callable[[Dict[str, Any]], T],
     ) -> None:
         """Initialize paginated iterator.
 
