@@ -54,7 +54,7 @@ class TestCompleteWorkflow:
             },
             {
                 "id": 457,
-                "name": "Test Course 2", 
+                "name": "Test Course 2",
                 "course_code": "TEST102",
                 "workflow_state": "available",
                 "start_at": "2024-01-15T08:00:00Z",
@@ -62,9 +62,7 @@ class TestCompleteWorkflow:
             },
         ]
 
-    def test_complete_setup_workflow(
-        self, runner, temp_config_dir, mock_user_response
-    ):
+    def test_complete_setup_workflow(self, runner, temp_config_dir, mock_user_response):
         """Test complete setup workflow from init to doctor validation."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
             with patch("httpx.AsyncClient") as mock_client:
@@ -72,15 +70,19 @@ class TestCompleteWorkflow:
                 mock_response = AsyncMock()
                 mock_response.is_success = True
                 mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = mock_response
+                mock_client.return_value.__aenter__.return_value.request.return_value = (
+                    mock_response
+                )
 
                 # Step 1: Initialize configuration
-                user_input = "\n".join([
-                    "Test University",
-                    "https://test.instructure.com",
-                    "test_token_123",
-                    "y",  # confirm token verification
-                ])
+                user_input = "\n".join(
+                    [
+                        "Test University",
+                        "https://test.instructure.com",
+                        "test_token_123",
+                        "y",  # confirm token verification
+                    ]
+                )
 
                 init_result = runner.invoke(cli, ["init"], input=user_input)
                 assert init_result.exit_code == 0
@@ -112,7 +114,7 @@ class TestCompleteWorkflow:
         config = EaselConfig(
             canvas=CanvasInstance(
                 name="Test University",
-                base_url="https://test.instructure.com",
+                url="https://test.instructure.com",
                 api_token="test_token",
             )
         )
@@ -130,7 +132,7 @@ class TestCompleteWorkflow:
             # Test JSON format
             json_result = runner.invoke(cli, ["--format", "json", "config", "list"])
             assert json_result.exit_code == 0
-            
+
             # Validate JSON output
             try:
                 json_data = json.loads(json_result.output)
@@ -141,7 +143,7 @@ class TestCompleteWorkflow:
             # Test YAML format
             yaml_result = runner.invoke(cli, ["--format", "yaml", "config", "list"])
             assert yaml_result.exit_code == 0
-            
+
             # Validate YAML output
             try:
                 yaml_data = yaml.safe_load(yaml_result.output)
@@ -168,14 +170,18 @@ class TestCompleteWorkflow:
                 mock_response.is_success = False
                 mock_response.status_code = 401
                 mock_response.json.return_value = {"message": "Invalid token"}
-                mock_client.return_value.__aenter__.return_value.request.return_value = mock_response
+                mock_client.return_value.__aenter__.return_value.request.return_value = (
+                    mock_response
+                )
 
-                user_input = "\n".join([
-                    "Test University",
-                    "https://test.instructure.com",
-                    "invalid_token",
-                    "n",  # don't save after failed verification
-                ])
+                user_input = "\n".join(
+                    [
+                        "Test University",
+                        "https://test.instructure.com",
+                        "invalid_token",
+                        "n",  # don't save after failed verification
+                    ]
+                )
 
                 init_result = runner.invoke(cli, ["init"], input=user_input)
                 assert init_result.exit_code == 1
@@ -208,7 +214,7 @@ class TestCompleteWorkflow:
             valid_config = EaselConfig(
                 canvas=CanvasInstance(
                     name="Test University",
-                    base_url="https://test.instructure.com",
+                    url="https://test.instructure.com",
                     api_token="test_token",
                 )
             )
@@ -221,15 +227,13 @@ class TestCompleteWorkflow:
             assert list_result.exit_code == 0
             assert "Test University" in list_result.output
 
-    def test_verbose_workflow(
-        self, runner, temp_config_dir, mock_user_response
-    ):
+    def test_verbose_workflow(self, runner, temp_config_dir, mock_user_response):
         """Test workflow with verbose output enabled."""
         # Setup configuration
         config = EaselConfig(
             canvas=CanvasInstance(
                 name="Test University",
-                base_url="https://test.instructure.com",
+                url="https://test.instructure.com",
                 api_token="test_token",
             )
         )
@@ -244,7 +248,9 @@ class TestCompleteWorkflow:
                 mock_response = AsyncMock()
                 mock_response.is_success = True
                 mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = mock_response
+                mock_client.return_value.__aenter__.return_value.request.return_value = (
+                    mock_response
+                )
 
                 # Test verbose output
                 verbose_result = runner.invoke(cli, ["--verbose", "doctor"])
@@ -269,15 +275,19 @@ class TestCompleteWorkflow:
                 mock_response = AsyncMock()
                 mock_response.is_success = True
                 mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = mock_response
+                mock_client.return_value.__aenter__.return_value.request.return_value = (
+                    mock_response
+                )
 
                 # Initialize with credential storage
-                user_input = "\n".join([
-                    "Test University",
-                    "https://test.instructure.com",
-                    "sensitive_token_123",
-                    "y",  # confirm token verification
-                ])
+                user_input = "\n".join(
+                    [
+                        "Test University",
+                        "https://test.instructure.com",
+                        "sensitive_token_123",
+                        "y",  # confirm token verification
+                    ]
+                )
 
                 init_result = runner.invoke(cli, ["init"], input=user_input)
                 assert init_result.exit_code == 0
@@ -289,7 +299,7 @@ class TestCompleteWorkflow:
                 # Verify token is not stored in plain text in config file
                 with open(config_file) as f:
                     config_content = f.read()
-                
+
                 assert "sensitive_token_123" not in config_content
                 assert "canvas" in config_content
 
@@ -298,13 +308,11 @@ class TestCompleteWorkflow:
                 if credentials_file.exists():
                     with open(credentials_file) as f:
                         cred_content = f.read()
-                    
+
                     # Token should be encrypted, not in plain text
                     assert "sensitive_token_123" not in cred_content
 
-    def test_multi_command_workflow(
-        self, runner, temp_config_dir, mock_user_response
-    ):
+    def test_multi_command_workflow(self, runner, temp_config_dir, mock_user_response):
         """Test workflow with multiple commands in sequence."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
             with patch("httpx.AsyncClient") as mock_client:
@@ -312,17 +320,21 @@ class TestCompleteWorkflow:
                 mock_response = AsyncMock()
                 mock_response.is_success = True
                 mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = mock_response
+                mock_client.return_value.__aenter__.return_value.request.return_value = (
+                    mock_response
+                )
 
                 # Command sequence: init -> config list -> doctor -> version
-                
+
                 # 1. Initialize
-                user_input = "\n".join([
-                    "Test University",
-                    "https://test.instructure.com",
-                    "test_token_123",
-                    "y",
-                ])
+                user_input = "\n".join(
+                    [
+                        "Test University",
+                        "https://test.instructure.com",
+                        "test_token_123",
+                        "y",
+                    ]
+                )
 
                 init_result = runner.invoke(cli, ["init"], input=user_input)
                 assert init_result.exit_code == 0
@@ -352,7 +364,7 @@ class TestCompleteWorkflow:
                     "name": "Min",
                     "base_url": "https://min.com",
                     "api_token": "token",
-                }
+                },
             }
 
             config_file = temp_config_dir / "config.yaml"
@@ -366,7 +378,7 @@ class TestCompleteWorkflow:
 
             # Test with empty configuration directory
             config_file.unlink()
-            
+
             list_result = runner.invoke(cli, ["config", "list"])
             assert list_result.exit_code == 1
             assert "No configuration found" in list_result.output
@@ -377,7 +389,7 @@ class TestCompleteWorkflow:
         config = EaselConfig(
             canvas=CanvasInstance(
                 name="Test University",
-                base_url="https://test.instructure.com",
+                url="https://test.instructure.com",
                 api_token="test_token",
             )
         )
@@ -402,7 +414,7 @@ class TestCompleteWorkflow:
             assert config_file.exists()
             with open(config_file) as f:
                 final_config = yaml.safe_load(f)
-            
+
             assert final_config["canvas"]["name"] == "Test University"
 
 
@@ -439,15 +451,20 @@ class TestUserExperienceWorkflows:
         """Test quality and helpfulness of error messages."""
         with tempfile.TemporaryDirectory() as temp_dir:
             empty_config_dir = Path(temp_dir) / ".easel"
-            
-            with patch("easel.config.paths.get_config_dir", return_value=empty_config_dir):
+
+            with patch(
+                "easel.config.paths.get_config_dir", return_value=empty_config_dir
+            ):
                 # Test missing configuration error
                 result = runner.invoke(cli, ["config", "list"])
-                
+
                 assert result.exit_code == 1
                 assert "No configuration found" in result.output
                 # Should provide helpful guidance
-                assert "Run 'easel init'" in result.output or "run 'easel init'" in result.output
+                assert (
+                    "Run 'easel init'" in result.output
+                    or "run 'easel init'" in result.output
+                )
 
     def test_progressive_disclosure_workflow(self, runner):
         """Test progressive disclosure of information."""
@@ -455,7 +472,7 @@ class TestUserExperienceWorkflows:
         version_result = runner.invoke(cli, ["--version"])
         assert version_result.exit_code == 0
         # Should be concise
-        assert len(version_result.output.split('\n')) <= 3
+        assert len(version_result.output.split("\n")) <= 3
 
         # Help should provide more detailed information
         help_result = runner.invoke(cli, ["--help"])
@@ -499,10 +516,13 @@ class TestBackwardCompatibilityWorkflows:
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
             # Should handle legacy configuration gracefully
             result = runner.invoke(cli, ["config", "list"])
-            
+
             # Should either succeed or provide clear migration guidance
             if result.exit_code != 0:
-                assert "version" in result.output.lower() or "upgrade" in result.output.lower()
+                assert (
+                    "version" in result.output.lower()
+                    or "upgrade" in result.output.lower()
+                )
             else:
                 assert "Legacy University" in result.output
 
@@ -513,9 +533,9 @@ class TestBackwardCompatibilityWorkflows:
             version="1.0",
             canvas=CanvasInstance(
                 name="Current University",
-                base_url="https://current.instructure.com",
+                url="https://current.instructure.com",
                 api_token="current_token",
-            )
+            ),
         )
 
         config_file = temp_config_dir / "config.yaml"
@@ -524,6 +544,6 @@ class TestBackwardCompatibilityWorkflows:
 
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
             result = runner.invoke(cli, ["config", "list"])
-            
+
             assert result.exit_code == 0
             assert "Current University" in result.output

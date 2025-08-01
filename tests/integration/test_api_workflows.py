@@ -79,15 +79,17 @@ class TestAPIClientWorkflows:
     @pytest.mark.asyncio
     async def test_verify_connection_success(self, client, mock_user_response):
         """Test successful API connection verification."""
-        with patch("httpx.AsyncClient") as mock_client_class:
+        with patch("easel.api.client.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client_class.return_value = mock_client
+            mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+            mock_client.__aexit__ = AsyncMock()
 
             # Mock successful response
             mock_response = AsyncMock()
             mock_response.is_success = True
             mock_response.json.return_value = mock_user_response
-            mock_client.request.return_value = mock_response
+            mock_client.request = AsyncMock(return_value=mock_response)
 
             async with client:
                 user = await client.verify_connection()
@@ -132,7 +134,9 @@ class TestAPIClientWorkflows:
             mock_response.headers = {
                 "Link": '<https://test.instructure.com/api/v1/courses?page=2>; rel="next"'
             }
-            mock_response.request.url = "https://test.instructure.com/api/v1/courses?page=1"
+            mock_response.request.url = (
+                "https://test.instructure.com/api/v1/courses?page=1"
+            )
             mock_client.request.return_value = mock_response
 
             async with client:
@@ -140,7 +144,7 @@ class TestAPIClientWorkflows:
 
                 assert isinstance(courses_response, PaginatedResponse)
                 assert len(courses_response.items) == 1
-                
+
                 course = courses_response.items[0]
                 assert isinstance(course, Course)
                 assert course.id == 456
@@ -159,7 +163,9 @@ class TestAPIClientWorkflows:
             mock_response.is_success = True
             mock_response.json.return_value = [mock_assignment_response]
             mock_response.headers = {}
-            mock_response.request.url = "https://test.instructure.com/api/v1/courses/456/assignments"
+            mock_response.request.url = (
+                "https://test.instructure.com/api/v1/courses/456/assignments"
+            )
             mock_client.request.return_value = mock_response
 
             async with client:
@@ -167,7 +173,7 @@ class TestAPIClientWorkflows:
 
                 assert isinstance(assignments_response, PaginatedResponse)
                 assert len(assignments_response.items) == 1
-                
+
                 assignment = assignments_response.items[0]
                 assert isinstance(assignment, Assignment)
                 assert assignment.id == 789
@@ -198,7 +204,7 @@ class TestAPIClientWorkflows:
             async with client:
                 # Should retry after rate limit and succeed
                 user = await client.verify_connection()
-                
+
                 assert isinstance(user, User)
                 assert user.id == 123
                 assert mock_client.request.call_count == 2
@@ -275,7 +281,7 @@ class TestPaginationWorkflows:
     def client(self, auth):
         """Create test API client."""
         return CanvasClient(
-            base_url="https://test.instructure.com",
+            url="https://test.instructure.com",
             auth=auth,
             per_page=2,  # Small page size for testing
         )
@@ -326,27 +332,31 @@ class TestPaginationWorkflows:
             page1_response.headers = {
                 "Link": '<https://test.instructure.com/api/v1/courses?page=2>; rel="next"'
             }
-            page1_response.request.url = "https://test.instructure.com/api/v1/courses?page=1"
+            page1_response.request.url = (
+                "https://test.instructure.com/api/v1/courses?page=1"
+            )
 
             page2_response = AsyncMock()
             page2_response.is_success = True
             page2_response.json.return_value = mock_courses_page2
             page2_response.headers = {}
-            page2_response.request.url = "https://test.instructure.com/api/v1/courses?page=2"
+            page2_response.request.url = (
+                "https://test.instructure.com/api/v1/courses?page=2"
+            )
 
             mock_client.request.side_effect = [page1_response, page2_response]
 
             async with client:
                 # Get first page
                 first_page = await client.get_courses()
-                
+
                 assert len(first_page.items) == 2
                 assert first_page.has_next_page()
-                
+
                 # Get second page using the client's _make_request method
                 second_page_url = first_page.get_next_page_url()
                 assert second_page_url is not None
-                
+
                 # Verify pagination info
                 assert first_page.pagination.next_url == second_page_url
 
@@ -380,7 +390,7 @@ class TestAPIAuthenticationWorkflows:
         """Test authentication header creation."""
         auth = CanvasAuth("test_token_123")
         headers = auth.get_headers()
-        
+
         assert "Authorization" in headers
         assert headers["Authorization"] == "Bearer test_token_123"
         assert headers["Content-Type"] == "application/json"
@@ -390,7 +400,7 @@ class TestAPIAuthenticationWorkflows:
         """Test authentication integration with client."""
         auth = CanvasAuth("test_token_123")
         client = CanvasClient(
-            base_url="https://test.instructure.com",
+            url="https://test.instructure.com",
             auth=auth,
         )
 
@@ -402,7 +412,7 @@ class TestAPIAuthenticationWorkflows:
                 # Verify that client is initialized with auth headers
                 mock_client_class.assert_called_once()
                 call_kwargs = mock_client_class.call_args[1]
-                
+
                 assert "headers" in call_kwargs
                 headers = call_kwargs["headers"]
                 assert headers["Authorization"] == "Bearer test_token_123"
@@ -412,10 +422,10 @@ class TestAPIAuthenticationWorkflows:
         """Test token refresh workflow (placeholder for future implementation)."""
         # This test documents the expected behavior for future token refresh feature
         auth = CanvasAuth("test_token_123")
-        
+
         # Verify current token
-        assert auth.token == "test_token_123"
-        
+        assert auth.api_token == "test_token_123"
+
         # Future: Test token refresh logic
         # new_token = await auth.refresh_token()
         # assert new_token != "test_token_123"
@@ -434,7 +444,7 @@ class TestErrorRecoveryWorkflows:
     def client(self, auth):
         """Create test API client."""
         return CanvasClient(
-            base_url="https://test.instructure.com",
+            url="https://test.instructure.com",
             auth=auth,
             max_retries=2,  # Lower for faster tests
         )
@@ -458,7 +468,7 @@ class TestErrorRecoveryWorkflows:
 
             async with client:
                 user = await client.verify_connection()
-                
+
                 assert isinstance(user, User)
                 assert user.id == 123
                 assert mock_client.request.call_count == 2
@@ -510,7 +520,7 @@ class TestConcurrentAPIWorkflows:
     def client(self, auth):
         """Create test API client."""
         return CanvasClient(
-            base_url="https://test.instructure.com",
+            url="https://test.instructure.com",
             auth=auth,
             rate_limit=5.0,  # Lower rate limit for testing
         )
@@ -532,12 +542,12 @@ class TestConcurrentAPIWorkflows:
                 # Make multiple concurrent requests
                 tasks = [
                     client.verify_connection(),
-                    client.verify_connection(),  
+                    client.verify_connection(),
                     client.verify_connection(),
                 ]
-                
+
                 users = await asyncio.gather(*tasks)
-                
+
                 # All should succeed
                 assert len(users) == 3
                 for user in users:
