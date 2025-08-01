@@ -42,7 +42,7 @@ class TableFormatter(OutputFormatter):
         flattened_data = [self._flatten_dict(item) for item in data_list]
 
         # Get all unique keys across all items
-        all_keys = set()
+        all_keys: set[str] = set()
         for item in flattened_data:
             all_keys.update(item.keys())
 
@@ -129,7 +129,7 @@ class CSVFormatter(OutputFormatter):
         flattened_data = [self._flatten_dict(item) for item in data_list]
 
         # Get all unique keys
-        all_keys = set()
+        all_keys: set[str] = set()
         for item in flattened_data:
             all_keys.update(item.keys())
 

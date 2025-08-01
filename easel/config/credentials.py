@@ -8,7 +8,7 @@ import keyring
 import yaml
 from cryptography.fernet import Fernet
 
-from .exceptions import CredentialDecryptionError, CredentialNotFoundError
+from .exceptions import CredentialDecryptionError
 from .paths import get_config_dir, get_credentials_file
 
 
@@ -19,7 +19,8 @@ class CredentialManager:
         """Initialize credential manager.
 
         Args:
-            config_dir: Optional config directory path, defaults to standard location
+            config_dir: Optional config directory path, defaults to
+                standard location
         """
         self.config_dir = config_dir or get_config_dir()
         self.credentials_file = get_credentials_file()
@@ -94,7 +95,7 @@ class CredentialManager:
             encrypted_token = fernet.encrypt(token.encode())
 
             # Load existing credentials
-            credentials = {}
+            credentials: dict[str, str] = {}
             if self.credentials_file.exists():
                 with open(self.credentials_file, "r", encoding="utf-8") as f:
                     credentials = yaml.safe_load(f) or {}

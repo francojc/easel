@@ -2,6 +2,7 @@
 
 import json
 import sys
+from pathlib import Path
 from typing import Optional
 
 import click
@@ -58,8 +59,9 @@ def _version_callback(ctx: click.Context, param: click.Parameter, value: bool) -
 def cli(ctx: EaselContext, config: Optional[str], format: str, verbose: bool) -> None:
     """Easel CLI - Canvas LMS automation tool.
 
-    Easel provides programmatic access to Canvas LMS via REST API with a focus
-    on safety, extensibility, and automation workflows for educational institutions.
+    Easel provides programmatic access to Canvas LMS via REST API with a
+    focus on safety, extensibility, and automation workflows for
+    educational institutions.
     """
     ctx.config_file = config
     ctx.format = format
@@ -67,10 +69,12 @@ def cli(ctx: EaselContext, config: Optional[str], format: str, verbose: bool) ->
 
     # Initialize configuration manager
     try:
-        ctx.config_manager = ConfigManager(config_file=config)
+        config_path = Path(config) if config else None
+        ctx.config_manager = ConfigManager(config_file=config_path)
     except Exception as e:
         if verbose:
-            click.echo(f"Warning: Failed to initialize config manager: {e}", err=True)
+            msg = f"Warning: Failed to initialize config manager: {e}"
+            click.echo(msg, err=True)
 
 
 def main() -> None:
@@ -86,7 +90,7 @@ def main() -> None:
 
 
 # Import commands to register them with the CLI
-from .commands import config, doctor  # noqa: F401
+from .commands import config as config_commands, doctor  # noqa
 
 
 if __name__ == "__main__":

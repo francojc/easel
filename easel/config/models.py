@@ -11,7 +11,8 @@ class CanvasInstance(BaseModel):
 
     name: str = Field(..., description="Human-readable name for this Canvas instance")
     url: str = Field(
-        ..., description="Canvas base URL (e.g., https://university.instructure.com)"
+        ...,
+        description="Canvas base URL (e.g., " "https://university.instructure.com)",
     )
     api_token: Optional[str] = Field(
         None, description="Canvas API token (stored separately)"
@@ -69,7 +70,7 @@ class LoggingSettings(BaseModel):
         valid_formats = {"human", "json"}
         if v not in valid_formats:
             raise ValueError(
-                f"Invalid log format. Must be one of: {', '.join(valid_formats)}"
+                f"Invalid log format. Must be one of: " f"{', '.join(valid_formats)}"
             )
         return v
 
@@ -79,11 +80,9 @@ class EaselConfig(BaseModel):
 
     version: str = Field("1.0", description="Configuration version")
     canvas: CanvasInstance
-    api: APISettings = Field(default_factory=APISettings)
-    cache: CacheSettings = Field(default_factory=CacheSettings)
-    logging: LoggingSettings = Field(default_factory=LoggingSettings)
+    api: APISettings = Field(default_factory=lambda: APISettings())
+    cache: CacheSettings = Field(default_factory=lambda: CacheSettings())
+    logging: LoggingSettings = Field(default_factory=lambda: LoggingSettings())
 
-    model_config = {
-        "env_prefix": "EASEL_",
-        "env_nested_delimiter": "__",
-    }
+    # Configuration for environment variable reading
+    # model_config = ConfigDict(env_prefix="EASEL_", env_nested_delimiter="__")

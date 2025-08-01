@@ -1,7 +1,6 @@
 """Configuration-related CLI commands."""
 
 import json
-from typing import Optional
 
 import click
 import yaml
@@ -11,7 +10,6 @@ from easel.config import (
     ConfigManager,
     ConfigNotFoundError,
     ConfigValidationError,
-    EaselConfig,
 )
 
 from ..context import pass_context, EaselContext
@@ -39,9 +37,10 @@ def config_list(ctx: EaselContext, show_sensitive: bool) -> None:
 
         if not ctx.config_manager.config_exists():
             click.echo(
-                "No configuration found. Run 'easel init' to create one.", err=True
+                "No configuration found. Run 'easel init' to create one.",
+                err=True,
             )
-            ctx.exit(1)
+            click.get_current_context().exit(1)
 
         if show_sensitive:
             # Load full config (including tokens)
@@ -61,7 +60,8 @@ def config_list(ctx: EaselContext, show_sensitive: bool) -> None:
 
     except ConfigNotFoundError:
         click.echo(
-            "Configuration file not found. Run 'easel init' to create one.", err=True
+            "Configuration file not found. Run 'easel init' to create one.",
+            err=True,
         )
         ctx.exit(1)
     except ConfigValidationError as e:
@@ -102,7 +102,7 @@ def init(ctx: EaselContext) -> None:
         canvas_url = f"https://{canvas_url}"
 
     # API token setup
-    click.echo(f"\n📝 Canvas API Token Setup:")
+    click.echo("\n📝 Canvas API Token Setup:")
     click.echo("1. Go to your Canvas Account Settings")
     click.echo("2. Scroll to 'Approved Integrations'")
     click.echo("3. Click '+ New Access Token'")
@@ -142,7 +142,7 @@ def _display_config_table(config_dict: dict) -> None:
     click.echo("=" * 50)
 
     # Canvas configuration
-    click.echo(f"\n📚 Canvas Instance:")
+    click.echo("\n📚 Canvas Instance:")
     canvas = config_dict.get("canvas", {})
     click.echo(f"  Name: {canvas.get('name', 'Not set')}")
     click.echo(f"  URL:  {canvas.get('url', 'Not set')}")
@@ -151,7 +151,7 @@ def _display_config_table(config_dict: dict) -> None:
     click.echo(f"  Token: {'✅ Configured' if has_token else '❌ Not configured'}")
 
     # API settings
-    click.echo(f"\n🔧 API Settings:")
+    click.echo("\n🔧 API Settings:")
     api = config_dict.get("api", {})
     click.echo(f"  Rate limit: {api.get('rate_limit', 'Not set')} req/sec")
     click.echo(f"  Timeout:    {api.get('timeout', 'Not set')} seconds")
@@ -159,7 +159,7 @@ def _display_config_table(config_dict: dict) -> None:
     click.echo(f"  Page size:  {api.get('page_size', 'Not set')}")
 
     # Cache settings
-    click.echo(f"\n💾 Cache Settings:")
+    click.echo("\n💾 Cache Settings:")
     cache = config_dict.get("cache", {})
     enabled = cache.get("enabled", False)
     click.echo(f"  Enabled: {'✅ Yes' if enabled else '❌ No'}")
@@ -168,7 +168,7 @@ def _display_config_table(config_dict: dict) -> None:
         click.echo(f"  Max size: {cache.get('max_size', 'Not set')} entries")
 
     # Logging settings
-    click.echo(f"\n📝 Logging:")
+    click.echo("\n📝 Logging:")
     logging = config_dict.get("logging", {})
     click.echo(f"  Level:  {logging.get('level', 'Not set')}")
     click.echo(f"  Format: {logging.get('format', 'Not set')}")
@@ -178,7 +178,7 @@ def _display_config_table(config_dict: dict) -> None:
         click.echo(f"  File:   {log_file}")
 
     # File locations
-    click.echo(f"\n📁 Files:")
+    click.echo("\n📁 Files:")
     config_file = config_dict.get("config_file")
     if config_file:
         click.echo(f"  Config: {config_file}")

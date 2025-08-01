@@ -127,7 +127,11 @@ class CanvasClient:
                 await self._handle_response(response)
                 return response
 
-            except (httpx.TimeoutException, httpx.ConnectTimeout, httpx.ReadTimeout):
+            except (
+                httpx.TimeoutException,
+                httpx.ConnectTimeout,
+                httpx.ReadTimeout,
+            ):
                 if attempt == self.max_retries:
                     raise CanvasTimeoutError(
                         f"Request timeout after {self.max_retries} retries"
@@ -218,7 +222,10 @@ class CanvasClient:
             CanvasAPIError: If connection fails
         """
         response = await self._make_request("GET", "users/self")
-        user_data = response.json()
+        try:
+            user_data = response.json()
+        except (ValueError, TypeError) as e:
+            raise CanvasAPIError(f"Invalid response format: {e}")
         return User(**user_data)
 
     # Course methods
@@ -328,7 +335,9 @@ class CanvasClient:
             params["include[]"] = include
 
         response = await self._make_request(
-            "GET", f"courses/{course_id}/assignments/{assignment_id}", params=params
+            "GET",
+            f"courses/{course_id}/assignments/{assignment_id}",
+            params=params,
         )
         assignment_data = response.json()
         return Assignment(**assignment_data)

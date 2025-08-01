@@ -13,6 +13,14 @@ from easel.cli.main import cli
 from easel.config.models import CanvasInstance, EaselConfig
 
 
+def create_mock_httpx_client():
+    """Helper to create properly configured mock httpx client."""
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.__aexit__.return_value = None
+    return mock_client
+
+
 class TestCompleteWorkflow:
     """Test complete end-to-end workflow from initialization to API usage."""
 
@@ -65,14 +73,14 @@ class TestCompleteWorkflow:
     def test_complete_setup_workflow(self, runner, temp_config_dir, mock_user_response):
         """Test complete setup workflow from init to doctor validation."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock successful API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = True
-                mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: mock_user_response
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 # Step 1: Initialize configuration
                 user_input = "\n".join(
@@ -86,7 +94,7 @@ class TestCompleteWorkflow:
 
                 init_result = runner.invoke(cli, ["init"], input=user_input)
                 assert init_result.exit_code == 0
-                assert "Configuration saved successfully" in init_result.output
+                assert "Configuration saved to" in init_result.output
 
                 # Verify configuration file was created
                 config_file = temp_config_dir / "config.yaml"
@@ -161,18 +169,18 @@ class TestCompleteWorkflow:
 
             doctor_result = runner.invoke(cli, ["doctor"])
             assert doctor_result.exit_code == 1
-            assert "✗ Configuration file not found" in doctor_result.output
+            assert "❌ Config file" in doctor_result.output
 
             # Step 2: Initialize with invalid token
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock failed API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = False
                 mock_response.status_code = 401
-                mock_response.json.return_value = {"message": "Invalid token"}
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: {"message": "Invalid token"}
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 user_input = "\n".join(
                     [
@@ -203,12 +211,12 @@ class TestCompleteWorkflow:
             # Test configuration listing with invalid file
             list_result = runner.invoke(cli, ["config", "list"])
             assert list_result.exit_code == 1
-            assert "Configuration file is invalid" in list_result.output
+            assert "Configuration validation error" in list_result.output
 
             # Test doctor command with invalid configuration
             doctor_result = runner.invoke(cli, ["doctor"])
             assert doctor_result.exit_code == 1
-            assert "✗ Configuration validation failed" in doctor_result.output
+            assert "❌ Config is valid" in doctor_result.output
 
             # Fix configuration
             valid_config = EaselConfig(
@@ -243,14 +251,14 @@ class TestCompleteWorkflow:
             yaml.dump(config.model_dump(), f)
 
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock successful API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = True
-                mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: mock_user_response
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 # Test verbose output
                 verbose_result = runner.invoke(cli, ["--verbose", "doctor"])
@@ -270,14 +278,14 @@ class TestCompleteWorkflow:
     ):
         """Test credential security in complete workflow."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock successful API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = True
-                mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: mock_user_response
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 # Initialize with credential storage
                 user_input = "\n".join(
@@ -315,14 +323,14 @@ class TestCompleteWorkflow:
     def test_multi_command_workflow(self, runner, temp_config_dir, mock_user_response):
         """Test workflow with multiple commands in sequence."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock successful API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = True
-                mock_response.json.return_value = mock_user_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: mock_user_response
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 # Command sequence: init -> config list -> doctor -> version
 
@@ -453,7 +461,8 @@ class TestUserExperienceWorkflows:
             empty_config_dir = Path(temp_dir) / ".easel"
 
             with patch(
-                "easel.config.paths.get_config_dir", return_value=empty_config_dir
+                "easel.config.paths.get_config_dir",
+                return_value=empty_config_dir,
             ):
                 # Test missing configuration error
                 result = runner.invoke(cli, ["config", "list"])

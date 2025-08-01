@@ -3,7 +3,12 @@
 from typing import Dict, Type
 
 from .base import OutputFormatter
-from .formatters import TableFormatter, JSONFormatter, CSVFormatter, YAMLFormatter
+from .formatters import (
+    TableFormatter,
+    JSONFormatter,
+    CSVFormatter,
+    YAMLFormatter,
+)
 
 
 class FormatterFactory:

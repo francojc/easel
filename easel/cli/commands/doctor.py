@@ -1,15 +1,13 @@
 """System validation and diagnostics commands."""
 
 import sys
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import click
 import httpx
 
 from easel.config import (
-    ConfigError,
     ConfigManager,
-    ConfigNotFoundError,
     ConfigValidationError,
 )
 
@@ -74,33 +72,39 @@ def doctor(ctx: EaselContext) -> None:
                 click.echo("\n🌐 Network & API Checks:")
 
                 try:
-                    config = ctx.config_manager.load_config()
-
-                    network_ok, network_msg = _check_network_connectivity(
-                        config.canvas.url
-                    )
-                    _print_check_result("Network connectivity", network_ok, network_msg)
-                    total_checks += 1
-                    if network_ok:
-                        checks_passed += 1
+                    if not ctx.config_manager:
+                        issues.append("Configuration manager not initialized")
                     else:
-                        issues.append(network_msg)
+                        config = ctx.config_manager.load_config()
 
-                    if network_ok and config.canvas.api_token:
-                        api_ok, api_msg = _check_canvas_api_auth(
-                            config.canvas.url, config.canvas.api_token
+                        network_ok, network_msg = _check_network_connectivity(
+                            config.canvas.url
                         )
                         _print_check_result(
-                            "Canvas API authentication", api_ok, api_msg
+                            "Network connectivity", network_ok, network_msg
                         )
                         total_checks += 1
-                        if api_ok:
+                        if network_ok:
                             checks_passed += 1
                         else:
-                            issues.append(api_msg)
+                            issues.append(network_msg)
+
+                        if network_ok and config.canvas.api_token:
+                            api_ok, api_msg = _check_canvas_api_auth(
+                                config.canvas.url, config.canvas.api_token
+                            )
+                            _print_check_result(
+                                "Canvas API authentication", api_ok, api_msg
+                            )
+                            total_checks += 1
+                            if api_ok:
+                                checks_passed += 1
+                            else:
+                                issues.append(api_msg)
 
                 except Exception as e:
-                    issues.append(f"Failed to load config for API checks: {e}")
+                    msg = f"Failed to load config for API checks: {e}"
+                    issues.append(msg)
 
     # System checks
     click.echo("\n🔧 System Checks:")
@@ -122,7 +126,7 @@ def doctor(ctx: EaselContext) -> None:
         issues.append(perms_msg)
 
     # Summary
-    click.echo(f"\n📊 Summary:")
+    click.echo("\n📊 Summary:")
     click.echo(f"Checks passed: {checks_passed}/{total_checks}")
 
     if checks_passed == total_checks:
@@ -133,7 +137,7 @@ def doctor(ctx: EaselContext) -> None:
         for issue in issues:
             click.echo(f"  • {issue}")
 
-        click.echo(f"\n💡 Recommendations:")
+        click.echo("\n💡 Recommendations:")
         if not ctx.config_manager or not ctx.config_manager.config_exists():
             click.echo("  • Run 'easel init' to create configuration")
         else:
@@ -143,7 +147,9 @@ def doctor(ctx: EaselContext) -> None:
         sys.exit(1)
 
 
-def _check_config_exists(config_manager: ConfigManager) -> Tuple[bool, str]:
+def _check_config_exists(
+    config_manager: Optional[ConfigManager],
+) -> Tuple[bool, str]:
     """Check if configuration file exists."""
     if not config_manager:
         return False, "Configuration manager not initialized"
@@ -154,8 +160,13 @@ def _check_config_exists(config_manager: ConfigManager) -> Tuple[bool, str]:
         return False, f"Not found at {config_manager.config_file}"
 
 
-def _check_config_valid(config_manager: ConfigManager) -> Tuple[bool, str]:
+def _check_config_valid(
+    config_manager: Optional[ConfigManager],
+) -> Tuple[bool, str]:
     """Check if configuration is valid."""
+    if not config_manager:
+        return False, "Configuration manager not initialized"
+
     try:
         config_manager.load_config()
         return True, "Configuration is valid"
@@ -165,8 +176,13 @@ def _check_config_valid(config_manager: ConfigManager) -> Tuple[bool, str]:
         return False, f"Failed to load: {e}"
 
 
-def _check_credentials_exist(config_manager: ConfigManager) -> Tuple[bool, str]:
+def _check_credentials_exist(
+    config_manager: Optional[ConfigManager],
+) -> Tuple[bool, str]:
     """Check if API credentials are stored."""
+    if not config_manager:
+        return False, "Configuration manager not initialized"
+
     try:
         config = config_manager.load_config()
 
@@ -175,10 +191,12 @@ def _check_credentials_exist(config_manager: ConfigManager) -> Tuple[bool, str]:
             return True, "API token is available"
         else:
             # Check if stored credentials exist
-            if config_manager.credential_manager.has_credentials(config.canvas.name):
+            manager = config_manager.credential_manager
+            if manager.has_credentials(config.canvas.name):
                 return False, "Stored credentials found but failed to decrypt"
             else:
-                return False, "No API token found in storage or environment"
+                msg = "No API token found in storage or environment"
+                return False, msg
 
     except Exception as e:
         return False, f"Failed to check credentials: {e}"
@@ -234,19 +252,15 @@ def _check_canvas_api_auth(canvas_url: str, api_token: str) -> Tuple[bool, str]:
 def _check_dependencies() -> Tuple[bool, str]:
     """Check if required dependencies are available."""
     try:
-        import yaml
-        import httpx
-        import pydantic
-        import cryptography
-        import keyring
-
         return True, "All required dependencies available"
     except ImportError as e:
         return False, f"Missing dependency: {e}"
 
 
-def _check_file_permissions(config_manager: ConfigManager) -> Tuple[bool, str]:
-    """Check file permissions for security."""
+def _check_file_permissions(
+    config_manager: Optional[ConfigManager],
+) -> Tuple[bool, str]:
+    """Check if configuration files have proper permissions."""
     if not config_manager:
         return False, "Configuration manager not initialized"
 
@@ -254,7 +268,8 @@ def _check_file_permissions(config_manager: ConfigManager) -> Tuple[bool, str]:
         config_dir = config_manager.config_file.parent
 
         if not config_dir.exists():
-            return True, "Config directory will be created with secure permissions"
+            msg = "Config directory will be created with secure permissions"
+            return True, msg
 
         # Check if we can read/write to config directory
         if not config_dir.is_dir():
@@ -267,7 +282,8 @@ def _check_file_permissions(config_manager: ConfigManager) -> Tuple[bool, str]:
             test_file.unlink()
             return True, f"Directory permissions OK: {config_dir}"
         except (OSError, PermissionError):
-            return False, f"Cannot write to config directory: {config_dir}"
+            msg = f"Cannot write to config directory: {config_dir}"
+            return False, msg
 
     except Exception as e:
         return False, f"Permission check failed: {e}"

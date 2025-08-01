@@ -9,7 +9,7 @@ from pydantic import ValidationError
 
 from .credentials import CredentialManager
 from .exceptions import ConfigNotFoundError, ConfigValidationError
-from .models import EaselConfig
+from .models import EaselConfig, CanvasInstance
 from .paths import ensure_config_dirs, get_config_file
 
 
@@ -20,7 +20,8 @@ class ConfigManager:
         """Initialize configuration manager.
 
         Args:
-            config_file: Optional path to config file, defaults to standard location
+            config_file: Optional path to config file, defaults to
+                standard location
         """
         self.config_file = config_file or get_config_file()
         self.credential_manager = CredentialManager()
@@ -80,7 +81,8 @@ class ConfigManager:
 
         Args:
             config: EaselConfig instance to save
-            store_token: Whether to store the API token securely (default: True)
+            store_token: Whether to store the API token securely
+                (default: True)
 
         Raises:
             ConfigValidationError: If config cannot be saved
@@ -205,8 +207,9 @@ class ConfigManager:
             Default EaselConfig instance
         """
         return EaselConfig(
-            canvas={
-                "name": canvas_name,
-                "url": canvas_url,
-            }
+            version="1.0",
+            canvas=CanvasInstance(
+                name=canvas_name,
+                url=canvas_url,
+            ),
         )

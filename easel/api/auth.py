@@ -59,7 +59,8 @@ class CanvasAuth:
                 raise CanvasAuthError("API token lacks required permissions")
             else:
                 raise CanvasAuthError(
-                    f"Authentication verification failed: HTTP {response.status_code}"
+                    "Authentication verification failed: "
+                    f"HTTP {response.status_code}"
                 )
 
         except httpx.RequestError as e:

@@ -4,7 +4,6 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Dict
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -12,9 +11,15 @@ import yaml
 from click.testing import CliRunner
 
 from easel.cli.main import cli
-from easel.config.exceptions import ConfigError
-from easel.config.manager import ConfigManager
 from easel.config.models import CanvasInstance, EaselConfig
+
+
+def create_mock_httpx_client():
+    """Helper to create properly configured mock httpx client."""
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.__aexit__.return_value = None
+    return mock_client
 
 
 class TestConfigurationWorkflow:
@@ -48,14 +53,14 @@ class TestConfigurationWorkflow:
     ):
         """Test interactive configuration setup."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock successful API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = True
-                mock_response.json.return_value = mock_canvas_response
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: mock_canvas_response
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 # Simulate user input
                 user_input = "\n".join(
@@ -70,7 +75,7 @@ class TestConfigurationWorkflow:
                 result = runner.invoke(cli, ["init"], input=user_input)
 
                 assert result.exit_code == 0
-                assert "Configuration saved successfully" in result.output
+                assert "Configuration saved to" in result.output
                 assert (temp_config_dir / "config.yaml").exists()
 
                 # Verify configuration content
@@ -83,15 +88,15 @@ class TestConfigurationWorkflow:
     def test_init_command_with_invalid_token(self, runner, temp_config_dir):
         """Test init command with invalid API token."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock failed API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = False
                 mock_response.status_code = 401
-                mock_response.json.return_value = {"message": "Invalid token"}
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: {"message": "Invalid token"}
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 user_input = "\n".join(
                     [
@@ -175,14 +180,14 @@ class TestDoctorCommand:
     def test_doctor_all_checks_pass(self, runner, temp_config_dir, valid_config):
         """Test doctor command when all checks pass."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock successful API verification
                 mock_response = AsyncMock()
                 mock_response.is_success = True
-                mock_response.json.return_value = {"id": 123, "name": "Test User"}
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: {"id": 123, "name": "Test User"}
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 result = runner.invoke(cli, ["doctor"])
 
@@ -198,7 +203,7 @@ class TestDoctorCommand:
             result = runner.invoke(cli, ["doctor"])
 
             assert result.exit_code == 1
-            assert "✗ Configuration file not found" in result.output
+            assert "❌ Config file" in result.output
             assert "Run 'easel init' to create configuration" in result.output
 
     def test_doctor_invalid_configuration(self, runner, temp_config_dir):
@@ -212,25 +217,25 @@ class TestDoctorCommand:
             result = runner.invoke(cli, ["doctor"])
 
             assert result.exit_code == 1
-            assert "✗ Configuration validation failed" in result.output
+            assert "❌ Config is valid" in result.output
 
     def test_doctor_api_connection_failure(self, runner, temp_config_dir, valid_config):
         """Test doctor command with API connection failure."""
         with patch("easel.config.paths.get_config_dir", return_value=temp_config_dir):
-            with patch("httpx.AsyncClient") as mock_client:
+            with patch("httpx.AsyncClient") as mock_client_class:
                 # Mock failed API connection
                 mock_response = AsyncMock()
                 mock_response.is_success = False
                 mock_response.status_code = 401
-                mock_response.json.return_value = {"message": "Unauthorized"}
-                mock_client.return_value.__aenter__.return_value.request.return_value = (
-                    mock_response
-                )
+                mock_response.json = lambda: {"message": "Unauthorized"}
+                mock_client = create_mock_httpx_client()
+                mock_client_class.return_value = mock_client
+                mock_client.request.return_value = mock_response
 
                 result = runner.invoke(cli, ["doctor"])
 
                 assert result.exit_code == 1
-                assert "✗ Canvas API connection failed" in result.output
+                assert "❌ Canvas API authentication" in result.output
 
 
 class TestOutputFormats:
@@ -371,7 +376,8 @@ class TestErrorHandling:
             empty_config_dir = Path(temp_dir) / ".easel"
 
             with patch(
-                "easel.config.paths.get_config_dir", return_value=empty_config_dir
+                "easel.config.paths.get_config_dir",
+                return_value=empty_config_dir,
             ):
                 result = runner.invoke(cli, ["config", "list"])
 
@@ -393,7 +399,7 @@ class TestErrorHandling:
                 result = runner.invoke(cli, ["config", "list"])
 
                 assert result.exit_code == 1
-                assert "Configuration file is invalid" in result.output
+                assert "Configuration validation error" in result.output
 
     def test_permission_error_handling(self, runner):
         """Test handling of permission errors."""
@@ -408,7 +414,8 @@ class TestErrorHandling:
 
             try:
                 with patch(
-                    "easel.config.paths.get_config_dir", return_value=config_dir
+                    "easel.config.paths.get_config_dir",
+                    return_value=config_dir,
                 ):
                     result = runner.invoke(cli, ["config", "list"])
 

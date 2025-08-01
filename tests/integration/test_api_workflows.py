@@ -1,8 +1,7 @@
 """Integration tests for Canvas API client workflows."""
 
 import asyncio
-from typing import Dict, Any
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import httpx
 import pytest
@@ -13,12 +12,19 @@ from easel.api.exceptions import (
     CanvasAPIError,
     CanvasAuthError,
     CanvasNotFoundError,
-    CanvasRateLimitError,
     CanvasServerError,
     CanvasTimeoutError,
 )
 from easel.api.models import Course, User, Assignment
 from easel.api.pagination import PaginatedResponse
+
+
+def create_mock_httpx_client():
+    """Helper to create properly configured mock httpx client."""
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.__aexit__.return_value = None
+    return mock_client
 
 
 class TestAPIClientWorkflows:
@@ -136,7 +142,10 @@ class TestAPIClientWorkflows:
             mock_response.is_success = True
             mock_response.json = lambda: [mock_course_response]
             mock_response.headers = {
-                "Link": '<https://test.instructure.com/api/v1/courses?page=2>; rel="next"'
+                "Link": (
+                    "<https://test.instructure.com/api/v1/courses?page=2>; "
+                    'rel="next"'
+                )
             }
             mock_response.request.url = (
                 "https://test.instructure.com/api/v1/courses?page=1"
@@ -190,22 +199,25 @@ class TestAPIClientWorkflows:
     async def test_rate_limiting_workflow(self, client, mock_user_response):
         """Test rate limiting behavior in API workflows."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock rate limit response first, then success
             rate_limit_response = AsyncMock()
             rate_limit_response.is_success = False
             rate_limit_response.status_code = 429
             rate_limit_response.headers = {"Retry-After": "1"}
-            rate_limit_response.json.return_value = {"message": "Rate limit exceeded"}
+            rate_limit_response.json = lambda: {"message": "Rate limit exceeded"}
 
             success_response = AsyncMock()
             success_response.is_success = True
-            success_response.json.return_value = mock_user_response
+            success_response.json = lambda: mock_user_response
 
             # First call returns rate limit, second succeeds
-            mock_client.request.side_effect = [rate_limit_response, success_response]
+            mock_client.request.side_effect = [
+                rate_limit_response,
+                success_response,
+            ]
 
             async with client:
                 # Should retry after rate limit and succeed
@@ -219,8 +231,8 @@ class TestAPIClientWorkflows:
     async def test_timeout_retry_workflow(self, client):
         """Test timeout retry behavior."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock timeout exception
             mock_client.request.side_effect = httpx.TimeoutException("Request timeout")
@@ -236,8 +248,8 @@ class TestAPIClientWorkflows:
     async def test_server_error_handling(self, client):
         """Test server error handling."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock server error response
             mock_response = AsyncMock()
@@ -257,8 +269,8 @@ class TestAPIClientWorkflows:
     async def test_not_found_error_handling(self, client):
         """Test not found error handling."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock not found response
             mock_response = AsyncMock()
@@ -328,13 +340,13 @@ class TestPaginationWorkflows:
     ):
         """Test retrieving courses across multiple pages."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock responses for two pages
             page1_response = AsyncMock()
             page1_response.is_success = True
-            page1_response.json.return_value = mock_courses_page1
+            page1_response.json = lambda: mock_courses_page1
             page1_response.headers = {
                 "Link": '<https://test.instructure.com/api/v1/courses?page=2>; rel="next"'
             }
@@ -344,7 +356,7 @@ class TestPaginationWorkflows:
 
             page2_response = AsyncMock()
             page2_response.is_success = True
-            page2_response.json.return_value = mock_courses_page2
+            page2_response.json = lambda: mock_courses_page2
             page2_response.headers = {}
             page2_response.request.url = (
                 "https://test.instructure.com/api/v1/courses?page=2"
@@ -370,8 +382,8 @@ class TestPaginationWorkflows:
     async def test_empty_page_handling(self, client):
         """Test handling of empty API responses."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock empty response
             mock_response = AsyncMock()
@@ -411,8 +423,8 @@ class TestAPIAuthenticationWorkflows:
         )
 
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             async with client:
                 # Verify that client is initialized with auth headers
@@ -459,8 +471,8 @@ class TestErrorRecoveryWorkflows:
     async def test_network_failure_recovery(self, client):
         """Test recovery from temporary network failures."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock network failure then success
             mock_response = AsyncMock()
@@ -483,8 +495,8 @@ class TestErrorRecoveryWorkflows:
     async def test_persistent_failure_handling(self, client):
         """Test handling of persistent failures."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock persistent network failure
             mock_client.request.side_effect = httpx.ConnectError("Connection failed")
@@ -500,11 +512,11 @@ class TestErrorRecoveryWorkflows:
     async def test_partial_response_handling(self, client):
         """Test handling of partial or malformed responses."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock response with invalid JSON
-            mock_response = AsyncMock()
+            mock_response = Mock()  # Use regular Mock, not AsyncMock
             mock_response.is_success = True
             mock_response.json.side_effect = ValueError("Invalid JSON")
             mock_client.request.return_value = mock_response
@@ -535,8 +547,8 @@ class TestConcurrentAPIWorkflows:
     async def test_concurrent_requests_rate_limiting(self, client):
         """Test rate limiting with concurrent requests."""
         with patch("httpx.AsyncClient") as mock_client_class:
-            mock_client = AsyncMock()
-            mock_client_class.return_value.__aenter__.return_value = mock_client
+            mock_client = create_mock_httpx_client()
+            mock_client_class.return_value = mock_client
 
             # Mock successful responses
             mock_response = AsyncMock()
