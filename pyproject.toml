@@ -12,11 +12,13 @@ dependencies = [
     "httpx (>=0.24.0,<0.25.0)",
     "rich (>=13.0.0,<14.0.0)",
     "pyyaml (>=6.0,<7.0)",
-    "pydantic (>=2.0.0,<3.0.0)"
+    "pydantic (>=2.0.0,<3.0.0)",
+    "cryptography (>=3.0,<45.0)",
+    "keyring (>=25.6.0,<26.0.0)"
 ]
 
 [project.scripts]
-easel = "easel.cli.main:cli"
+easel = "easel.cli.main:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -31,6 +33,7 @@ black = "^23.0.0"
 flake8 = "^6.0.0"
 mypy = "^1.0.0"
 pre-commit = "^4.2.0"
+types-pyyaml = "^6.0.12.20250516"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -75,4 +78,3 @@ extend-ignore = ["E203", "W503"]
 per-file-ignores = [
     "__init__.py:F401"
 ]
-

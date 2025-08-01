@@ -1,6 +1,7 @@
 ---
 name: "doctor"
 description: "Milestone development environment health diagnostics and assessment specialist"
+model: haiku
 tools: ["Bash", "Read", "Glob"]
 ---
 
