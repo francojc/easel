@@ -1,7 +1,6 @@
 ---
 description: "Execute final submission workflow including commit, push, and PR creation"
 allowed-tools: ["Bash", "Read"]
-model: "sonnet-4"
 ---
 
 # Pull Request Submission

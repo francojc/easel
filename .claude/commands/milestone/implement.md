@@ -1,7 +1,6 @@
 ---
 description: "Execute milestone implementation following architectural compliance and code standards"
 allowed-tools: ["Bash", "Read", "Write", "Edit", "Glob", "Grep"]
-model: "sonnet-4"
 ---
 
 # Milestone Implementation Strategy

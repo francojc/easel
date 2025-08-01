@@ -2,6 +2,19 @@
 
 This directory contains custom Claude Code slash commands for autonomous milestone development on the **Easel CLI** project. These commands implement the complete development workflow specified in `milestone-agent.md`.
 
+## ⚡ IMPORTANT: Sub-Agent Migration
+
+**Complex milestone commands have been converted to specialized sub-agents** for enhanced conversational capabilities and expert assistance. See [Sub-Agents Documentation](../subagents/README.md) for details.
+
+**Converted to Sub-Agents:**
+- `/milestone:doctor` → `@doctor` sub-agent
+- `/milestone:implement` → `@implementation-specialist` sub-agent  
+- `/milestone:validate` → `@qa-specialist` sub-agent
+- `/milestone:recover` → `@troubleshooting-specialist` sub-agent
+
+**Remaining as Slash Commands:**
+- `/milestone:setup`, `/milestone:analyze`, `/milestone:integrate`, `/milestone:submit`
+
 ## Command Overview
 
 ### Core Workflow Commands
@@ -10,8 +23,8 @@ This directory contains custom Claude Code slash commands for autonomous milesto
 |---------|---------|-------|--------------|
 | `/milestone:setup` | Initialize development environment | Pre-development | None |
 | `/milestone:analyze <N>` | Create issue and feature branch | Phase 1 | setup complete |
-| `/milestone:implement` | Execute implementation | Phase 2 | analyze complete |
-| `/milestone:validate` | Quality assurance validation | Phase 3 | implement complete |
+| `@implementation-specialist` | Execute implementation (sub-agent) | Phase 2 | analyze complete |
+| `@qa-specialist` | Quality assurance validation (sub-agent) | Phase 3 | implement complete |
 | `/milestone:integrate` | Integration testing & docs | Phase 4 | validate complete |
 | `/milestone:submit` | Create pull request | Phase 5 | integrate complete |
 
@@ -19,8 +32,23 @@ This directory contains custom Claude Code slash commands for autonomous milesto
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
-| `/milestone:doctor` | Health check and diagnostics | Any time, especially when troubleshooting |
-| `/milestone:recover <phase>` | Error recovery procedures | When a phase fails |
+| `@doctor` | Health check and diagnostics (sub-agent) | Any time, especially when troubleshooting |
+| `@troubleshooting-specialist` | Error recovery procedures (sub-agent) | When a phase fails |
+
+### Project Utility Commands
+
+| Command | Purpose | When to Use |
+|---------|---------|-------------|
+| `/easel:test` | Comprehensive test suite with coverage reporting | After code changes, before commits |
+| `/easel:docs` | Documentation generation and validation | When updating documentation |
+| `/easel:release` | Release preparation and artifact building | Before creating releases |
+
+### Specialized Domain Sub-Agents
+
+| Sub-Agent | Purpose | When to Use |
+|-----------|---------|-------------|
+| `@analytics-specialist` | Canvas data analysis and export optimization | Milestone 3, data export features |
+| `@security-specialist` | Security analysis and educational compliance | Security reviews, compliance validation |
 
 ## Complete Workflow Guide
 
@@ -55,13 +83,13 @@ Replace `1` with your target milestone number. This command will:
 
 ### 3. Implementation
 
-Execute the milestone implementation:
+Execute the milestone implementation using the specialized sub-agent:
 
 ```bash
-/milestone:implement
+@implementation-specialist
 ```
 
-This command guides you through:
+This sub-agent provides conversational implementation guidance:
 - Following architectural compliance requirements
 - Implementing tasks in dependency order
 - Writing tests alongside implementation
@@ -70,13 +98,13 @@ This command guides you through:
 
 ### 4. Quality Validation
 
-Run comprehensive quality assurance:
+Run comprehensive quality assurance using the specialized sub-agent:
 
 ```bash
-/milestone:validate
+@qa-specialist
 ```
 
-This validates:
+This sub-agent provides intelligent validation:
 - Test coverage (≥80% regular milestones, ≥95% production)
 - Code quality (black, flake8, mypy)
 - Security scans
@@ -136,19 +164,48 @@ Each phase has **mandatory quality gates** that must pass:
 
 When a phase fails:
 
-1. **Use the recovery command**: `/milestone:recover <failed-phase>`
-2. **Review the specific guidance** for that phase
-3. **Fix the identified issues**
-4. **Re-run the failed phase**
+1. **Use the troubleshooting sub-agent**: `@troubleshooting-specialist`
+2. **Provide the failed phase context** for targeted recovery guidance
+3. **Follow the systematic recovery procedures**
+4. **Re-run the failed phase** after issues are resolved
 5. **Only proceed after successful completion**
 
 ### Health Monitoring
 
-Use `/milestone:doctor` regularly to:
+Use `@doctor` regularly to:
 - Monitor environment health
 - Identify potential issues early
 - Validate configuration
 - Check development context
+
+### Development Utilities
+
+**Testing and Quality Assurance:**
+- Use `/easel:test` after making code changes to run comprehensive testing
+- Run quality checks and coverage analysis before committing
+- Validate security and code style standards
+
+**Documentation Management:**
+- Use `/easel:docs` when updating project documentation
+- Generate API documentation and validate help text
+- Check documentation links and accuracy
+
+**Release Management:**
+- Use `/easel:release` when preparing for version releases
+- Build and validate distribution packages
+- Run comprehensive pre-release quality gates
+
+### Specialized Domain Support
+
+**Canvas Data Analytics (Milestone 3):**
+- Use `@analytics-specialist` for data export strategy design
+- Get expert guidance on Canvas API optimization
+- Implement educational analytics with performance considerations
+
+**Security and Compliance:**
+- Use `@security-specialist` for security reviews
+- Validate FERPA and educational privacy compliance
+- Get guidance on secure coding practices for educational data
 
 ## Command Arguments
 
@@ -156,10 +213,24 @@ Use `/milestone:doctor` regularly to:
 - **Required**: Milestone number (1-6 based on specs)
 - **Example**: `/milestone:analyze 3`
 
-### `/milestone:recover <phase>`
-- **Required**: Phase name
-- **Valid phases**: setup, analyze, implement, validate, integrate, submit
-- **Example**: `/milestone:recover validate`
+### Sub-Agent Invocation
+Sub-agents are invoked by name and provide conversational interfaces:
+
+**Milestone Development:**
+- **`@doctor`**: Environment health assessment
+- **`@implementation-specialist`**: Implementation guidance and assistance
+- **`@qa-specialist`**: Quality assurance and validation
+- **`@troubleshooting-specialist`**: Error recovery and troubleshooting
+
+**Specialized Domain Experts:**
+- **`@analytics-specialist`**: Canvas data analysis and export optimization
+- **`@security-specialist`**: Security analysis and educational compliance
+
+### Project Utility Commands
+Project-specific utility commands for common development tasks:
+- **`/easel:test`**: Comprehensive testing with coverage reports and quality checks
+- **`/easel:docs`**: Documentation generation, validation, and link checking
+- **`/easel:release`**: Release preparation, artifact building, and distribution validation
 
 ## Environment Requirements
 

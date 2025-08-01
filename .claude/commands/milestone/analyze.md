@@ -2,7 +2,6 @@
 description: "Analyze milestone requirements and create GitHub issue with feature branch"
 argument-hint: "<milestone-number>"
 allowed-tools: ["Bash", "Read", "Glob"]
-model: "sonnet-4"
 ---
 
 # Milestone Analysis & Issue Creation

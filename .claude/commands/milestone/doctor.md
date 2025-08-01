@@ -1,7 +1,6 @@
 ---
 description: "Comprehensive health check and diagnostic validation for milestone development environment"
 allowed-tools: ["Bash", "Read", "Glob"]
-model: "sonnet-4"
 ---
 
 # Milestone Development Health Check

@@ -1,7 +1,6 @@
 ---
 description: "Run comprehensive quality assurance validation including tests, coverage, and acceptance criteria"
 allowed-tools: ["Bash", "Read"]
-model: "sonnet-4"
 ---
 
 # Quality Assurance Protocol

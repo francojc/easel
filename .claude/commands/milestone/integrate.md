@@ -1,7 +1,6 @@
 ---
 description: "Prepare integration testing and documentation updates before PR submission"
 allowed-tools: ["Bash", "Read", "Write", "Edit", "Glob"]
-model: "sonnet-4"
 ---
 
 # Integration & Documentation

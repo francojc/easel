@@ -1,7 +1,6 @@
 ---
 description: "Initialize and verify development environment for Easel CLI milestone development"
 allowed-tools: ["Bash", "Read"]
-model: "sonnet-4"
 ---
 
 # Milestone Development Environment Setup

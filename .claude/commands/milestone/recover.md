@@ -2,7 +2,6 @@
 description: "Error handling and recovery protocols for milestone development failures"
 argument-hint: "<phase>"
 allowed-tools: ["Bash", "Read", "Write", "Edit"]
-model: "sonnet-4"
 ---
 
 # Milestone Development Recovery
