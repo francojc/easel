@@ -8,7 +8,7 @@ import click
 from easel.api.auth import CanvasAuth
 from easel.api.client import CanvasClient
 from easel.api.exceptions import CanvasAPIError
-from easel.output.factory import OutputFormatterFactory
+from easel.output.factory import FormatterFactory
 from ..context import pass_context, EaselContext
 from ..main import cli
 
@@ -72,7 +72,7 @@ def list(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
         assignments = asyncio.run(fetch_assignments())
         
         # Format output
-        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format)
         
         # Convert assignments to dictionaries for formatting
         assignments_data = [assignment.model_dump() for assignment in assignments]
@@ -128,7 +128,7 @@ def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[s
         assignment = asyncio.run(fetch_assignment())
         
         # Format output
-        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format)
         
         # Convert assignment to dictionary for formatting
         assignment_data = assignment.model_dump()
@@ -221,7 +221,7 @@ def submissions(
         submissions = asyncio.run(fetch_submissions())
         
         # Format output
-        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format)
         
         # Convert submissions to dictionaries for formatting
         submissions_data = [submission.model_dump() for submission in submissions]

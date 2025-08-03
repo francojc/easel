@@ -9,7 +9,7 @@ from easel.api.auth import CanvasAuth
 from easel.api.client import CanvasClient
 from easel.api.exceptions import CanvasAPIError
 from easel.config.exceptions import ConfigError
-from easel.output.factory import OutputFormatterFactory
+from easel.output.factory import FormatterFactory
 from ..context import pass_context, EaselContext
 from ..error_handlers import with_error_handling
 from ..main import cli
@@ -81,7 +81,7 @@ def list(ctx: EaselContext, active: bool, include: tuple[str, ...]) -> None:
     courses = asyncio.run(fetch_courses())
     
     # Format output
-    formatter = OutputFormatterFactory.get_formatter(ctx.format)
+    formatter = FormatterFactory.create_formatter(ctx.format)
     
     # Convert courses to dictionaries for formatting
     courses_data = [course.model_dump() for course in courses]
@@ -128,7 +128,7 @@ def show(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
     course = asyncio.run(fetch_course())
     
     # Format output
-    formatter = OutputFormatterFactory.get_formatter(ctx.format)
+    formatter = FormatterFactory.create_formatter(ctx.format)
     
     # Convert course to dictionary for formatting
     course_data = course.model_dump()
@@ -190,7 +190,7 @@ def modules(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None
     modules = asyncio.run(fetch_modules())
     
     # Format output
-    formatter = OutputFormatterFactory.get_formatter(ctx.format)
+    formatter = FormatterFactory.create_formatter(ctx.format)
     
     # Convert modules to dictionaries for formatting
     modules_data = [module.model_dump() for module in modules]

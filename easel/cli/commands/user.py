@@ -8,7 +8,7 @@ import click
 from easel.api.auth import CanvasAuth
 from easel.api.client import CanvasClient
 from easel.api.exceptions import CanvasAPIError
-from easel.output.factory import OutputFormatterFactory
+from easel.output.factory import FormatterFactory
 from ..context import pass_context, EaselContext
 from ..main import cli
 
@@ -45,7 +45,7 @@ def profile(ctx: EaselContext) -> None:
         user = asyncio.run(fetch_user())
         
         # Format output
-        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format)
         
         # Convert user to dictionary for formatting
         user_data = user.model_dump()
@@ -144,7 +144,7 @@ def courses(
         courses = asyncio.run(fetch_courses())
         
         # Format output
-        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format)
         
         # Convert courses to dictionaries for formatting
         courses_data = [course.model_dump() for course in courses]
@@ -233,7 +233,7 @@ def roster(
         users = asyncio.run(fetch_users())
         
         # Format output
-        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format)
         
         # Convert users to dictionaries for formatting
         users_data = [user.model_dump() for user in users]
