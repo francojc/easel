@@ -63,9 +63,9 @@ def list(ctx: EaselContext, active: bool, include: tuple[str, ...]) -> None:
             )
             
             # Collect all courses by handling pagination
-            courses = response.data
-            while response.has_next_page:
-                next_response = await client._make_request("GET", url=response.next_page_url)
+            courses = response.items
+            while response.has_next_page():
+                next_response = await client._make_request("GET", url=response.get_next_page_url())
                 next_data = next_response.json()
                 from easel.api.models import Course
                 next_courses = [Course(**course_data) for course_data in next_data]
@@ -172,9 +172,9 @@ def modules(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None
             )
             
             # Collect all modules by handling pagination
-            modules = response.data
-            while response.has_next_page:
-                next_response = await client._make_request("GET", url=response.next_page_url)
+            modules = response.items
+            while response.has_next_page():
+                next_response = await client._make_request("GET", url=response.get_next_page_url())
                 next_data = next_response.json()
                 from easel.api.models import Module
                 next_modules = [Module(**module_data) for module_data in next_data]

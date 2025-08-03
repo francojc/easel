@@ -54,9 +54,9 @@ def list(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
                 )
                 
                 # Collect all assignments by handling pagination
-                assignments = response.data
-                while response.has_next_page:
-                    next_response = await client._make_request("GET", url=response.next_page_url)
+                assignments = response.items
+                while response.has_next_page():
+                    next_response = await client._make_request("GET", url=response.get_next_page_url())
                     next_data = next_response.json()
                     from easel.api.models import Assignment
                     next_assignments = [Assignment(**assignment_data) for assignment_data in next_data]
@@ -192,9 +192,9 @@ def submissions(
                 )
                 
                 # Collect all submissions by handling pagination
-                submissions = response.data
-                while response.has_next_page:
-                    next_response = await client._make_request("GET", url=response.next_page_url)
+                submissions = response.items
+                while response.has_next_page():
+                    next_response = await client._make_request("GET", url=response.get_next_page_url())
                     next_data = next_response.json()
                     from easel.api.models import Submission
                     next_submissions = [Submission(**submission_data) for submission_data in next_data]

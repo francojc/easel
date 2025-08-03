@@ -115,9 +115,9 @@ def courses(
                 )
                 
                 # Collect all courses by handling pagination
-                courses = response.data
-                while response.has_next_page:
-                    next_response = await client._make_request("GET", url=response.next_page_url)
+                courses = response.items
+                while response.has_next_page():
+                    next_response = await client._make_request("GET", url=response.get_next_page_url())
                     next_data = next_response.json()
                     from easel.api.models import Course
                     next_courses = [Course(**course_data) for course_data in next_data]
@@ -215,9 +215,9 @@ def roster(
                 )
                 
                 # Collect all users by handling pagination
-                users = response.data
-                while response.has_next_page:
-                    next_response = await client._make_request("GET", url=response.next_page_url)
+                users = response.items
+                while response.has_next_page():
+                    next_response = await client._make_request("GET", url=response.get_next_page_url())
                     next_data = next_response.json()
                     from easel.api.models import User
                     next_users = [User(**user_data) for user_data in next_data]
