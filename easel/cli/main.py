@@ -90,7 +90,7 @@ def main() -> None:
 
 
 # Import commands to register them with the CLI
-from .commands import config as config_commands, doctor  # noqa
+from .commands import assignment, config as config_commands, course, doctor, user  # noqa
 
 
 if __name__ == "__main__":

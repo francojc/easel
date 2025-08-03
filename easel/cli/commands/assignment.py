@@ -1,0 +1,237 @@
+"""Assignment commands for Easel CLI."""
+
+import asyncio
+from typing import Optional, List
+
+import click
+
+from easel.api.auth import CanvasAuth
+from easel.api.client import CanvasClient
+from easel.api.exceptions import CanvasAPIError
+from easel.output.factory import OutputFormatterFactory
+from ..context import pass_context, EaselContext
+from ..main import cli
+
+
+@cli.group()
+def assignment() -> None:
+    """Assignment management commands."""
+    pass
+
+
+@assignment.command()
+@click.argument("course_id", type=int)
+@click.option(
+    "--include",
+    multiple=True,
+    help="Additional data to include (e.g., submission, needs_grading_count)",
+)
+@pass_context
+def list(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
+    """List assignments for a course."""
+    try:
+        # Load configuration
+        if not ctx.config_manager:
+            raise click.ClickException("Configuration manager not initialized")
+        
+        config = ctx.config_manager.load_config()
+        if not config.canvas.api_token:
+            raise click.ClickException(
+                "No API token found. Run 'easel config init' to set up authentication."
+            )
+
+        # Set up API client
+        auth = CanvasAuth(config.canvas.api_token)
+        
+        async def fetch_assignments():
+            async with CanvasClient(config.canvas.url, auth) as client:
+                # Convert include tuple to list
+                include_list = list(include) if include else None
+                
+                response = await client.get_assignments(
+                    course_id=course_id,
+                    include=include_list,
+                )
+                
+                # Collect all assignments by handling pagination
+                assignments = response.data
+                while response.has_next_page:
+                    next_response = await client._make_request("GET", url=response.next_page_url)
+                    next_data = next_response.json()
+                    from easel.api.models import Assignment
+                    next_assignments = [Assignment(**assignment_data) for assignment_data in next_data]
+                    assignments.extend(next_assignments)
+                    
+                    # Update pagination info for next iteration
+                    from easel.api.pagination import PaginatedResponse
+                    response = PaginatedResponse.from_response(next_response, next_assignments)
+                
+                return assignments
+
+        # Run async operation
+        assignments = asyncio.run(fetch_assignments())
+        
+        # Format output
+        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        
+        # Convert assignments to dictionaries for formatting
+        assignments_data = [assignment.model_dump() for assignment in assignments]
+        
+        output = formatter.format(assignments_data)
+        click.echo(output)
+        
+    except CanvasAPIError as e:
+        raise click.ClickException(f"Canvas API error: {e}")
+    except Exception as e:
+        if ctx.verbose:
+            raise
+        raise click.ClickException(f"Error: {e}")
+
+
+@assignment.command()
+@click.argument("course_id", type=int)
+@click.argument("assignment_id", type=int)
+@click.option(
+    "--include",
+    multiple=True,
+    help="Additional data to include (e.g., submission, rubric)",
+)
+@pass_context
+def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[str, ...]) -> None:
+    """Show detailed information for a specific assignment."""
+    try:
+        # Load configuration
+        if not ctx.config_manager:
+            raise click.ClickException("Configuration manager not initialized")
+        
+        config = ctx.config_manager.load_config()
+        if not config.canvas.api_token:
+            raise click.ClickException(
+                "No API token found. Run 'easel config init' to set up authentication."
+            )
+
+        # Set up API client
+        auth = CanvasAuth(config.canvas.api_token)
+        
+        async def fetch_assignment():
+            async with CanvasClient(config.canvas.url, auth) as client:
+                # Convert include tuple to list
+                include_list = list(include) if include else None
+                
+                return await client.get_assignment(
+                    course_id=course_id,
+                    assignment_id=assignment_id,
+                    include=include_list,
+                )
+
+        # Run async operation
+        assignment = asyncio.run(fetch_assignment())
+        
+        # Format output
+        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        
+        # Convert assignment to dictionary for formatting
+        assignment_data = assignment.model_dump()
+        
+        output = formatter.format(assignment_data)
+        click.echo(output)
+        
+    except CanvasAPIError as e:
+        raise click.ClickException(f"Canvas API error: {e}")
+    except Exception as e:
+        if ctx.verbose:
+            raise
+        raise click.ClickException(f"Error: {e}")
+
+
+@assignment.command()
+@click.argument("course_id", type=int)
+@click.argument("assignment_id", type=int)
+@click.option(
+    "--include",
+    multiple=True,
+    help="Additional data to include (e.g., user, submission_history)",
+)
+@click.option(
+    "--status",
+    type=click.Choice(["submitted", "unsubmitted", "graded", "pending_review"]),
+    help="Filter submissions by status",
+)
+@pass_context
+def submissions(
+    ctx: EaselContext, 
+    course_id: int, 
+    assignment_id: int, 
+    include: tuple[str, ...],
+    status: Optional[str]
+) -> None:
+    """List submissions for a specific assignment."""
+    try:
+        # Load configuration
+        if not ctx.config_manager:
+            raise click.ClickException("Configuration manager not initialized")
+        
+        config = ctx.config_manager.load_config()
+        if not config.canvas.api_token:
+            raise click.ClickException(
+                "No API token found. Run 'easel config init' to set up authentication."
+            )
+
+        # Set up API client
+        auth = CanvasAuth(config.canvas.api_token)
+        
+        async def fetch_submissions():
+            async with CanvasClient(config.canvas.url, auth) as client:
+                # Convert include tuple to list
+                include_list = list(include) if include else None
+                
+                response = await client.get_submissions(
+                    course_id=course_id,
+                    assignment_id=assignment_id,
+                    include=include_list,
+                )
+                
+                # Collect all submissions by handling pagination
+                submissions = response.data
+                while response.has_next_page:
+                    next_response = await client._make_request("GET", url=response.next_page_url)
+                    next_data = next_response.json()
+                    from easel.api.models import Submission
+                    next_submissions = [Submission(**submission_data) for submission_data in next_data]
+                    submissions.extend(next_submissions)
+                    
+                    # Update pagination info for next iteration
+                    from easel.api.pagination import PaginatedResponse
+                    response = PaginatedResponse.from_response(next_response, next_submissions)
+                
+                # Filter by status if specified
+                if status:
+                    if status == "submitted":
+                        submissions = [s for s in submissions if s.submitted_at is not None]
+                    elif status == "unsubmitted":
+                        submissions = [s for s in submissions if s.submitted_at is None]
+                    elif status == "graded":
+                        submissions = [s for s in submissions if s.score is not None]
+                    elif status == "pending_review":
+                        submissions = [s for s in submissions if s.workflow_state == "pending_review"]
+                
+                return submissions
+
+        # Run async operation
+        submissions = asyncio.run(fetch_submissions())
+        
+        # Format output
+        formatter = OutputFormatterFactory.get_formatter(ctx.format)
+        
+        # Convert submissions to dictionaries for formatting
+        submissions_data = [submission.model_dump() for submission in submissions]
+        
+        output = formatter.format(submissions_data)
+        click.echo(output)
+        
+    except CanvasAPIError as e:
+        raise click.ClickException(f"Canvas API error: {e}")
+    except Exception as e:
+        if ctx.verbose:
+            raise
+        raise click.ClickException(f"Error: {e}")

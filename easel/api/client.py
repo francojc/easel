@@ -17,7 +17,7 @@ from .exceptions import (
     CanvasValidationError,
     CanvasPermissionError,
 )
-from .models import Course, User, Assignment, Discussion, Page
+from .models import Course, User, Assignment, Discussion, Page, Module, Submission
 from .pagination import PaginatedResponse
 from .rate_limit import RateLimiter
 
@@ -438,6 +438,70 @@ class CanvasClient:
         users = [User(**user_data) for user_data in users_data]
 
         return PaginatedResponse.from_response(response, users)
+
+    # Module methods  
+    async def get_modules(
+        self,
+        course_id: int,
+        include: Optional[List[str]] = None,
+        per_page: Optional[int] = None,
+    ) -> PaginatedResponse[Module]:
+        """Get modules for a course.
+
+        Args:
+            course_id: Course ID
+            include: Additional data to include (e.g., ['items'])
+            per_page: Number of modules per page
+
+        Returns:
+            Paginated module response
+        """
+        params: Dict[str, Any] = {"per_page": per_page or self.per_page}
+        if include:
+            params["include[]"] = include
+
+        response = await self._make_request(
+            "GET", f"courses/{course_id}/modules", params=params
+        )
+        modules_data = response.json()
+        modules = [Module(**module_data) for module_data in modules_data]
+
+        return PaginatedResponse.from_response(response, modules)
+
+    # Submission methods
+    async def get_submissions(
+        self,
+        course_id: int,
+        assignment_id: int,
+        include: Optional[List[str]] = None,
+        per_page: Optional[int] = None,
+    ) -> PaginatedResponse[Submission]:
+        """Get submissions for an assignment.
+
+        Args:
+            course_id: Course ID
+            assignment_id: Assignment ID
+            include: Additional data to include
+            per_page: Number of submissions per page
+
+        Returns:
+            Paginated submission response
+        """
+        params: Dict[str, Any] = {"per_page": per_page or self.per_page}
+        if include:
+            params["include[]"] = include
+
+        response = await self._make_request(
+            "GET",
+            f"courses/{course_id}/assignments/{assignment_id}/submissions",
+            params=params,
+        )
+        submissions_data = response.json()
+        submissions = [
+            Submission(**submission_data) for submission_data in submissions_data
+        ]
+
+        return PaginatedResponse.from_response(response, submissions)
 
     async def close(self) -> None:
         """Close the HTTP client."""

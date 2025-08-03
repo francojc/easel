@@ -159,6 +159,24 @@ class Page(BaseModel):
     lock_explanation: Optional[str] = None
 
 
+class Module(BaseModel):
+    """Canvas module model."""
+
+    id: int
+    name: str
+    position: Optional[int] = None
+    unlock_at: Optional[datetime] = None
+    require_sequential_progress: Optional[bool] = None
+    prerequisite_module_ids: Optional[List[int]] = None
+    items_count: Optional[int] = None
+    items_url: Optional[str] = None
+    items: Optional[List[Dict[str, Any]]] = None
+    state: Optional[str] = None
+    completed_at: Optional[datetime] = None
+    publish_final_grade: Optional[bool] = None
+    published: Optional[bool] = None
+
+
 class Submission(BaseModel):
     """Canvas submission model."""
 
