@@ -74,6 +74,7 @@ easel course list --format json
 ```
 
 **Example Output (Table):**
+
 ```
 Course ID | Name                    | Code     | Status | Students
 ----------|-------------------------|----------|--------|----------

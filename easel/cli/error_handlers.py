@@ -1,5 +1,6 @@
 """Error handling utilities for CLI commands."""
 
+import functools
 import click
 from typing import NoReturn
 
@@ -154,6 +155,7 @@ def with_error_handling(func):
     Returns:
         The wrapped function with error handling
     """
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # Extract context from args to get verbose flag
         ctx = None
