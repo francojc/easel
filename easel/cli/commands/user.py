@@ -33,7 +33,7 @@ def profile(ctx: EaselContext, columns: tuple[str, ...]) -> None:
         # Load configuration
         if not ctx.config_manager:
             raise click.ClickException("Configuration manager not initialized")
-        
+
         config = ctx.config_manager.load_config()
         if not config.canvas.api_token:
             raise click.ClickException(
@@ -42,26 +42,28 @@ def profile(ctx: EaselContext, columns: tuple[str, ...]) -> None:
 
         # Set up API client
         auth = CanvasAuth(config.canvas.api_token)
-        
+
         async def fetch_user():
             async with CanvasClient(config.canvas.url, auth) as client:
                 return await client.verify_connection()
 
         # Run async operation
         user = asyncio.run(fetch_user())
-        
+
         # Parse display columns
         display_columns = parse_include_columns(columns) if columns else None
-        
+
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
-        
+        formatter = FormatterFactory.create_formatter(
+            ctx.format, columns=display_columns
+        )
+
         # Convert user to dictionary for formatting
         user_data = user.model_dump()
-        
+
         output = formatter.format(user_data)
         click.echo(output)
-        
+
     except CanvasAPIError as e:
         raise click.ClickException(f"Canvas API error: {e}")
     except Exception as e:
@@ -93,18 +95,18 @@ def profile(ctx: EaselContext, columns: tuple[str, ...]) -> None:
 )
 @pass_context
 def courses(
-    ctx: EaselContext, 
-    role: Optional[str], 
-    state: Optional[str], 
+    ctx: EaselContext,
+    role: Optional[str],
+    state: Optional[str],
     include: tuple[str, ...],
-    columns: tuple[str, ...]
+    columns: tuple[str, ...],
 ) -> None:
     """List courses for the current user."""
     try:
         # Load configuration
         if not ctx.config_manager:
             raise click.ClickException("Configuration manager not initialized")
-        
+
         config = ctx.config_manager.load_config()
         if not config.canvas.api_token:
             raise click.ClickException(
@@ -113,35 +115,41 @@ def courses(
 
         # Set up API client
         auth = CanvasAuth(config.canvas.api_token)
-        
+
         async def fetch_courses():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include tuple to list
                 include_list = list(include) if include else None
-                
+
                 # Build state filter
                 state_filter = None
                 if state:
                     state_filter = [state]
-                
+
                 response = await client.get_courses(
                     include=include_list,
                     state=state_filter,
                 )
-                
+
                 # Collect all courses by handling pagination
                 courses = response.items
                 while response.has_next_page():
-                    next_response = await client._make_request("GET", url=response.get_next_page_url())
+                    next_response = await client._make_request(
+                        "GET", url=response.get_next_page_url()
+                    )
                     next_data = next_response.json()
                     from easel.api.models import Course
+
                     next_courses = [Course(**course_data) for course_data in next_data]
                     courses.extend(next_courses)
-                    
+
                     # Update pagination info for next iteration
                     from easel.api.pagination import PaginatedResponse
-                    response = PaginatedResponse.from_response(next_response, next_courses)
-                
+
+                    response = PaginatedResponse.from_response(
+                        next_response, next_courses
+                    )
+
                 # Filter by role if specified
                 if role:
                     filtered_courses = []
@@ -152,24 +160,26 @@ def courses(
                                     filtered_courses.append(course)
                                     break
                     courses = filtered_courses
-                
+
                 return courses
 
         # Run async operation
         courses = asyncio.run(fetch_courses())
-        
+
         # Parse display columns
         display_columns = parse_include_columns(columns) if columns else None
-        
+
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
-        
+        formatter = FormatterFactory.create_formatter(
+            ctx.format, columns=display_columns
+        )
+
         # Convert courses to dictionaries for formatting
         courses_data = [course.model_dump() for course in courses]
-        
+
         output = formatter.format(courses_data)
         click.echo(output)
-        
+
     except CanvasAPIError as e:
         raise click.ClickException(f"Canvas API error: {e}")
     except Exception as e:
@@ -197,18 +207,18 @@ def courses(
 )
 @pass_context
 def roster(
-    ctx: EaselContext, 
-    course_id: int, 
-    role: Optional[str], 
+    ctx: EaselContext,
+    course_id: int,
+    role: Optional[str],
     include: tuple[str, ...],
-    columns: tuple[str, ...]
+    columns: tuple[str, ...],
 ) -> None:
     """List users enrolled in a specific course."""
     try:
         # Load configuration
         if not ctx.config_manager:
             raise click.ClickException("Configuration manager not initialized")
-        
+
         config = ctx.config_manager.load_config()
         if not config.canvas.api_token:
             raise click.ClickException(
@@ -217,7 +227,7 @@ def roster(
 
         # Set up API client
         auth = CanvasAuth(config.canvas.api_token)
-        
+
         async def fetch_users():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Build enrollment type filter
@@ -226,48 +236,56 @@ def roster(
                     # Map role to Canvas enrollment types
                     role_mapping = {
                         "student": "StudentEnrollment",
-                        "teacher": "TeacherEnrollment", 
+                        "teacher": "TeacherEnrollment",
                         "ta": "TaEnrollment",
                         "observer": "ObserverEnrollment",
-                        "designer": "DesignerEnrollment"
+                        "designer": "DesignerEnrollment",
                     }
                     enrollment_type = [role_mapping.get(role, role)]
-                
+
                 response = await client.get_users(
                     course_id=course_id,
                     enrollment_type=enrollment_type,
                 )
-                
+
                 # Collect all users by handling pagination
                 users = response.items
                 while response.has_next_page():
-                    next_response = await client._make_request("GET", url=response.get_next_page_url())
+                    next_response = await client._make_request(
+                        "GET", url=response.get_next_page_url()
+                    )
                     next_data = next_response.json()
                     from easel.api.models import User
+
                     next_users = [User(**user_data) for user_data in next_data]
                     users.extend(next_users)
-                    
+
                     # Update pagination info for next iteration
                     from easel.api.pagination import PaginatedResponse
-                    response = PaginatedResponse.from_response(next_response, next_users)
-                
+
+                    response = PaginatedResponse.from_response(
+                        next_response, next_users
+                    )
+
                 return users
 
         # Run async operation
         users = asyncio.run(fetch_users())
-        
+
         # Parse display columns
         display_columns = parse_include_columns(columns) if columns else None
-        
+
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
-        
+        formatter = FormatterFactory.create_formatter(
+            ctx.format, columns=display_columns
+        )
+
         # Convert users to dictionaries for formatting
         users_data = [user.model_dump() for user in users]
-        
+
         output = formatter.format(users_data)
         click.echo(output)
-        
+
     except CanvasAPIError as e:
         raise click.ClickException(f"Canvas API error: {e}")
     except Exception as e:

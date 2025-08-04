@@ -24,11 +24,11 @@ from easel.config.exceptions import (
 
 def handle_canvas_api_error(error: CanvasAPIError, verbose: bool = False) -> NoReturn:
     """Handle Canvas API errors with actionable messages.
-    
+
     Args:
         error: The Canvas API error to handle
         verbose: Whether to show verbose error information
-        
+
     Raises:
         click.ClickException: Always raises with an appropriate message
     """
@@ -64,27 +64,26 @@ def handle_canvas_api_error(error: CanvasAPIError, verbose: bool = False) -> NoR
         )
     elif isinstance(error, CanvasValidationError):
         message = (
-            f"Invalid request: {error}\n"
-            "Check your command arguments and try again."
+            f"Invalid request: {error}\n" "Check your command arguments and try again."
         )
     else:
         message = f"Canvas API error: {error}"
-    
+
     if verbose:
         message += f"\n\nError details: {error}"
-        if hasattr(error, 'status_code') and error.status_code:
+        if hasattr(error, "status_code") and error.status_code:
             message += f"\nHTTP Status: {error.status_code}"
-    
+
     raise click.ClickException(message)
 
 
 def handle_config_error(error: ConfigError, verbose: bool = False) -> NoReturn:
     """Handle configuration errors with actionable messages.
-    
+
     Args:
         error: The configuration error to handle
         verbose: Whether to show verbose error information
-        
+
     Raises:
         click.ClickException: Always raises with an appropriate message
     """
@@ -105,67 +104,72 @@ def handle_config_error(error: ConfigError, verbose: bool = False) -> NoReturn:
         )
     else:
         message = f"Configuration error: {error}"
-    
+
     if verbose:
         message += f"\n\nError details: {error}"
-    
+
     raise click.ClickException(message)
 
 
 def handle_general_error(error: Exception, verbose: bool = False) -> NoReturn:
     """Handle general errors with appropriate messages.
-    
+
     Args:
         error: The error to handle
         verbose: Whether to show verbose error information
-        
+
     Raises:
         click.ClickException: Always raises with an appropriate message
     """
     if verbose:
         # In verbose mode, let the full exception bubble up for debugging
         raise error
-    
+
     # For non-verbose mode, provide a user-friendly message
     message = f"An unexpected error occurred: {error}"
-    
+
     # Add suggestions based on common error types
     error_str = str(error).lower()
     if "connection" in error_str or "network" in error_str:
-        message += "\n\nThis looks like a network issue. Check your internet connection."
+        message += (
+            "\n\nThis looks like a network issue. Check your internet connection."
+        )
     elif "ssl" in error_str or "certificate" in error_str:
-        message += "\n\nThis looks like an SSL/certificate issue. Check your network settings."
+        message += (
+            "\n\nThis looks like an SSL/certificate issue. Check your network settings."
+        )
     elif "permission" in error_str:
         message += "\n\nThis looks like a permission issue. Check file permissions."
-    
+
     message += "\n\nFor more details, use the --verbose flag."
-    
+
     raise click.ClickException(message)
 
 
 def with_error_handling(func):
     """Decorator to add consistent error handling to CLI commands.
-    
+
     This decorator catches common exceptions and converts them to user-friendly
     messages using the error handlers above.
-    
+
     Args:
         func: The CLI command function to wrap
-        
+
     Returns:
         The wrapped function with error handling
     """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # Extract context from args to get verbose flag
         ctx = None
         for arg in args:
-            if hasattr(arg, 'verbose'):
+            if hasattr(arg, "verbose"):
                 ctx = arg
                 break
-        
+
         verbose = ctx.verbose if ctx else False
-        
+
         try:
             return func(*args, **kwargs)
         except CanvasAPIError as e:
@@ -177,5 +181,5 @@ def with_error_handling(func):
             raise
         except Exception as e:
             handle_general_error(e, verbose)
-    
+
     return wrapper

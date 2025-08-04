@@ -439,7 +439,7 @@ class CanvasClient:
 
         return PaginatedResponse.from_response(response, users)
 
-    # Module methods  
+    # Module methods
     async def get_modules(
         self,
         course_id: int,

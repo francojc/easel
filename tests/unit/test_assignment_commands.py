@@ -67,58 +67,74 @@ class TestAssignmentCommands:
 
     @patch("easel.cli.commands.assignment.asyncio.run")
     @patch("easel.cli.commands.assignment.CanvasClient")
-    def test_assignment_list_success(self, mock_client_class, mock_asyncio_run, runner, mock_config):
+    def test_assignment_list_success(
+        self, mock_client_class, mock_asyncio_run, runner, mock_config
+    ):
         """Test successful assignment list command."""
         # Mock async client
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
-        
+
         # Mock response
         mock_response = AsyncMock()
         mock_response.data = [
-            AsyncMock(model_dump=lambda: {
-                "id": 789,
-                "name": "Test Assignment",
-                "course_id": 123,
-                "points_possible": 100.0
-            })
+            AsyncMock(
+                model_dump=lambda: {
+                    "id": 789,
+                    "name": "Test Assignment",
+                    "course_id": 123,
+                    "points_possible": 100.0,
+                }
+            )
         ]
         mock_response.has_next_page = False
         mock_client.get_assignments.return_value = mock_response
-        
+
         # Mock asyncio.run to return our mock data
         mock_asyncio_run.return_value = mock_response.data
-        
-        with patch("easel.config.paths.get_config_dir", return_value=mock_config._config_dir):
-            result = runner.invoke(cli, ["assignment", "list", "123", "--format", "json"])
-            
+
+        with patch(
+            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+        ):
+            result = runner.invoke(
+                cli, ["assignment", "list", "123", "--format", "json"]
+            )
+
         assert result.exit_code == 0
         mock_client.get_assignments.assert_called_once()
 
     @patch("easel.cli.commands.assignment.asyncio.run")
     @patch("easel.cli.commands.assignment.CanvasClient")
-    def test_assignment_show_success(self, mock_client_class, mock_asyncio_run, runner, mock_config):
+    def test_assignment_show_success(
+        self, mock_client_class, mock_asyncio_run, runner, mock_config
+    ):
         """Test successful assignment show command."""
         # Mock async client
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
-        
+
         # Mock assignment data
-        mock_assignment = AsyncMock(model_dump=lambda: {
-            "id": 789,
-            "name": "Test Assignment",
-            "course_id": 123,
-            "points_possible": 100.0
-        })
+        mock_assignment = AsyncMock(
+            model_dump=lambda: {
+                "id": 789,
+                "name": "Test Assignment",
+                "course_id": 123,
+                "points_possible": 100.0,
+            }
+        )
         mock_client.get_assignment.return_value = mock_assignment
-        
+
         # Mock asyncio.run to return our mock data
         mock_asyncio_run.return_value = mock_assignment
-        
-        with patch("easel.config.paths.get_config_dir", return_value=mock_config._config_dir):
-            result = runner.invoke(cli, ["assignment", "show", "123", "789", "--format", "json"])
-            
-        assert result.exit_code == 0 
+
+        with patch(
+            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+        ):
+            result = runner.invoke(
+                cli, ["assignment", "show", "123", "789", "--format", "json"]
+            )
+
+        assert result.exit_code == 0
         mock_client.get_assignment.assert_called_once_with(
             course_id=123,
             assignment_id=789,
@@ -127,31 +143,39 @@ class TestAssignmentCommands:
 
     @patch("easel.cli.commands.assignment.asyncio.run")
     @patch("easel.cli.commands.assignment.CanvasClient")
-    def test_assignment_submissions_success(self, mock_client_class, mock_asyncio_run, runner, mock_config):
+    def test_assignment_submissions_success(
+        self, mock_client_class, mock_asyncio_run, runner, mock_config
+    ):
         """Test successful assignment submissions command."""
         # Mock async client
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
-        
+
         # Mock response
         mock_response = AsyncMock()
         mock_response.data = [
-            AsyncMock(model_dump=lambda: {
-                "id": 111,
-                "user_id": 456,
-                "assignment_id": 789,
-                "workflow_state": "submitted"
-            })
+            AsyncMock(
+                model_dump=lambda: {
+                    "id": 111,
+                    "user_id": 456,
+                    "assignment_id": 789,
+                    "workflow_state": "submitted",
+                }
+            )
         ]
         mock_response.has_next_page = False
         mock_client.get_submissions.return_value = mock_response
-        
+
         # Mock asyncio.run to return our mock data
         mock_asyncio_run.return_value = mock_response.data
-        
-        with patch("easel.config.paths.get_config_dir", return_value=mock_config._config_dir):
-            result = runner.invoke(cli, ["assignment", "submissions", "123", "789", "--format", "json"])
-            
+
+        with patch(
+            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+        ):
+            result = runner.invoke(
+                cli, ["assignment", "submissions", "123", "789", "--format", "json"]
+            )
+
         assert result.exit_code == 0
         mock_client.get_submissions.assert_called_once_with(
             course_id=123,
@@ -168,7 +192,7 @@ class TestAssignmentCommands:
         """Test assignment show without required arguments."""
         result = runner.invoke(cli, ["assignment", "show"])
         assert result.exit_code != 0
-        
+
         result = runner.invoke(cli, ["assignment", "show", "123"])
         assert result.exit_code != 0
 
@@ -176,6 +200,6 @@ class TestAssignmentCommands:
         """Test assignment submissions without required arguments."""
         result = runner.invoke(cli, ["assignment", "submissions"])
         assert result.exit_code != 0
-        
+
         result = runner.invoke(cli, ["assignment", "submissions", "123"])
         assert result.exit_code != 0

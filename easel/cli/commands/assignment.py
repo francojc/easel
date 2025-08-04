@@ -33,13 +33,18 @@ def assignment() -> None:
     help="Display specific columns (use 'all' for all columns)",
 )
 @pass_context
-def list(ctx: EaselContext, course_id: int, include: tuple[str, ...], columns: tuple[str, ...]) -> None:
+def list(
+    ctx: EaselContext,
+    course_id: int,
+    include: tuple[str, ...],
+    columns: tuple[str, ...],
+) -> None:
     """List assignments for a course."""
     try:
         # Load configuration
         if not ctx.config_manager:
             raise click.ClickException("Configuration manager not initialized")
-        
+
         config = ctx.config_manager.load_config()
         if not config.canvas.api_token:
             raise click.ClickException(
@@ -48,47 +53,57 @@ def list(ctx: EaselContext, course_id: int, include: tuple[str, ...], columns: t
 
         # Set up API client
         auth = CanvasAuth(config.canvas.api_token)
-        
+
         async def fetch_assignments():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include tuple to list
                 include_list = list(include) if include else None
-                
+
                 response = await client.get_assignments(
                     course_id=course_id,
                     include=include_list,
                 )
-                
+
                 # Collect all assignments by handling pagination
                 assignments = response.items
                 while response.has_next_page():
-                    next_response = await client._make_request("GET", url=response.get_next_page_url())
+                    next_response = await client._make_request(
+                        "GET", url=response.get_next_page_url()
+                    )
                     next_data = next_response.json()
                     from easel.api.models import Assignment
-                    next_assignments = [Assignment(**assignment_data) for assignment_data in next_data]
+
+                    next_assignments = [
+                        Assignment(**assignment_data) for assignment_data in next_data
+                    ]
                     assignments.extend(next_assignments)
-                    
+
                     # Update pagination info for next iteration
                     from easel.api.pagination import PaginatedResponse
-                    response = PaginatedResponse.from_response(next_response, next_assignments)
-                
+
+                    response = PaginatedResponse.from_response(
+                        next_response, next_assignments
+                    )
+
                 return assignments
 
         # Run async operation
         assignments = asyncio.run(fetch_assignments())
-        
+
         # Parse display columns
         display_columns = parse_include_columns(columns) if columns else None
-        
+
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
-        
+        formatter = FormatterFactory.create_formatter(
+            ctx.format, columns=display_columns
+        )
+
         # Convert assignments to dictionaries for formatting
         assignments_data = [assignment.model_dump() for assignment in assignments]
-        
+
         output = formatter.format(assignments_data)
         click.echo(output)
-        
+
     except CanvasAPIError as e:
         raise click.ClickException(f"Canvas API error: {e}")
     except Exception as e:
@@ -111,13 +126,19 @@ def list(ctx: EaselContext, course_id: int, include: tuple[str, ...], columns: t
     help="Display specific columns (use 'all' for all columns)",
 )
 @pass_context
-def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[str, ...], columns: tuple[str, ...]) -> None:
+def show(
+    ctx: EaselContext,
+    course_id: int,
+    assignment_id: int,
+    include: tuple[str, ...],
+    columns: tuple[str, ...],
+) -> None:
     """Show detailed information for a specific assignment."""
     try:
         # Load configuration
         if not ctx.config_manager:
             raise click.ClickException("Configuration manager not initialized")
-        
+
         config = ctx.config_manager.load_config()
         if not config.canvas.api_token:
             raise click.ClickException(
@@ -126,12 +147,12 @@ def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[s
 
         # Set up API client
         auth = CanvasAuth(config.canvas.api_token)
-        
+
         async def fetch_assignment():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include tuple to list
                 include_list = list(include) if include else None
-                
+
                 return await client.get_assignment(
                     course_id=course_id,
                     assignment_id=assignment_id,
@@ -140,19 +161,21 @@ def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[s
 
         # Run async operation
         assignment = asyncio.run(fetch_assignment())
-        
+
         # Parse display columns
         display_columns = parse_include_columns(columns) if columns else None
-        
+
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
-        
+        formatter = FormatterFactory.create_formatter(
+            ctx.format, columns=display_columns
+        )
+
         # Convert assignment to dictionary for formatting
         assignment_data = assignment.model_dump()
-        
+
         output = formatter.format(assignment_data)
         click.echo(output)
-        
+
     except CanvasAPIError as e:
         raise click.ClickException(f"Canvas API error: {e}")
     except Exception as e:
@@ -181,19 +204,19 @@ def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[s
 )
 @pass_context
 def submissions(
-    ctx: EaselContext, 
-    course_id: int, 
-    assignment_id: int, 
+    ctx: EaselContext,
+    course_id: int,
+    assignment_id: int,
     include: tuple[str, ...],
     columns: tuple[str, ...],
-    status: Optional[str]
+    status: Optional[str],
 ) -> None:
     """List submissions for a specific assignment."""
     try:
         # Load configuration
         if not ctx.config_manager:
             raise click.ClickException("Configuration manager not initialized")
-        
+
         config = ctx.config_manager.load_config()
         if not config.canvas.api_token:
             raise click.ClickException(
@@ -202,59 +225,75 @@ def submissions(
 
         # Set up API client
         auth = CanvasAuth(config.canvas.api_token)
-        
+
         async def fetch_submissions():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include tuple to list
                 include_list = list(include) if include else None
-                
+
                 response = await client.get_submissions(
                     course_id=course_id,
                     assignment_id=assignment_id,
                     include=include_list,
                 )
-                
+
                 # Collect all submissions by handling pagination
                 submissions = response.items
                 while response.has_next_page():
-                    next_response = await client._make_request("GET", url=response.get_next_page_url())
+                    next_response = await client._make_request(
+                        "GET", url=response.get_next_page_url()
+                    )
                     next_data = next_response.json()
                     from easel.api.models import Submission
-                    next_submissions = [Submission(**submission_data) for submission_data in next_data]
+
+                    next_submissions = [
+                        Submission(**submission_data) for submission_data in next_data
+                    ]
                     submissions.extend(next_submissions)
-                    
+
                     # Update pagination info for next iteration
                     from easel.api.pagination import PaginatedResponse
-                    response = PaginatedResponse.from_response(next_response, next_submissions)
-                
+
+                    response = PaginatedResponse.from_response(
+                        next_response, next_submissions
+                    )
+
                 # Filter by status if specified
                 if status:
                     if status == "submitted":
-                        submissions = [s for s in submissions if s.submitted_at is not None]
+                        submissions = [
+                            s for s in submissions if s.submitted_at is not None
+                        ]
                     elif status == "unsubmitted":
                         submissions = [s for s in submissions if s.submitted_at is None]
                     elif status == "graded":
                         submissions = [s for s in submissions if s.score is not None]
                     elif status == "pending_review":
-                        submissions = [s for s in submissions if s.workflow_state == "pending_review"]
-                
+                        submissions = [
+                            s
+                            for s in submissions
+                            if s.workflow_state == "pending_review"
+                        ]
+
                 return submissions
 
         # Run async operation
         submissions = asyncio.run(fetch_submissions())
-        
+
         # Parse display columns
         display_columns = parse_include_columns(columns) if columns else None
-        
+
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
-        
+        formatter = FormatterFactory.create_formatter(
+            ctx.format, columns=display_columns
+        )
+
         # Convert submissions to dictionaries for formatting
         submissions_data = [submission.model_dump() for submission in submissions]
-        
+
         output = formatter.format(submissions_data)
         click.echo(output)
-        
+
     except CanvasAPIError as e:
         raise click.ClickException(f"Canvas API error: {e}")
     except Exception as e:

@@ -30,7 +30,7 @@ def _version_callback(ctx: click.Context, param: click.Parameter, value: bool) -
     ctx.exit()
 
 
-@click.group()
+@click.group(context_settings={"allow_interspersed_args": True})
 @click.option(
     "--config",
     type=click.Path(exists=True),
@@ -90,7 +90,13 @@ def main() -> None:
 
 
 # Import commands to register them with the CLI
-from .commands import assignment, config as config_commands, course, doctor, user  # noqa
+from .commands import (
+    assignment,
+    config as config_commands,
+    course,
+    doctor,
+    user,
+)  # noqa
 
 
 if __name__ == "__main__":

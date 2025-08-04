@@ -23,9 +23,7 @@ class FormatterFactory:
 
     @classmethod
     def create_formatter(
-        cls, 
-        format_name: str, 
-        columns: Optional[List[str]] = None
+        cls, format_name: str, columns: Optional[List[str]] = None
     ) -> OutputFormatter:
         """Create a formatter for the specified format.
 
@@ -48,7 +46,7 @@ class FormatterFactory:
             )
 
         formatter_class = cls._formatters[format_name]
-        
+
         # Pass columns to TableFormatter, ignore for others
         if format_name == "table" and columns is not None:
             return formatter_class(columns=columns)

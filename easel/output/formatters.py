@@ -16,7 +16,9 @@ from .columns import filter_columns_for_data, infer_model_type
 class TableFormatter(OutputFormatter):
     """Format data as a rich table."""
 
-    def __init__(self, max_width: int = 200, columns: Optional[List[str]] = None) -> None:
+    def __init__(
+        self, max_width: int = 200, columns: Optional[List[str]] = None
+    ) -> None:
         """Initialize table formatter.
 
         Args:
@@ -47,9 +49,7 @@ class TableFormatter(OutputFormatter):
         # Determine which columns to display
         model_type = infer_model_type(flattened_data)
         display_columns = filter_columns_for_data(
-            flattened_data, 
-            columns=self.columns,
-            model_type=model_type
+            flattened_data, columns=self.columns, model_type=model_type
         )
 
         if not display_columns:

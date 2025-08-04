@@ -67,90 +67,110 @@ class TestCourseCommands:
 
     @patch("easel.cli.commands.course.asyncio.run")
     @patch("easel.cli.commands.course.CanvasClient")
-    def test_course_list_success(self, mock_client_class, mock_asyncio_run, runner, mock_config):
+    def test_course_list_success(
+        self, mock_client_class, mock_asyncio_run, runner, mock_config
+    ):
         """Test successful course list command."""
         # Mock async client
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
-        
+
         # Mock response
         mock_response = AsyncMock()
         mock_response.data = [
-            AsyncMock(model_dump=lambda: {
-                "id": 123,
-                "name": "Test Course",
-                "course_code": "TEST101",
-                "workflow_state": "available"
-            })
+            AsyncMock(
+                model_dump=lambda: {
+                    "id": 123,
+                    "name": "Test Course",
+                    "course_code": "TEST101",
+                    "workflow_state": "available",
+                }
+            )
         ]
         mock_response.has_next_page = False
         mock_client.get_courses.return_value = mock_response
-        
+
         # Mock asyncio.run to return our mock data
         mock_asyncio_run.return_value = mock_response.data
-        
-        with patch("easel.config.paths.get_config_dir", return_value=mock_config._config_dir):
+
+        with patch(
+            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+        ):
             result = runner.invoke(cli, ["course", "list", "--format", "json"])
-            
+
         assert result.exit_code == 0
         mock_client.get_courses.assert_called_once()
 
     @patch("easel.cli.commands.course.asyncio.run")
     @patch("easel.cli.commands.course.CanvasClient")
-    def test_course_show_success(self, mock_client_class, mock_asyncio_run, runner, mock_config):
+    def test_course_show_success(
+        self, mock_client_class, mock_asyncio_run, runner, mock_config
+    ):
         """Test successful course show command."""
         # Mock async client
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
-        
+
         # Mock course data
-        mock_course = AsyncMock(model_dump=lambda: {
-            "id": 123,
-            "name": "Test Course",
-            "course_code": "TEST101",
-            "workflow_state": "available"
-        })
+        mock_course = AsyncMock(
+            model_dump=lambda: {
+                "id": 123,
+                "name": "Test Course",
+                "course_code": "TEST101",
+                "workflow_state": "available",
+            }
+        )
         mock_client.get_course.return_value = mock_course
-        
+
         # Mock asyncio.run to return our mock data
         mock_asyncio_run.return_value = mock_course
-        
-        with patch("easel.config.paths.get_config_dir", return_value=mock_config._config_dir):
+
+        with patch(
+            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+        ):
             result = runner.invoke(cli, ["course", "show", "123", "--format", "json"])
-            
+
         assert result.exit_code == 0
         mock_client.get_course.assert_called_once_with(
             course_id=123,
             include=None,
         )
 
-    @patch("easel.cli.commands.course.asyncio.run")  
+    @patch("easel.cli.commands.course.asyncio.run")
     @patch("easel.cli.commands.course.CanvasClient")
-    def test_course_modules_success(self, mock_client_class, mock_asyncio_run, runner, mock_config):
+    def test_course_modules_success(
+        self, mock_client_class, mock_asyncio_run, runner, mock_config
+    ):
         """Test successful course modules command."""
         # Mock async client
         mock_client = AsyncMock()
         mock_client_class.return_value.__aenter__.return_value = mock_client
-        
+
         # Mock response
         mock_response = AsyncMock()
         mock_response.data = [
-            AsyncMock(model_dump=lambda: {
-                "id": 456,
-                "name": "Module 1",
-                "position": 1,
-                "published": True
-            })
+            AsyncMock(
+                model_dump=lambda: {
+                    "id": 456,
+                    "name": "Module 1",
+                    "position": 1,
+                    "published": True,
+                }
+            )
         ]
         mock_response.has_next_page = False
         mock_client.get_modules.return_value = mock_response
-        
+
         # Mock asyncio.run to return our mock data
         mock_asyncio_run.return_value = mock_response.data
-        
-        with patch("easel.config.paths.get_config_dir", return_value=mock_config._config_dir):
-            result = runner.invoke(cli, ["course", "modules", "123", "--format", "json"])
-            
+
+        with patch(
+            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+        ):
+            result = runner.invoke(
+                cli, ["course", "modules", "123", "--format", "json"]
+            )
+
         assert result.exit_code == 0
         mock_client.get_modules.assert_called_once_with(
             course_id=123,
@@ -162,10 +182,10 @@ class TestCourseCommands:
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir) / ".easel"
             config_dir.mkdir()
-            
+
             with patch("easel.config.paths.get_config_dir", return_value=config_dir):
                 result = runner.invoke(cli, ["course", "list"])
-                
+
         assert result.exit_code != 0
         assert "Configuration not found" in result.output
 
