@@ -14,19 +14,11 @@ from .context import EaselContext, pass_context
 
 
 def _version_callback(ctx: click.Context, param: click.Parameter, value: bool) -> None:
-    """Custom version callback that respects format option."""
+    """Custom version callback."""
     if not value or ctx.resilient_parsing:
         return
 
-    # Get format from context params (should be available since is_eager=False)
-    format_option = ctx.params.get("format", "table")
-
-    if format_option == "json":
-        version_data = {"program": "easel", "version": __version__}
-        click.echo(json.dumps(version_data))
-    else:
-        click.echo(f"easel, version {__version__}")
-
+    click.echo(f"easel, version {__version__}")
     ctx.exit()
 
 
@@ -51,7 +43,7 @@ def _version_callback(ctx: click.Context, param: click.Parameter, value: bool) -
     "--version",
     is_flag=True,
     expose_value=False,
-    is_eager=False,  # Process after other options
+    is_eager=True,  # Process early
     callback=_version_callback,
     help="Show version and exit",
 )

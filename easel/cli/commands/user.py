@@ -84,8 +84,7 @@ def profile(ctx: EaselContext, columns: tuple[str, ...]) -> None:
 )
 @click.option(
     "--include",
-    multiple=True,
-    help="Additional data to include (e.g., total_students, term)",
+    help="Additional data to include (e.g., total_students, term). Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -97,7 +96,7 @@ def courses(
     ctx: EaselContext,
     role: Optional[str],
     state: Optional[str],
-    include: tuple[str, ...],
+    include: str,
     columns: tuple[str, ...],
 ) -> None:
     """List courses for the current user."""
@@ -117,8 +116,8 @@ def courses(
 
         async def fetch_courses():
             async with CanvasClient(config.canvas.url, auth) as client:
-                # Convert include tuple to list
-                include_list = list(include) if include else None
+                # Convert include string to list (handle comma-separated values)
+                include_list = [item.strip() for item in include.split(',')] if include else None
 
                 # Build state filter
                 state_filter = None
@@ -196,8 +195,7 @@ def courses(
 )
 @click.option(
     "--include",
-    multiple=True,
-    help="Additional data to include (e.g., enrollments, avatar_url)",
+    help="Additional data to include (e.g., enrollments, avatar_url). Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -209,7 +207,7 @@ def roster(
     ctx: EaselContext,
     course_id: int,
     role: Optional[str],
-    include: tuple[str, ...],
+    include: str,
     columns: tuple[str, ...],
 ) -> None:
     """List users enrolled in a specific course."""
@@ -242,9 +240,13 @@ def roster(
                     }
                     enrollment_type = [role_mapping.get(role, role)]
 
+                # Convert include string to list (handle comma-separated values)
+                include_list = [item.strip() for item in include.split(',')] if include else None
+
                 response = await client.get_users(
                     course_id=course_id,
                     enrollment_type=enrollment_type,
+                    include=include_list,
                 )
 
                 # Collect all users by handling pagination

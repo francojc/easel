@@ -1,5 +1,6 @@
 """CLI context object shared between commands."""
 
+import functools
 from typing import Optional
 
 import click

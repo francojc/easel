@@ -23,8 +23,7 @@ def assignment() -> None:
 @click.argument("course_id", type=int)
 @click.option(
     "--include",
-    multiple=True,
-    help="Additional data to include (e.g., submission, needs_grading_count)",
+    help="Additional data to include (e.g., submission, needs_grading_count). Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -35,7 +34,7 @@ def assignment() -> None:
 def list(
     ctx: EaselContext,
     course_id: int,
-    include: tuple[str, ...],
+    include: str,
     columns: tuple[str, ...],
 ) -> None:
     """List assignments for a course."""
@@ -55,8 +54,8 @@ def list(
 
         async def fetch_assignments():
             async with CanvasClient(config.canvas.url, auth) as client:
-                # Convert include tuple to list
-                include_list = list(include) if include else None
+                # Convert include string to list (handle comma-separated values)
+                include_list = [item.strip() for item in include.split(',')] if include else None
 
                 response = await client.get_assignments(
                     course_id=course_id,
@@ -116,8 +115,7 @@ def list(
 @click.argument("assignment_id", type=int)
 @click.option(
     "--include",
-    multiple=True,
-    help="Additional data to include (e.g., submission, rubric)",
+    help="Additional data to include (e.g., submission, rubric). Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -129,7 +127,7 @@ def show(
     ctx: EaselContext,
     course_id: int,
     assignment_id: int,
-    include: tuple[str, ...],
+    include: str,
     columns: tuple[str, ...],
 ) -> None:
     """Show detailed information for a specific assignment."""
@@ -149,8 +147,8 @@ def show(
 
         async def fetch_assignment():
             async with CanvasClient(config.canvas.url, auth) as client:
-                # Convert include tuple to list
-                include_list = list(include) if include else None
+                # Convert include string to list (handle comma-separated values)
+                include_list = [item.strip() for item in include.split(',')] if include else None
 
                 return await client.get_assignment(
                     course_id=course_id,
@@ -188,8 +186,7 @@ def show(
 @click.argument("assignment_id", type=int)
 @click.option(
     "--include",
-    multiple=True,
-    help="Additional data to include (e.g., user, submission_history)",
+    help="Additional data to include (e.g., user, submission_history). Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -206,7 +203,7 @@ def submissions(
     ctx: EaselContext,
     course_id: int,
     assignment_id: int,
-    include: tuple[str, ...],
+    include: str,
     columns: tuple[str, ...],
     status: Optional[str],
 ) -> None:
@@ -227,8 +224,8 @@ def submissions(
 
         async def fetch_submissions():
             async with CanvasClient(config.canvas.url, auth) as client:
-                # Convert include tuple to list
-                include_list = list(include) if include else None
+                # Convert include string to list (handle comma-separated values)
+                include_list = [item.strip() for item in include.split(',')] if include else None
 
                 response = await client.get_submissions(
                     course_id=course_id,
