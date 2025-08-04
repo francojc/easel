@@ -13,10 +13,9 @@ from easel.config import (
 )
 
 from ..context import pass_context, EaselContext
-from ..main import cli
 
 
-@cli.group()
+@click.group()
 def config() -> None:
     """Configuration management commands."""
     pass
@@ -72,7 +71,7 @@ def config_list(ctx: EaselContext, show_sensitive: bool) -> None:
         ctx.exit(1)
 
 
-@cli.command()
+@click.command()
 @pass_context
 def init(ctx: EaselContext) -> None:
     """Initialize Easel configuration with interactive setup."""

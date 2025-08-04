@@ -12,10 +12,9 @@ from easel.config import (
 )
 
 from ..context import pass_context, EaselContext
-from ..main import cli
 
 
-@cli.command()
+@click.command()
 @pass_context
 def doctor(ctx: EaselContext) -> None:
     """Validate Easel configuration and Canvas connectivity.

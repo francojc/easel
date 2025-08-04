@@ -11,10 +11,9 @@ from easel.api.exceptions import CanvasAPIError
 from easel.output.factory import FormatterFactory
 from easel.output.columns import parse_include_columns
 from ..context import pass_context, EaselContext
-from ..main import cli
 
 
-@cli.group()
+@click.group()
 def user() -> None:
     """User management commands."""
     pass

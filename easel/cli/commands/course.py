@@ -13,10 +13,9 @@ from easel.output.factory import FormatterFactory
 from easel.output.columns import parse_include_columns
 from ..context import pass_context, EaselContext
 from ..error_handlers import with_error_handling
-from ..main import cli
 
 
-@cli.group()
+@click.group()
 def course() -> None:
     """Course management commands."""
     pass
@@ -38,10 +37,15 @@ def course() -> None:
     multiple=True,
     help="Display specific columns (use 'all' for all columns)",
 )
+@click.option(
+    "--format",
+    type=click.Choice(["table", "json", "csv", "yaml"]),
+    help="Output format (overrides global format)",
+)
 @pass_context
 @with_error_handling
 def list(
-    ctx: EaselContext, active: bool, include: tuple[str, ...], columns: tuple[str, ...]
+    ctx: EaselContext, active: bool, include: tuple[str, ...], columns: tuple[str, ...], format: str = None
 ) -> None:
     """List courses for the current user."""
     # Load configuration
@@ -96,7 +100,8 @@ def list(
     display_columns = parse_include_columns(columns) if columns else None
 
     # Format output
-    formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
+    output_format = format if format else ctx.format
+    formatter = FormatterFactory.create_formatter(output_format, columns=display_columns)
 
     # Convert courses to dictionaries for formatting
     courses_data = [course.model_dump() for course in courses]
@@ -117,6 +122,11 @@ def list(
     multiple=True,
     help="Display specific columns (use 'all' for all columns)",
 )
+@click.option(
+    "--format",
+    type=click.Choice(["table", "json", "csv", "yaml"]),
+    help="Output format (overrides global format)",
+)
 @pass_context
 @with_error_handling
 def show(
@@ -124,6 +134,7 @@ def show(
     course_id: int,
     include: tuple[str, ...],
     columns: tuple[str, ...],
+    format: str = None,
 ) -> None:
     """Show detailed information for a specific course."""
     # Load configuration
@@ -156,7 +167,8 @@ def show(
     display_columns = parse_include_columns(columns) if columns else None
 
     # Format output
-    formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
+    output_format = format if format else ctx.format
+    formatter = FormatterFactory.create_formatter(output_format, columns=display_columns)
 
     # Convert course to dictionary for formatting
     course_data = course.model_dump()
@@ -177,6 +189,11 @@ def show(
     multiple=True,
     help="Display specific columns (use 'all' for all columns)",
 )
+@click.option(
+    "--format",
+    type=click.Choice(["table", "json", "csv", "yaml"]),
+    help="Output format (overrides global format)",
+)
 @pass_context
 @with_error_handling
 def modules(
@@ -184,6 +201,7 @@ def modules(
     course_id: int,
     include: tuple[str, ...],
     columns: tuple[str, ...],
+    format: str = None,
 ) -> None:
     """List modules for a specific course."""
     # Load configuration
@@ -235,7 +253,8 @@ def modules(
     display_columns = parse_include_columns(columns) if columns else None
 
     # Format output
-    formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
+    output_format = format if format else ctx.format
+    formatter = FormatterFactory.create_formatter(output_format, columns=display_columns)
 
     # Convert modules to dictionaries for formatting
     modules_data = [module.model_dump() for module in modules]

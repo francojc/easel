@@ -30,7 +30,7 @@ def _version_callback(ctx: click.Context, param: click.Parameter, value: bool) -
     ctx.exit()
 
 
-@click.group(context_settings={"allow_interspersed_args": True})
+@click.group()
 @click.option(
     "--config",
     type=click.Path(exists=True),
@@ -77,6 +77,25 @@ def cli(ctx: EaselContext, config: Optional[str], format: str, verbose: bool) ->
             click.echo(msg, err=True)
 
 
+# Import commands to register them with the CLI
+from .commands import (
+    assignment,
+    config as config_commands,
+    course,
+    doctor,
+    user,
+    init,
+)  # noqa
+
+# Register commands with the main CLI
+cli.add_command(assignment)
+cli.add_command(config_commands)
+cli.add_command(course)
+cli.add_command(doctor)
+cli.add_command(user)
+cli.add_command(init)
+
+
 def main() -> None:
     """Entry point for the CLI application."""
     try:
@@ -87,16 +106,6 @@ def main() -> None:
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
-
-
-# Import commands to register them with the CLI
-from .commands import (
-    assignment,
-    config as config_commands,
-    course,
-    doctor,
-    user,
-)  # noqa
 
 
 if __name__ == "__main__":
