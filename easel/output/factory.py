@@ -1,6 +1,6 @@
 """Factory for creating output formatters."""
 
-from typing import Dict, Type
+from typing import Dict, Type, Optional, List
 
 from .base import OutputFormatter
 from .formatters import (
@@ -22,11 +22,16 @@ class FormatterFactory:
     }
 
     @classmethod
-    def create_formatter(cls, format_name: str) -> OutputFormatter:
+    def create_formatter(
+        cls, 
+        format_name: str, 
+        columns: Optional[List[str]] = None
+    ) -> OutputFormatter:
         """Create a formatter for the specified format.
 
         Args:
             format_name: Name of the format
+            columns: Specific columns to display (for table format)
 
         Returns:
             Formatter instance
@@ -43,7 +48,12 @@ class FormatterFactory:
             )
 
         formatter_class = cls._formatters[format_name]
-        return formatter_class()
+        
+        # Pass columns to TableFormatter, ignore for others
+        if format_name == "table" and columns is not None:
+            return formatter_class(columns=columns)
+        else:
+            return formatter_class()
 
     @classmethod
     def get_supported_formats(cls) -> list[str]:

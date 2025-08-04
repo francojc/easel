@@ -9,6 +9,7 @@ from easel.api.auth import CanvasAuth
 from easel.api.client import CanvasClient
 from easel.api.exceptions import CanvasAPIError
 from easel.output.factory import FormatterFactory
+from easel.output.columns import parse_include_columns
 from ..context import pass_context, EaselContext
 from ..main import cli
 
@@ -20,8 +21,13 @@ def user() -> None:
 
 
 @user.command()
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
-def profile(ctx: EaselContext) -> None:
+def profile(ctx: EaselContext, columns: tuple[str, ...]) -> None:
     """Show current user profile information."""
     try:
         # Load configuration
@@ -44,8 +50,11 @@ def profile(ctx: EaselContext) -> None:
         # Run async operation
         user = asyncio.run(fetch_user())
         
+        # Parse display columns
+        display_columns = parse_include_columns(columns) if columns else None
+        
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
         
         # Convert user to dictionary for formatting
         user_data = user.model_dump()
@@ -77,12 +86,18 @@ def profile(ctx: EaselContext) -> None:
     multiple=True,
     help="Additional data to include (e.g., total_students, term)",
 )
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
 def courses(
     ctx: EaselContext, 
     role: Optional[str], 
     state: Optional[str], 
-    include: tuple[str, ...]
+    include: tuple[str, ...],
+    columns: tuple[str, ...]
 ) -> None:
     """List courses for the current user."""
     try:
@@ -143,8 +158,11 @@ def courses(
         # Run async operation
         courses = asyncio.run(fetch_courses())
         
+        # Parse display columns
+        display_columns = parse_include_columns(columns) if columns else None
+        
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
         
         # Convert courses to dictionaries for formatting
         courses_data = [course.model_dump() for course in courses]
@@ -172,12 +190,18 @@ def courses(
     multiple=True,
     help="Additional data to include (e.g., enrollments, avatar_url)",
 )
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
 def roster(
     ctx: EaselContext, 
     course_id: int, 
     role: Optional[str], 
-    include: tuple[str, ...]
+    include: tuple[str, ...],
+    columns: tuple[str, ...]
 ) -> None:
     """List users enrolled in a specific course."""
     try:
@@ -232,8 +256,11 @@ def roster(
         # Run async operation
         users = asyncio.run(fetch_users())
         
+        # Parse display columns
+        display_columns = parse_include_columns(columns) if columns else None
+        
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
         
         # Convert users to dictionaries for formatting
         users_data = [user.model_dump() for user in users]

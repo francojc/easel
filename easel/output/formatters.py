@@ -3,26 +3,29 @@
 import csv
 import json
 from io import StringIO
-from typing import Any, List, Dict, Union
+from typing import Any, List, Dict, Union, Optional
 
 import yaml
 from rich.console import Console
 from rich.table import Table
 
 from .base import OutputFormatter
+from .columns import filter_columns_for_data, infer_model_type
 
 
 class TableFormatter(OutputFormatter):
     """Format data as a rich table."""
 
-    def __init__(self, max_width: int = 120) -> None:
+    def __init__(self, max_width: int = 200, columns: Optional[List[str]] = None) -> None:
         """Initialize table formatter.
 
         Args:
             max_width: Maximum table width
+            columns: Specific columns to display (None for auto-detection)
         """
         self.max_width = max_width
         self.console = Console(width=max_width)
+        self.columns = columns
 
     def format(self, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> str:
         """Format data as a rich table.
@@ -41,25 +44,30 @@ class TableFormatter(OutputFormatter):
         # Flatten nested structures for table display
         flattened_data = [self._flatten_dict(item) for item in data_list]
 
-        # Get all unique keys across all items
-        all_keys: set[str] = set()
-        for item in flattened_data:
-            all_keys.update(item.keys())
+        # Determine which columns to display
+        model_type = infer_model_type(flattened_data)
+        display_columns = filter_columns_for_data(
+            flattened_data, 
+            columns=self.columns,
+            model_type=model_type
+        )
 
-        # Sort keys for consistent column order
-        columns = sorted(all_keys)
+        if not display_columns:
+            return "No columns to display."
 
         # Create rich table
         table = Table(show_header=True, header_style="bold magenta")
 
         # Add columns
-        for column in columns:
-            table.add_column(column, overflow="fold", max_width=20)
+        for column in display_columns:
+            # Set minimum width to column header length to prevent wrapping
+            min_width = len(column)
+            table.add_column(column, min_width=min_width)
 
         # Add rows
         for item in flattened_data:
             row = []
-            for column in columns:
+            for column in display_columns:
                 value = item.get(column, "")
                 if value is None:
                     value = ""

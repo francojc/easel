@@ -10,6 +10,7 @@ from easel.api.client import CanvasClient
 from easel.api.exceptions import CanvasAPIError
 from easel.config.exceptions import ConfigError
 from easel.output.factory import FormatterFactory
+from easel.output.columns import parse_include_columns
 from ..context import pass_context, EaselContext
 from ..error_handlers import with_error_handling
 from ..main import cli
@@ -32,9 +33,14 @@ def course() -> None:
     multiple=True,
     help="Additional data to include (e.g., total_students)",
 )
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
 @with_error_handling
-def list(ctx: EaselContext, active: bool, include: tuple[str, ...]) -> None:
+def list(ctx: EaselContext, active: bool, include: tuple[str, ...], columns: tuple[str, ...]) -> None:
     """List courses for the current user."""
     # Load configuration
     if not ctx.config_manager:
@@ -80,8 +86,11 @@ def list(ctx: EaselContext, active: bool, include: tuple[str, ...]) -> None:
     # Run async operation
     courses = asyncio.run(fetch_courses())
     
+    # Parse display columns
+    display_columns = parse_include_columns(columns) if columns else None
+    
     # Format output
-    formatter = FormatterFactory.create_formatter(ctx.format)
+    formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
     
     # Convert courses to dictionaries for formatting
     courses_data = [course.model_dump() for course in courses]
@@ -97,9 +106,14 @@ def list(ctx: EaselContext, active: bool, include: tuple[str, ...]) -> None:
     multiple=True,
     help="Additional data to include (e.g., syllabus_body, term)",
 )
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
 @with_error_handling
-def show(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
+def show(ctx: EaselContext, course_id: int, include: tuple[str, ...], columns: tuple[str, ...]) -> None:
     """Show detailed information for a specific course."""
     # Load configuration
     if not ctx.config_manager:
@@ -127,8 +141,11 @@ def show(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
     # Run async operation
     course = asyncio.run(fetch_course())
     
+    # Parse display columns
+    display_columns = parse_include_columns(columns) if columns else None
+    
     # Format output
-    formatter = FormatterFactory.create_formatter(ctx.format)
+    formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
     
     # Convert course to dictionary for formatting
     course_data = course.model_dump()
@@ -144,9 +161,14 @@ def show(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
     multiple=True,
     help="Additional data to include (e.g., items)",
 )
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
 @with_error_handling
-def modules(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
+def modules(ctx: EaselContext, course_id: int, include: tuple[str, ...], columns: tuple[str, ...]) -> None:
     """List modules for a specific course."""
     # Load configuration
     if not ctx.config_manager:
@@ -189,8 +211,11 @@ def modules(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None
     # Run async operation
     modules = asyncio.run(fetch_modules())
     
+    # Parse display columns
+    display_columns = parse_include_columns(columns) if columns else None
+    
     # Format output
-    formatter = FormatterFactory.create_formatter(ctx.format)
+    formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
     
     # Convert modules to dictionaries for formatting
     modules_data = [module.model_dump() for module in modules]

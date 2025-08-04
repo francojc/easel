@@ -9,6 +9,7 @@ from easel.api.auth import CanvasAuth
 from easel.api.client import CanvasClient
 from easel.api.exceptions import CanvasAPIError
 from easel.output.factory import FormatterFactory
+from easel.output.columns import parse_include_columns
 from ..context import pass_context, EaselContext
 from ..main import cli
 
@@ -26,8 +27,13 @@ def assignment() -> None:
     multiple=True,
     help="Additional data to include (e.g., submission, needs_grading_count)",
 )
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
-def list(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
+def list(ctx: EaselContext, course_id: int, include: tuple[str, ...], columns: tuple[str, ...]) -> None:
     """List assignments for a course."""
     try:
         # Load configuration
@@ -71,8 +77,11 @@ def list(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
         # Run async operation
         assignments = asyncio.run(fetch_assignments())
         
+        # Parse display columns
+        display_columns = parse_include_columns(columns) if columns else None
+        
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
         
         # Convert assignments to dictionaries for formatting
         assignments_data = [assignment.model_dump() for assignment in assignments]
@@ -96,8 +105,13 @@ def list(ctx: EaselContext, course_id: int, include: tuple[str, ...]) -> None:
     multiple=True,
     help="Additional data to include (e.g., submission, rubric)",
 )
+@click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
 @pass_context
-def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[str, ...]) -> None:
+def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[str, ...], columns: tuple[str, ...]) -> None:
     """Show detailed information for a specific assignment."""
     try:
         # Load configuration
@@ -127,8 +141,11 @@ def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[s
         # Run async operation
         assignment = asyncio.run(fetch_assignment())
         
+        # Parse display columns
+        display_columns = parse_include_columns(columns) if columns else None
+        
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
         
         # Convert assignment to dictionary for formatting
         assignment_data = assignment.model_dump()
@@ -153,6 +170,11 @@ def show(ctx: EaselContext, course_id: int, assignment_id: int, include: tuple[s
     help="Additional data to include (e.g., user, submission_history)",
 )
 @click.option(
+    "--columns",
+    multiple=True,
+    help="Display specific columns (use 'all' for all columns)",
+)
+@click.option(
     "--status",
     type=click.Choice(["submitted", "unsubmitted", "graded", "pending_review"]),
     help="Filter submissions by status",
@@ -163,6 +185,7 @@ def submissions(
     course_id: int, 
     assignment_id: int, 
     include: tuple[str, ...],
+    columns: tuple[str, ...],
     status: Optional[str]
 ) -> None:
     """List submissions for a specific assignment."""
@@ -220,8 +243,11 @@ def submissions(
         # Run async operation
         submissions = asyncio.run(fetch_submissions())
         
+        # Parse display columns
+        display_columns = parse_include_columns(columns) if columns else None
+        
         # Format output
-        formatter = FormatterFactory.create_formatter(ctx.format)
+        formatter = FormatterFactory.create_formatter(ctx.format, columns=display_columns)
         
         # Convert submissions to dictionaries for formatting
         submissions_data = [submission.model_dump() for submission in submissions]
