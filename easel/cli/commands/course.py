@@ -29,7 +29,7 @@ def course() -> None:
 )
 @click.option(
     "--include",
-    help="Additional data to include (e.g., total_students). Use comma-separated values for multiple items.",
+    help="Additional data to include. Common values: total_students, teachers, term, syllabus_body, sections, favorites. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -44,7 +44,11 @@ def course() -> None:
 @pass_context
 @with_error_handling
 def list(
-    ctx: EaselContext, active: bool, include: str, columns: tuple[str, ...], format: str = None
+    ctx: EaselContext,
+    active: bool,
+    include: str,
+    columns: tuple[str, ...],
+    format: str = None,
 ) -> None:
     """List courses for the current user."""
     # Load configuration
@@ -66,7 +70,9 @@ def list(
             state = ["available"] if active else None
 
             # Convert include string to list (handle comma-separated values)
-            include_list = [item.strip() for item in include.split(',')] if include else None
+            include_list = (
+                [item.strip() for item in include.split(",")] if include else None
+            )
 
             response = await client.get_courses(
                 include=include_list,
@@ -100,7 +106,9 @@ def list(
 
     # Format output
     output_format = format if format else ctx.format
-    formatter = FormatterFactory.create_formatter(output_format, columns=display_columns)
+    formatter = FormatterFactory.create_formatter(
+        output_format, columns=display_columns
+    )
 
     # Convert courses to dictionaries for formatting
     courses_data = [course.model_dump() for course in courses]
@@ -113,7 +121,7 @@ def list(
 @click.argument("course_id", type=int)
 @click.option(
     "--include",
-    help="Additional data to include (e.g., syllabus_body, term). Use comma-separated values for multiple items.",
+    help="Additional data to include. Common values: total_students, teachers, term, syllabus_body, sections, favorites. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -151,7 +159,9 @@ def show(
     async def fetch_course():
         async with CanvasClient(config.canvas.url, auth) as client:
             # Convert include string to list (handle comma-separated values)
-            include_list = [item.strip() for item in include.split(',')] if include else None
+            include_list = (
+                [item.strip() for item in include.split(",")] if include else None
+            )
 
             return await client.get_course(
                 course_id=course_id,
@@ -166,7 +176,9 @@ def show(
 
     # Format output
     output_format = format if format else ctx.format
-    formatter = FormatterFactory.create_formatter(output_format, columns=display_columns)
+    formatter = FormatterFactory.create_formatter(
+        output_format, columns=display_columns
+    )
 
     # Convert course to dictionary for formatting
     course_data = course.model_dump()
@@ -179,7 +191,7 @@ def show(
 @click.argument("course_id", type=int)
 @click.option(
     "--include",
-    help="Additional data to include (e.g., items). Use comma-separated values for multiple items.",
+    help="Additional data to include. Common values: items, content_details. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -217,7 +229,9 @@ def modules(
     async def fetch_modules():
         async with CanvasClient(config.canvas.url, auth) as client:
             # Convert include string to list (handle comma-separated values)
-            include_list = [item.strip() for item in include.split(',')] if include else None
+            include_list = (
+                [item.strip() for item in include.split(",")] if include else None
+            )
 
             response = await client.get_modules(
                 course_id=course_id,
@@ -251,7 +265,9 @@ def modules(
 
     # Format output
     output_format = format if format else ctx.format
-    formatter = FormatterFactory.create_formatter(output_format, columns=display_columns)
+    formatter = FormatterFactory.create_formatter(
+        output_format, columns=display_columns
+    )
 
     # Convert modules to dictionaries for formatting
     modules_data = [module.model_dump() for module in modules]

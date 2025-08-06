@@ -10,24 +10,25 @@ from pydantic import ValidationError
 from .credentials import CredentialManager
 from .exceptions import ConfigNotFoundError, ConfigValidationError
 from .models import EaselConfig, CanvasInstance
-from .paths import ensure_config_dirs, get_config_file
+from .paths import ensure_config_dirs, get_config_file, get_config_dir
 
 
 class ConfigManager:
     """Manages Easel configuration loading, validation, and storage."""
 
-    def __init__(self, config_file: Optional[Path] = None) -> None:
+    def __init__(self, config_file: Optional[Path] = None, config_dir: Optional[Path] = None) -> None:
         """Initialize configuration manager.
-
         Args:
             config_file: Optional path to config file, defaults to
                 standard location
+            config_dir: Optional path to config directory, defaults to
+                standard location
         """
-        self.config_file = config_file or get_config_file()
-        self.credential_manager = CredentialManager()
-
+        self.config_dir = config_dir or get_config_dir()
+        self.config_file = config_file or get_config_file(self.config_dir)
+        self.credential_manager = CredentialManager(config_dir=self.config_dir)
         # Ensure config directories exist
-        ensure_config_dirs()
+        ensure_config_dirs(self.config_dir)
 
     def load_config(self) -> EaselConfig:
         """Load and validate configuration from file.

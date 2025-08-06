@@ -94,7 +94,7 @@ class TestCourseCommands:
         mock_asyncio_run.return_value = mock_response.data
 
         with patch(
-            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+            "easel.config.paths.get_config_dir", return_value=mock_config.config_dir
         ):
             result = runner.invoke(cli, ["course", "list", "--format", "json"])
 
@@ -126,7 +126,7 @@ class TestCourseCommands:
         mock_asyncio_run.return_value = mock_course
 
         with patch(
-            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+            "easel.config.paths.get_config_dir", return_value=mock_config.config_dir
         ):
             result = runner.invoke(cli, ["course", "show", "123", "--format", "json"])
 
@@ -165,7 +165,7 @@ class TestCourseCommands:
         mock_asyncio_run.return_value = mock_response.data
 
         with patch(
-            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+            "easel.config.paths.get_config_dir", return_value=mock_config.config_dir
         ):
             result = runner.invoke(
                 cli, ["course", "modules", "123", "--format", "json"]

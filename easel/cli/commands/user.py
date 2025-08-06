@@ -1,7 +1,7 @@
 """User commands for Easel CLI."""
 
 import asyncio
-from typing import Optional, List
+from typing import Optional
 
 import click
 
@@ -84,7 +84,7 @@ def profile(ctx: EaselContext, columns: tuple[str, ...]) -> None:
 )
 @click.option(
     "--include",
-    help="Additional data to include (e.g., total_students, term). Use comma-separated values for multiple items.",
+    help="Common values: total_students, term. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -117,7 +117,9 @@ def courses(
         async def fetch_courses():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include string to list (handle comma-separated values)
-                include_list = [item.strip() for item in include.split(',')] if include else None
+                include_list = (
+                    [item.strip() for item in include.split(",")] if include else None
+                )
 
                 # Build state filter
                 state_filter = None
@@ -195,7 +197,7 @@ def courses(
 )
 @click.option(
     "--include",
-    help="Additional data to include (e.g., enrollments, avatar_url). Use comma-separated values for multiple items.",
+    help="Common values: enrollments, avatar_url. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -241,7 +243,9 @@ def roster(
                     enrollment_type = [role_mapping.get(role, role)]
 
                 # Convert include string to list (handle comma-separated values)
-                include_list = [item.strip() for item in include.split(',')] if include else None
+                include_list = (
+                    [item.strip() for item in include.split(",")] if include else None
+                )
 
                 response = await client.get_users(
                     course_id=course_id,

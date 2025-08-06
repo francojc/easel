@@ -89,7 +89,7 @@ class TestUserCommands:
         mock_asyncio_run.return_value = mock_user
 
         with patch(
-            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+            "easel.config.paths.get_config_dir", return_value=mock_config.config_dir
         ):
             result = runner.invoke(cli, ["user", "profile", "--format", "json"])
 
@@ -125,7 +125,7 @@ class TestUserCommands:
         mock_asyncio_run.return_value = mock_response.data
 
         with patch(
-            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+            "easel.config.paths.get_config_dir", return_value=mock_config.config_dir
         ):
             result = runner.invoke(cli, ["user", "courses", "--format", "json"])
 
@@ -161,7 +161,7 @@ class TestUserCommands:
         mock_asyncio_run.return_value = mock_response.data
 
         with patch(
-            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+            "easel.config.paths.get_config_dir", return_value=mock_config.config_dir
         ):
             result = runner.invoke(cli, ["user", "roster", "123", "--format", "json"])
 
@@ -169,6 +169,7 @@ class TestUserCommands:
         mock_client.get_users.assert_called_once_with(
             course_id=123,
             enrollment_type=None,
+            include=None,
         )
 
     @patch("easel.cli.commands.user.asyncio.run")
@@ -191,7 +192,7 @@ class TestUserCommands:
         mock_asyncio_run.return_value = mock_response.data
 
         with patch(
-            "easel.config.paths.get_config_dir", return_value=mock_config._config_dir
+            "easel.config.paths.get_config_dir", return_value=mock_config.config_dir
         ):
             result = runner.invoke(
                 cli, ["user", "roster", "123", "--role", "student", "--format", "json"]
@@ -201,6 +202,7 @@ class TestUserCommands:
         mock_client.get_users.assert_called_once_with(
             course_id=123,
             enrollment_type=["StudentEnrollment"],
+            include=None,
         )
 
     def test_user_roster_missing_course_id(self, runner):

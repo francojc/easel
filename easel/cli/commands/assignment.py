@@ -1,7 +1,7 @@
 """Assignment commands for Easel CLI."""
 
 import asyncio
-from typing import Optional, List
+from typing import Optional
 
 import click
 
@@ -23,7 +23,7 @@ def assignment() -> None:
 @click.argument("course_id", type=int)
 @click.option(
     "--include",
-    help="Additional data to include (e.g., submission, needs_grading_count). Use comma-separated values for multiple items.",
+    help="Common values: submission, needs_grading_count. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -55,7 +55,9 @@ def list(
         async def fetch_assignments():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include string to list (handle comma-separated values)
-                include_list = [item.strip() for item in include.split(',')] if include else None
+                include_list = (
+                    [item.strip() for item in include.split(",")] if include else None
+                )
 
                 response = await client.get_assignments(
                     course_id=course_id,
@@ -115,7 +117,7 @@ def list(
 @click.argument("assignment_id", type=int)
 @click.option(
     "--include",
-    help="Additional data to include (e.g., submission, rubric). Use comma-separated values for multiple items.",
+    help="Common values: submission, rubric. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -148,7 +150,9 @@ def show(
         async def fetch_assignment():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include string to list (handle comma-separated values)
-                include_list = [item.strip() for item in include.split(',')] if include else None
+                include_list = (
+                    [item.strip() for item in include.split(",")] if include else None
+                )
 
                 return await client.get_assignment(
                     course_id=course_id,
@@ -186,7 +190,7 @@ def show(
 @click.argument("assignment_id", type=int)
 @click.option(
     "--include",
-    help="Additional data to include (e.g., user, submission_history). Use comma-separated values for multiple items.",
+    help="Common values: user, submission_history. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -225,7 +229,9 @@ def submissions(
         async def fetch_submissions():
             async with CanvasClient(config.canvas.url, auth) as client:
                 # Convert include string to list (handle comma-separated values)
-                include_list = [item.strip() for item in include.split(',')] if include else None
+                include_list = (
+                    [item.strip() for item in include.split(",")] if include else None
+                )
 
                 response = await client.get_submissions(
                     course_id=course_id,

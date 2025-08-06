@@ -31,13 +31,14 @@ def get_config_dir() -> Path:
         return home / ".easel"
 
 
-def get_config_file() -> Path:
+def get_config_file(config_dir: Path) -> Path:
     """Get the main configuration file path.
-
+    Args:
+        config_dir: The configuration directory.
     Returns:
         Path to config.yaml file
     """
-    return get_config_dir() / "config.yaml"
+    return config_dir / "config.yaml"
 
 
 def get_credentials_file() -> Path:
@@ -58,9 +59,10 @@ def get_log_dir() -> Path:
     return get_config_dir() / "logs"
 
 
-def get_cache_dir() -> Path:
+def get_cache_dir(config_dir: Path) -> Path:
     """Get the cache directory path.
-
+    Args:
+        config_dir: The configuration directory.
     Returns:
         Path to cache directory
     """
@@ -75,22 +77,25 @@ def get_cache_dir() -> Path:
     elif os.name == "posix":
         return home / ".cache" / "easel"
     else:
-        return get_config_dir() / "cache"
+        return config_dir / "cache"
 
 
-def ensure_config_dirs() -> None:
+def ensure_config_dirs(config_dir: Path) -> None:
     """Ensure all necessary configuration directories exist."""
+    log_dir = config_dir / "logs"
+    cache_dir = get_cache_dir(config_dir)
+
     dirs_to_create = [
-        get_config_dir(),
-        get_log_dir(),
-        get_cache_dir(),
+        config_dir,
+        log_dir,
+        cache_dir,
     ]
 
     for directory in dirs_to_create:
         directory.mkdir(parents=True, exist_ok=True)
 
         # Set secure permissions on config directory
-        if directory == get_config_dir():
+        if directory == config_dir:
             try:
                 directory.chmod(0o700)  # User read/write/execute only
             except (OSError, PermissionError):
