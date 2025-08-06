@@ -70,16 +70,16 @@ async with CanvasClient(url, auth) as client:
     # Basic course list
     response = await client.get_courses()
     courses = response.data
-    
+
     # Filter by active courses only
     response = await client.get_courses(state=["available"])
-    
+
     # Include additional data
     response = await client.get_courses(
         include=["total_students", "term"],
         state=["available", "completed"]
     )
-    
+
     # Custom page size
     response = await client.get_courses(per_page=50)
 ```
@@ -100,13 +100,13 @@ Get detailed information for a specific course.
 async with CanvasClient(url, auth) as client:
     # Basic course details
     course = await client.get_course(12345)
-    
+
     # Include syllabus and term
     course = await client.get_course(
-        12345, 
+        12345,
         include=["syllabus_body", "term"]
     )
-    
+
     print(f"Course: {course.name}")
     print(f"Code: {course.course_code}")
     print(f"Students: {course.total_students}")
@@ -123,13 +123,13 @@ async with CanvasClient(url, auth) as client:
     # List assignments
     response = await client.get_assignments(12345)
     assignments = response.data
-    
+
     # Include submission data
     response = await client.get_assignments(
         12345,
         include=["submission", "needs_grading_count"]
     )
-    
+
     for assignment in response.data:
         print(f"{assignment.name}: {assignment.points_possible} points")
 ```
@@ -150,7 +150,7 @@ async with CanvasClient(url, auth) as client:
         12345, 67890,
         include=["rubric", "submission"]
     )
-    
+
     print(f"Assignment: {assignment.name}")
     print(f"Due: {assignment.due_at}")
     print(f"Points: {assignment.points_possible}")
@@ -166,7 +166,7 @@ async with CanvasClient(url, auth) as client:
         12345, 67890,
         include=["user", "submission_history"]
     )
-    
+
     for submission in response.data:
         if submission.user:
             print(f"Student: {submission.user.name}")
@@ -189,19 +189,19 @@ Get users enrolled in a course.
 async with CanvasClient(url, auth) as client:
     # All users
     response = await client.get_users(12345)
-    
+
     # Students only
     response = await client.get_users(
         12345,
         enrollment_type=["StudentEnrollment"]
     )
-    
+
     # Teachers and TAs
     response = await client.get_users(
         12345,
         enrollment_type=["TeacherEnrollment", "TaEnrollment"]
     )
-    
+
     for user in response.data:
         print(f"{user.name} ({user.login_id})")
 ```
@@ -223,13 +223,13 @@ Get modules for a course.
 async with CanvasClient(url, auth) as client:
     # Basic module list
     response = await client.get_modules(12345)
-    
+
     # Include module items
     response = await client.get_modules(
         12345,
         include=["items"]
     )
-    
+
     for module in response.data:
         print(f"Module: {module.name}")
         if module.items:
@@ -244,14 +244,14 @@ All list methods return `PaginatedResponse` objects that support automatic pagin
 ```python
 async with CanvasClient(url, auth) as client:
     response = await client.get_courses()
-    
+
     # Get first page of data
     courses = response.data
-    
+
     # Check for more pages
     if response.has_next_page:
         print(f"More pages available: {response.next_page_url}")
-    
+
     # Manual pagination handling
     all_courses = []
     while response.has_next_page:
@@ -260,7 +260,7 @@ async with CanvasClient(url, auth) as client:
         next_data = next_response.json()
         next_courses = [Course(**course_data) for course_data in next_data]
         all_courses.extend(next_courses)
-        
+
         # Update pagination info
         from easel.api.pagination import PaginatedResponse
         response = PaginatedResponse.from_response(next_response, next_courses)
@@ -356,14 +356,14 @@ async def get_course_data(client, course_id):
     course_task = client.get_course(course_id, include=["term"])
     assignments_task = client.get_assignments(course_id)
     modules_task = client.get_modules(course_id)
-    
+
     # Run concurrently (still rate limited)
     course, assignments_response, modules_response = await asyncio.gather(
         course_task,
         assignments_task,
         modules_task
     )
-    
+
     return {
         "course": course,
         "assignments": assignments_response.data,
@@ -386,9 +386,9 @@ async with CanvasClient(url, auth) as client:
         "courses/12345/announcements",
         params={"per_page": 50}
     )
-    
+
     announcements = response.json()
-    
+
     # Custom error handling
     try:
         response = await client._make_request("GET", "invalid/endpoint")
@@ -504,7 +504,7 @@ all_students.extend(response.data)
 while response.has_next_page:
     next_response = await client._make_request("GET", url=response.next_page_url)
     # ... handle pagination
-    
+
 # For UI display with limits
 response = await client.get_assignments(course_id, per_page=20)
 # Display first 20 assignments only

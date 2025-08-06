@@ -59,7 +59,7 @@ This milestone builds upon the foundation to deliver the core user-facing functi
 
 **Output Formatting System:**
 - `OutputFormatter` abstract base class
-- `TableFormatter` using rich library for beautiful tables  
+- `TableFormatter` using rich library for beautiful tables
 - `JSONFormatter` with proper escaping and structure
 - `CSVFormatter` with configurable delimiters
 - `YAMLFormatter` for human-readable config-style output
@@ -88,7 +88,7 @@ easel course list [--active] [--include FIELD] [--format FORMAT]
 easel course show <course-id> [--include FIELD] [--format FORMAT]
 easel course modules <course-id> [--include FIELD] [--format FORMAT]
 
-# Assignment operations  
+# Assignment operations
 easel assignment list <course-id> [--include FIELD] [--format FORMAT]
 easel assignment show <course-id> <assignment-id> [--include FIELD] [--format FORMAT]
 easel --format FORMAT assignment submissions <course-id> <assignment-id> [--status STATUS] [--include FIELD]
@@ -114,11 +114,11 @@ class OutputFormatter(ABC):
 class FormatterFactory:
     _formatters = {
         "table": TableFormatter,
-        "json": JSONFormatter, 
+        "json": JSONFormatter,
         "csv": CSVFormatter,
         "yaml": YAMLFormatter,
     }
-    
+
     @classmethod
     def create_formatter(cls, format_type: str) -> OutputFormatter:
         """Create formatter instance."""
@@ -178,7 +178,7 @@ async with CanvasClient("https://school.instructure.com", auth) as client:
     # Get courses
     response = await client.get_courses(include=["total_students"])
     courses = response.data
-    
+
     # Get assignment submissions
     submissions_response = await client.get_submissions(
         course_id=12345,
@@ -190,7 +190,7 @@ async with CanvasClient("https://school.instructure.com", auth) as client:
 ## Success Metrics ✅ All Achieved
 
 - ✅ All commands execute successfully with real Canvas data
-- ✅ Output formats are consistent and properly structured  
+- ✅ Output formats are consistent and properly structured
 - ✅ Error handling provides actionable feedback
 - ✅ Commands complete within performance targets (<2s typical)
 - ✅ Test coverage >80% for all new code
@@ -214,7 +214,7 @@ async with CanvasClient("https://school.instructure.com", auth) as client:
 ## Integration Points ✅ Complete
 
 - ✅ **Configuration system:** Commands use centralized config management
-- ✅ **Authentication:** Leverages token management from Milestone 1  
+- ✅ **Authentication:** Leverages token management from Milestone 1
 - ✅ **Logging:** Integrates with established logging infrastructure
 - ✅ **Error handling:** Uses standardized error response patterns
 
@@ -229,7 +229,7 @@ async with CanvasClient("https://school.instructure.com", auth) as client:
 ## Key Implementation Files
 
 - `easel/cli/commands/course.py` - Course CLI commands
-- `easel/cli/commands/assignment.py` - Assignment CLI commands  
+- `easel/cli/commands/assignment.py` - Assignment CLI commands
 - `easel/cli/commands/user.py` - User CLI commands
 - `easel/api/client.py` - Canvas API client implementation
 - `easel/output/formatters.py` - Output formatting system

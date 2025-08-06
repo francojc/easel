@@ -357,7 +357,7 @@ easel --format csv assignment submissions 12345 67890 --status graded --include 
    ```bash
    # Verify your connection
    easel doctor
-   
+
    # Re-run setup if needed
    easel config init
    ```

@@ -16,7 +16,9 @@ from .paths import ensure_config_dirs, get_config_file, get_config_dir
 class ConfigManager:
     """Manages Easel configuration loading, validation, and storage."""
 
-    def __init__(self, config_file: Optional[Path] = None, config_dir: Optional[Path] = None) -> None:
+    def __init__(
+        self, config_file: Optional[Path] = None, config_dir: Optional[Path] = None
+    ) -> None:
         """Initialize configuration manager.
         Args:
             config_file: Optional path to config file, defaults to

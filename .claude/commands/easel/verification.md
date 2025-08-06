@@ -45,7 +45,7 @@
 **Formatter Factory** (`easel/output/factory.py`):
 - ✅ `table` → TableFormatter
 - ✅ `json` → JSONFormatter
-- ✅ `csv` → CSVFormatter  
+- ✅ `csv` → CSVFormatter
 - ✅ `yaml` → YAMLFormatter
 
 **Global Format Option** (`easel/cli/main.py`):
@@ -112,7 +112,7 @@ Exception types verified against `easel/api/exceptions.py`:
 from easel.api.exceptions import (
     CanvasAPIError,        # ✅ Base exception
     CanvasAuthError,       # ✅ 401 errors
-    CanvasNotFoundError,   # ✅ 404 errors  
+    CanvasNotFoundError,   # ✅ 404 errors
     CanvasRateLimitError,  # ✅ 429 errors
     CanvasServerError,     # ✅ 5xx errors
     CanvasTimeoutError,    # ✅ Timeout errors

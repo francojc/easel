@@ -76,7 +76,7 @@ This milestone transforms Easel from a simple query tool into a powerful data ex
 - [ ] Implement `easel assignment submissions export <assignment-id>` to export submission metadata (e.g., student, timestamp, grade, comments) to CSV/JSON.
 - [ ] Implement `easel assignment rubric export <assignment-id>` to export assignment rubric criteria and ratings to JSON or CSV.
 - [ ] Implement `easel page export <course-id> <page-slug>` to export a Canvas Page's content to HTML or Markdown.
-- [ ] Add support for exporting all pages in a course with `easel page export --all <course-id>`. 
+- [ ] Add support for exporting all pages in a course with `easel page export --all <course-id>`.
 
 ### Data Streaming & Memory Management
 

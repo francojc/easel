@@ -469,7 +469,7 @@ easel course show 99999 2>/dev/null || echo "Course not found or access denied"
    ```bash
    # Validate setup
    easel doctor --verbose
-   
+
    # Reconfigure if needed
    easel config init
    ```
@@ -478,7 +478,7 @@ easel course show 99999 2>/dev/null || echo "Course not found or access denied"
    ```bash
    # Check user permissions
    easel user profile
-   
+
    # Verify course access
    easel course list
    ```

@@ -73,17 +73,20 @@ def profile(ctx: EaselContext, columns: tuple[str, ...]) -> None:
 
 @user.command()
 @click.option(
-    "-r", "--role",
+    "-r",
+    "--role",
     type=click.Choice(["student", "teacher", "ta", "observer", "designer"]),
     help="Filter courses by enrollment role",
 )
 @click.option(
-    "-S", "--state",
+    "-S",
+    "--state",
     type=click.Choice(["active", "invited", "completed"]),
     help="Filter courses by enrollment state",
 )
 @click.option(
-    "-I", "--include",
+    "-I",
+    "--include",
     help="Common values: total_students, term. Use comma-separated values for multiple items.",
 )
 @click.option(
@@ -191,7 +194,8 @@ def courses(
 @user.command()
 @click.argument("course_id", type=int)
 @click.option(
-    "-r", "--role",
+    "-r",
+    "--role",
     type=click.Choice(["student", "teacher", "ta", "observer", "designer"]),
     help="Filter users by enrollment role",
 )

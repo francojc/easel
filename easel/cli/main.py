@@ -24,18 +24,21 @@ def _version_callback(ctx: click.Context, param: click.Parameter, value: bool) -
 
 @click.group(context_settings={"allow_interspersed_args": False})
 @click.option(
-    "-C", "--config",
+    "-C",
+    "--config",
     type=click.Path(exists=True),
     help="Path to configuration file",
 )
 @click.option(
-    "-f", "--format",
+    "-f",
+    "--format",
     type=click.Choice(["table", "json", "csv", "yaml"]),
     default="table",
     help="Output format",
 )
 @click.option(
-    "-v", "--verbose",
+    "-v",
+    "--verbose",
     is_flag=True,
     help="Enable verbose output",
 )
