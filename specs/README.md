@@ -12,8 +12,8 @@ This document outlines the complete development roadmap for Easel CLI, broken do
 
 | Milestone | Goal | Duration | Priority | Status |
 |-----------|------|----------|----------|---------|
-| [01-core-infrastructure](01-core-infrastructure.md) | Establish foundational architecture and tooling | 2-3 weeks | Critical | Planned |
-| [02-read-only-commands](02-read-only-commands.md) | Implement core read-only Canvas operations | 3-4 weeks | High | Planned |
+| [01-core-infrastructure](01-core-infrastructure.md) | Establish foundational architecture and tooling | 2-3 weeks | Critical | Complete |
+| [02-read-only-commands](02-read-only-commands.md) | Implement core read-only Canvas operations | 3-4 weeks | High | Complete |
 | [03-data-export-analytics](03-data-export-analytics.md) | Add data export and analytics capabilities | 2-3 weeks | High | Planned |
 | [04-automation-features](04-automation-features.md) | Enable automation and scripting integration | 2 weeks | Medium | Planned |
 | [05-production-readiness](05-production-readiness.md) | Achieve enterprise-grade reliability | 3-4 weeks | Critical | Planned |

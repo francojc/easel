@@ -47,6 +47,9 @@ This milestone transforms Easel from a simple query tool into a powerful data ex
 - [ ] Implement content accessibility analysis
 - [ ] Add content duplication detection across courses
 - [ ] Create content link validation and health checks
+- [ ] Implement `easel page list <course-id>` to list all Canvas pages for a course, including page IDs and titles.
+- [ ] Implement `easel page show <course-id> <page-id>` to display the full content of a specified page.
+- [ ] Implement `easel page info <course-id> <page-slug>` to retrieve additional metadata about a page (e.g., last updated, author).
 
 ### Analytics Engine
 
@@ -67,6 +70,13 @@ This milestone transforms Easel from a simple query tool into a powerful data ex
 - [ ] Implement file integrity verification (checksums)
 - [ ] Add disk space monitoring and pre-download validation
 - [ ] Create download progress tracking with ETA calculation
+
+### Assignment & Content Export
+
+- [ ] Implement `easel assignment submissions export <assignment-id>` to export submission metadata (e.g., student, timestamp, grade, comments) to CSV/JSON.
+- [ ] Implement `easel assignment rubric export <assignment-id>` to export assignment rubric criteria and ratings to JSON or CSV.
+- [ ] Implement `easel page export <course-id> <page-slug>` to export a Canvas Page's content to HTML or Markdown.
+- [ ] Add support for exporting all pages in a course with `easel page export --all <course-id>`. 
 
 ### Data Streaming & Memory Management
 
@@ -134,6 +144,35 @@ easel grade analytics CS101 --export-raw --format json
 
 # Bulk export across courses
 easel grade export --all-courses --format csv --output-dir ./exports/
+```
+
+### Assignment & Content Export Commands
+
+```bash
+# Export submission metadata for a specific assignment
+easel assignment submissions export 45678 --format csv --output submissions_meta.csv
+
+# Export the rubric for a specific assignment
+easel assignment rubric export 45678 --format json --output rubric.json
+
+# Export a single Canvas Page
+easel page export CS101 "course-syllabus" --format markdown --output syllabus.md
+
+# Export all Canvas Pages for a course
+easel page export --all CS101 --format markdown --output-dir ./exports/pages/
+```
+
+### Canvas Page Discovery Commands
+
+```bash
+# List all Canvas pages for a course
+easel page list CS101
+
+# Show details for a specific page using its ID
+easel page show CS101 12345
+
+# Display metadata/info for a page using its slug
+easel page info CS101 "course-syllabus"
 ```
 
 ### Analytics Output Examples

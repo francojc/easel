@@ -91,7 +91,7 @@ easel course modules <course-id> [--include FIELD] [--format FORMAT]
 # Assignment operations  
 easel assignment list <course-id> [--include FIELD] [--format FORMAT]
 easel assignment show <course-id> <assignment-id> [--include FIELD] [--format FORMAT]
-easel assignment submissions <course-id> <assignment-id> [--status STATUS] [--include FIELD] [--format FORMAT]
+easel --format FORMAT assignment submissions <course-id> <assignment-id> [--status STATUS] [--include FIELD]
 
 # User operations
 easel user profile [--format FORMAT]
@@ -158,7 +158,9 @@ easel course list --active
 easel course show 12345 --include syllabus_body,term --format yaml
 
 # Export assignment submissions to CSV
-easel assignment submissions 12345 67890 --status graded --include user --format csv
+
+**Note:** Global options (such as `--format`/`-f`, `--verbose`/`-v`, `--config`/`-C`) must be placed immediately after `easel` and before the subcommand. Most options support both long and short flags. For example: use `-I` for `--include`, `-c` for `--columns`, `-s` for `--status`, `-f` for `--format`, etc. Example: `easel -f csv assignment submissions ...`
+easel --format csv assignment submissions 12345 67890 --status graded -I user
 
 # Get student roster for a course
 easel user roster 12345 --role student --format json

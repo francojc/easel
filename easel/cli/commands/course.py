@@ -23,7 +23,7 @@ def course() -> None:
 
 @course.command()
 @click.option(
-    "--active",
+    "-a", "--active",
     is_flag=True,
     help="Show only active courses",
 )
@@ -190,7 +190,7 @@ def show(
 @course.command()
 @click.argument("course_id", type=int)
 @click.option(
-    "--include",
+    "-I", "--include",
     help="Additional data to include. Common values: items, content_details. Use comma-separated values for multiple items.",
 )
 @click.option(

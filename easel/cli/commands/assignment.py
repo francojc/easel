@@ -22,7 +22,7 @@ def assignment() -> None:
 @assignment.command()
 @click.argument("course_id", type=int)
 @click.option(
-    "--include",
+    "-I", "--include",
     help="Common values: submission, needs_grading_count. Use comma-separated values for multiple items.",
 )
 @click.option(
@@ -116,8 +116,8 @@ def list(
 @click.argument("course_id", type=int)
 @click.argument("assignment_id", type=int)
 @click.option(
-    "--include",
-    help="Common values: submission, rubric. Use comma-separated values for multiple items.",
+    "-I", "--include",
+    help="Common values: submission. Use comma-separated values for multiple items.",
 )
 @click.option(
     "--columns",
@@ -189,7 +189,7 @@ def show(
 @click.argument("course_id", type=int)
 @click.argument("assignment_id", type=int)
 @click.option(
-    "--include",
+    "-I", "--include",
     help="Common values: user, submission_history. Use comma-separated values for multiple items.",
 )
 @click.option(
@@ -198,7 +198,7 @@ def show(
     help="Display specific columns (use 'all' for all columns)",
 )
 @click.option(
-    "--status",
+    "-s", "--status",
     type=click.Choice(["submitted", "unsubmitted", "graded", "pending_review"]),
     help="Filter submissions by status",
 )

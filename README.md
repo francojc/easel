@@ -47,6 +47,8 @@ easel user profile
 
 ### Global Options
 
+**Important:** Global options (e.g., `--format`/`-f`, `--verbose`/`-v`, `--config`/`-C`) must be specified immediately after `easel` and before the subcommand. Most options support both long and short flags. For example: use `-I` for `--include`, `-c` for `--columns`, `-s` for `--status`, `-f` for `--format`, etc. Example: `easel -f csv assignment submissions ...`
+
 All commands support these global options:
 
 - `--format`: Output format (`table`, `json`, `csv`, `yaml`) - default: `table`
@@ -181,7 +183,7 @@ easel assignment submissions 12345 67890 --status submitted
 easel assignment submissions 12345 67890 --include user
 
 # Export graded submissions to CSV
-easel assignment submissions 12345 67890 --status graded --format csv
+easel --format csv assignment submissions 12345 67890 --status graded
 ```
 
 ### User Commands
@@ -341,10 +343,10 @@ easel course show 12345 --include syllabus_body,term --format yaml > course_summ
 
 ```bash
 # Check submissions that need grading
-easel assignment submissions 12345 67890 --status submitted --format table
+easel --format table assignment submissions 12345 67890 --status submitted
 
 # Export graded submissions for record keeping
-easel assignment submissions 12345 67890 --status graded --include user --format csv > graded_submissions.csv
+easel --format csv assignment submissions 12345 67890 --status graded --include user > graded_submissions.csv
 ```
 
 ## Troubleshooting
