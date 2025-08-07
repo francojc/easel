@@ -72,7 +72,7 @@ easel course list --active
 easel course list --include total_students
 
 # Output as JSON
-easel course list --format json
+easel --format json course list 
 ```
 
 **Example Output (Table):**
@@ -110,7 +110,7 @@ easel course show 12345
 easel course show 12345 --include syllabus_body,term
 
 # Output as YAML for readability
-easel course show 12345 --format yaml
+easel --format yaml course show 12345 
 ```
 
 #### `easel course modules <course-id>`
@@ -125,7 +125,7 @@ easel course modules 12345
 easel course modules 12345 --include items
 
 # Export to CSV
-easel course modules 12345 --format csv
+easel --format csv course modules 12345 
 ```
 
 ### Assignment Commands
@@ -317,13 +317,13 @@ export CANVAS_API_TOKEN="your_token_here"
 
 ```bash
 # Export course enrollments for analysis
-easel course list --include total_students --format csv > enrollment_data.csv
+easel --format csv  course list --include total_students > enrollment_data.csv
 
 # Get assignment submission statistics
-easel assignment list 12345 --include needs_grading_count --format json | jq '.[] | {name, needs_grading_count}'
+easel --format json assignment list 12345 --include needs_grading_count | jq '.[] | {name, needs_grading_count}'
 
 # Export student roster for attendance tracking
-easel user roster 12345 --role student --format csv > class_roster.csv
+easel --format csv user roster 12345 --role student  > class_roster.csv
 ```
 
 ### Course Management
@@ -332,11 +332,11 @@ easel user roster 12345 --role student --format csv > class_roster.csv
 # Check assignment due dates across courses
 for course_id in $(easel course list --format json | jq -r '.[].id'); do
   echo "Course $course_id assignments:"
-  easel assignment list $course_id --format table
+  easel --format table assignment list $course_id 
 done
 
 # Generate course summary report
-easel course show 12345 --include syllabus_body,term --format yaml > course_summary.yaml
+easel --format yaml course show 12345 --include syllabus_body,term > course_summary.yaml
 ```
 
 ### Grading Workflows
