@@ -4,14 +4,17 @@ A powerful Python CLI tool for Canvas LMS API access, providing read-only operat
 
 ## Features
 
-### Milestone 2: Read-Only Commands
+### Milestone 3: Analytics, Bulk Download, Grade Export
 
-Easel provides comprehensive read-only access to Canvas LMS data with:
+Easel provides comprehensive data access and workflow support for Canvas LMS:
 
-- **Course Operations**: List, show details, and explore course modules
-- **Assignment Operations**: Browse assignments and review submissions
-- **User Operations**: View profiles, course enrollments, and rosters
-- **Multiple Output Formats**: Table, JSON, CSV, and YAML support
+- **Course Operations**: List, show details, explore course modules
+- **Assignment Operations**: Browse assignments, review submissions
+- **User Operations**: View profiles, course enrollments, rosters
+- **Analytics**: CLI analytics and reporting for Canvas data
+- **Bulk Download**: Download artifacts and course content in bulk
+- **Grade Export**: Export assignment grades in multiple formats
+- **Multiple Output Formats**: Table, JSON, CSV, YAML support
 - **Transparent Pagination**: Automatically handles large datasets
 - **Robust Error Handling**: Clear, actionable error messages
 
@@ -25,7 +28,7 @@ pip install easel
 
 ```bash
 # Initialize configuration with Canvas credentials
-easel config init
+easel init
 
 # Validate your setup and connection
 easel doctor
@@ -49,11 +52,183 @@ easel user profile
 
 **Important:** Global options (e.g., `--format`/`-f`, `--verbose`/`-v`, `--config`/`-C`) must be specified immediately after `easel` and before the subcommand. Most options support both long and short flags. For example: use `-I` for `--include`, `-c` for `--columns`, `-s` for `--status`, `-f` for `--format`, etc. Example: `easel -f csv assignment submissions ...`
 
+**Note:** Not all subcommands support `--format` or `--include`. See command-specific help (`easel <subcommand> --help`) for details and supported options.
+
 All commands support these global options:
 
 - `--format`: Output format (`table`, `json`, `csv`, `yaml`) - default: `table`
 - `--verbose`: Enable verbose output for debugging
 - `--config`: Path to custom configuration file
+
+### Grade Management Commands
+
+#### `easel grade export <course-id>`
+
+Export grades for a course with multiple output formats and filtering options.
+
+```bash
+# Export all grades to CSV (Excel-compatible)
+easel grade export 12345 --format csv --output grades.csv
+
+# Export grades filtered by assignment group
+# You can now filter by assignment group name (case-insensitive substring match):
+easel grade export 12345 --assignment-group "Homework" --format csv
+
+# Export all grades to CSV (Excel-compatible)
+easel grade export 12345 --format csv
+
+# Export specific columns only
+# NOTE: --include-columns is currently broken (known bug)
+# easel grade export 12345 --include-columns "student_name,assignment_name,score" (not supported)
+easel grade export 12345 --format csv
+```
+
+#### `easel grade analytics <course-id>`
+
+Generate comprehensive grade analytics and insights.
+
+```bash
+# Basic grade analytics
+easel grade analytics 12345
+
+# Export raw analytics data
+easel grade analytics 12345 --export-raw --format json
+```
+
+**Example Analytics Output:**
+```
+Course: CS101 - Introduction to Python
+
+Grade Statistics:
+  Class Average: 82.3%
+  Class Median: 81.5%
+  Standard Deviation: 12.8
+
+Grade Distribution:
+  A (90-100%): 12 students (26.7%)
+  B (80-89%): 18 students (40.0%)
+  C (70-79%): 10 students (22.2%)
+  D (60-69%): 3 students (6.7%)
+  F (0-59%): 2 students (4.4%)
+
+Most Difficult Assignment: Final Project (avg: 68.2%)
+Easiest Assignment: Quiz 3 (avg: 91.5%)
+
+Student Insights:
+  At-Risk Students: 5 (grades below 70%)
+  Improving Students: 8 (showing upward trend)
+```
+
+### Canvas Page Management Commands
+
+#### `easel page list <course-id>`
+
+List all Canvas pages for a course.
+
+```bash
+# List all pages
+easel page list 12345
+
+# List with specific columns
+easel page list 12345 --include-columns "title,published,updated_at"
+
+# Export to CSV
+easel page list 12345 --format csv --output pages.csv
+```
+
+#### `easel page show <course-id> <page-id>`
+
+Display full content of a specific page by ID.
+
+```bash
+# Show page content
+easel page show 12345 67890
+
+# Output as JSON
+easel page show 12345 67890 --format json
+```
+
+#### `easel page info <course-id> <page-slug>`
+
+Get metadata for a page using its URL slug.
+
+```bash
+# Get page metadata
+easel page info 12345 "course-syllabus"
+
+# Export metadata as YAML
+easel page info 12345 "course-syllabus" --format yaml
+```
+
+#### `easel page export <course-id> <page-slug>`
+
+Export page content to HTML or Markdown.
+
+```bash
+# Export single page to Markdown
+easel page export 12345 "course-syllabus" --format markdown --output syllabus.md
+
+# Export all pages in a course
+easel page export 12345 --all --format html --output-dir ./exports/pages/
+```
+
+### Content Discovery Commands
+
+#### `easel content list <course-id>`
+
+Create comprehensive content inventory for a course.
+
+```bash
+# List all content types
+# NOTE: easel content list may return HTTP 404 for some courses (known bug)
+easel content list 12345
+
+# Filter by content type
+# NOTE: easel content list may return HTTP 404 for some courses (known bug)
+easel content list 12345 --content-type files
+
+# Show only published content
+# NOTE: easel content list may return HTTP 404 for some courses (known bug)
+easel content list 12345 --published-only
+
+# Filter by module
+# NOTE: easel content list may return HTTP 404 for some courses (known bug)
+easel content list 12345 --module-filter "Week 1"
+```
+
+#### `easel content analytics <course-id>`
+
+Generate content usage statistics and accessibility analysis.
+
+```bash
+# Basic content analytics
+easel content analytics 12345
+
+# Include detailed file analysis
+easel content analytics 12345 --include-files --format json
+```
+
+**Example Content Analytics Output:**
+```
+Course: CS101 - Introduction to Python
+
+Content Summary:
+  Files: 245 (1.2 GB)
+  Pages: 15
+  Assignments: 12
+  Discussions: 8
+  Modules: 16
+
+File Type Distribution:
+  application/pdf: 89 files (456 MB)
+  image/png: 67 files (234 MB)
+  text/plain: 45 files (12 MB)
+
+Accessibility Analysis:
+  Large Files (>10MB): 5 (89 MB)
+  Empty Pages: 2
+  Empty Assignments: 0
+```
 
 ### Course Commands
 
@@ -72,7 +247,7 @@ easel course list --active
 easel course list --include total_students
 
 # Output as JSON
-easel --format json course list 
+easel --format json course list
 ```
 
 **Example Output (Table):**
@@ -110,7 +285,7 @@ easel course show 12345
 easel course show 12345 --include syllabus_body,term
 
 # Output as YAML for readability
-easel --format yaml course show 12345 
+easel --format yaml course show 12345
 ```
 
 #### `easel course modules <course-id>`
@@ -125,7 +300,7 @@ easel course modules 12345
 easel course modules 12345 --include items
 
 # Export to CSV
-easel --format csv course modules 12345 
+easel --format csv course modules 12345
 ```
 
 ### Assignment Commands
@@ -197,7 +372,9 @@ Show current user profile information.
 easel user profile
 
 # Output as JSON
-easel user profile --format json
+# NOTE: --format is not supported for user profile
+# easel user profile --format json (not supported)
+easel user profile
 ```
 
 **Example Output (Table):**
@@ -240,10 +417,17 @@ easel user roster 12345
 easel user roster 12345 --role student
 
 # Include enrollment details
-easel user roster 12345 --include enrollments
+# NOTE: --include is not supported for user roster (known bug)
+# easel user roster 12345 --include enrollments (not supported)
+easel user roster 12345
 
 # Export student list to CSV
-easel user roster 12345 --role student --format csv
+# You can use --format for CSV, JSON, YAML, or table output:
+easel --format csv user roster 12345 --role student
+
+easel --format json user roster 12345 --role teacher
+
+easel user roster 12345 --role student
 ```
 
 ## Output Formats
@@ -286,7 +470,7 @@ easel course show 12345 --format yaml
 
 ```bash
 # Interactive setup wizard
-easel config init
+easel init
 ```
 
 ### Manual Configuration
@@ -332,7 +516,7 @@ easel --format csv user roster 12345 --role student  > class_roster.csv
 # Check assignment due dates across courses
 for course_id in $(easel course list --format json | jq -r '.[].id'); do
   echo "Course $course_id assignments:"
-  easel --format table assignment list $course_id 
+  easel --format table assignment list $course_id
 done
 
 # Generate course summary report
@@ -359,7 +543,7 @@ easel --format csv assignment submissions 12345 67890 --status graded --include 
    easel doctor
 
    # Re-run setup if needed
-   easel config init
+   easel init
    ```
 
 2. **Rate Limiting**

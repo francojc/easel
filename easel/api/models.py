@@ -10,7 +10,7 @@ class User(BaseModel):
     """Canvas user model."""
 
     id: int
-    name: str
+    name: Optional[str] = None
     email: Optional[str] = None
     login_id: Optional[str] = None
     sis_user_id: Optional[str] = None
@@ -144,6 +144,7 @@ class Discussion(BaseModel):
 class Page(BaseModel):
     """Canvas page model."""
 
+    page_id: Optional[int] = None
     url: str
     title: str
     created_at: Optional[datetime] = None
@@ -200,3 +201,5 @@ class Submission(BaseModel):
     seconds_late: Optional[int] = None
     extra_attempts: Optional[int] = None
     anonymous_id: Optional[str] = None
+    late: Optional[bool] = None
+    missing: Optional[bool] = None

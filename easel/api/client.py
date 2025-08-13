@@ -283,6 +283,28 @@ class CanvasClient:
         course_data = response.json()
         return Course(**course_data)
 
+    # Assignment group methods
+    async def get_assignment_groups(
+        self,
+        course_id: int,
+        per_page: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
+        """Get assignment groups for a course.
+
+        Args:
+            course_id: Course ID
+            per_page: Number of groups per page
+
+        Returns:
+            List of assignment group dicts
+        """
+        params: Dict[str, Any] = {"per_page": per_page or self.per_page}
+        response = await self._make_request(
+            "GET", f"courses/{course_id}/assignment_groups", params=params
+        )
+        groups_data = response.json()
+        return groups_data
+
     # Assignment methods
     async def get_assignments(
         self,
@@ -502,6 +524,65 @@ class CanvasClient:
         ]
 
         return PaginatedResponse.from_response(response, submissions)
+
+    async def get_enrollments(
+        self, course_id: int, enrollment_type: Optional[str] = None
+    ) -> List[Any]:
+        """Get enrollments for a course.
+
+        Args:
+            course_id: Course ID
+            enrollment_type: Filter by enrollment type (e.g., 'StudentEnrollment')
+
+        Returns:
+            List of enrollment objects
+        """
+        endpoint = f"courses/{course_id}/enrollments"
+        params = {"per_page": self.per_page}
+
+        if enrollment_type:
+            params["type[]"] = enrollment_type
+
+        response = await self._make_request("GET", endpoint, params=params)
+        enrollments_data = response.json()
+
+        # For now, return raw data since we don't have an Enrollment model
+        return enrollments_data
+
+    async def get_files(self, course_id: int) -> List[Any]:
+        """Get files for a course.
+
+        Args:
+            course_id: Course ID
+
+        Returns:
+            List of file objects
+        """
+        endpoint = f"courses/{course_id}/files"
+        params = {"per_page": self.per_page}
+
+        response = await self._make_request("GET", endpoint, params=params)
+        files_data = response.json()
+
+        # For now, return raw data since we don't have a File model
+        return files_data
+
+    async def get_page_by_slug(self, course_id: int, page_slug: str) -> Page:
+        """Get a specific page by its URL slug.
+
+        Args:
+            course_id: Course ID
+            page_slug: Page URL slug
+
+        Returns:
+            Page object
+        """
+        endpoint = f"/api/v1/courses/{course_id}/pages/{page_slug}"
+
+        response = await self._make_request("GET", endpoint)
+        page_data = response.json()
+
+        return Page(**page_data)
 
     async def close(self) -> None:
         """Close the HTTP client."""

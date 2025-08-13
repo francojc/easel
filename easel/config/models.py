@@ -86,3 +86,23 @@ class EaselConfig(BaseModel):
 
     # Configuration for environment variable reading
     # model_config = ConfigDict(env_prefix="EASEL_", env_nested_delimiter="__")
+
+    @property
+    def token(self) -> Optional[str]:
+        """Convenience property for Canvas API token."""
+        return self.canvas.api_token
+
+    @property
+    def base_url(self) -> str:
+        """Convenience property for Canvas base URL."""
+        return self.canvas.url
+
+    @property
+    def rate_limit(self) -> int:
+        """Convenience property for API rate limit."""
+        return self.api.rate_limit
+
+    @property
+    def timeout(self) -> int:
+        """Convenience property for API timeout."""
+        return self.api.timeout

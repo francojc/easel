@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:pypi.org)",
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(poetry:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(python:*)",
+      "Bash(pytest:*)",
+      "Bash(black:*)",
+      "Bash(flake8:*)",
+      "Bash(mypy:*)",
+      "Bash(pre-commit:*)",
+      "Bash(pip:*)",
+      "Bash(coverage:*)",
+      "Bash(safety:*)",
+      "Bash(bandit:*)",
+      "Bash(touch:*)",
+      "Bash(grep:*)",
+      "Bash(time poetry run python -m easel --help)",
+      "Bash(rm:*)"
+    ],
+    "deny": [
+      "Bash(rm:-rf)",
+      "Bash(sudo:*)",
+      "Bash(chmod:777)"
+    ]
+  }
+}

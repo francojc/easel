@@ -76,8 +76,11 @@ def cli(ctx: EaselContext, config: Optional[str], format: str, verbose: bool) ->
 from .commands import (
     assignment,
     config as config_commands,
+    content,
     course,
     doctor,
+    grade,
+    page,
     user,
     init,
 )  # noqa
@@ -85,8 +88,11 @@ from .commands import (
 # Register commands with the main CLI
 cli.add_command(assignment)
 cli.add_command(config_commands)
+cli.add_command(content)
 cli.add_command(course)
 cli.add_command(doctor)
+cli.add_command(grade)
+cli.add_command(page)
 cli.add_command(user)
 cli.add_command(init)
 

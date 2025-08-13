@@ -200,10 +200,6 @@ def courses(
     help="Filter users by enrollment role",
 )
 @click.option(
-    "--include",
-    help="Common values: enrollments, avatar_url. Use comma-separated values for multiple items.",
-)
-@click.option(
     "--columns",
     multiple=True,
     help="Display specific columns (use 'all' for all columns)",
@@ -213,7 +209,6 @@ def roster(
     ctx: EaselContext,
     course_id: int,
     role: Optional[str],
-    include: str,
     columns: tuple[str, ...],
 ) -> None:
     """List users enrolled in a specific course."""
@@ -246,15 +241,9 @@ def roster(
                     }
                     enrollment_type = [role_mapping.get(role, role)]
 
-                # Convert include string to list (handle comma-separated values)
-                include_list = (
-                    [item.strip() for item in include.split(",")] if include else None
-                )
-
                 response = await client.get_users(
                     course_id=course_id,
                     enrollment_type=enrollment_type,
-                    include=include_list,
                 )
 
                 # Collect all users by handling pagination
