@@ -1,7 +1,7 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 2 - Courses
+**Status:** Phase 2 - Courses (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Architecture
@@ -84,6 +84,19 @@ easel/
    - **Public Interface:** `app` (Typer instance), `--version`,
      `--test`, `--config`, `--format`
    - **Dependencies:** All cli/ sub-apps, cli/_context.py
+
+6. **services/courses.py**
+   - **Purpose:** Courses business logic (list, details, enrollments)
+   - **Public Interface:** `list_courses()`, `get_course()`,
+     `get_enrollments()` -- all async, accept CanvasClient
+   - **Dependencies:** core/client.py, CanvasError
+
+7. **cli/courses.py**
+   - **Purpose:** Typer sub-app for course commands
+   - **Public Interface:** `courses_app` with `list`, `show`,
+     `enrollments` commands
+   - **Dependencies:** services/courses.py, cli/_context.py,
+     cli/_async.py, cli/_output.py
 
 ### Data Model
 
@@ -213,3 +226,4 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | Two test layers (services + CLI) | Clean separation, services test logic, CLI tests integration | Single test layer (insufficient coverage), three layers with tools/ (no MCP tools in easel) |
 | 2026-02-22 | Mock httpx at transport level | Tests actual request construction, cleaner than monkeypatching | respx library (extra dep), monkeypatch (fragile) |
 | 2026-02-22 | CanvasClient class (not module functions) | Testable via DI, supports multiple configs, clean async lifecycle | Module-level functions like canvas-mcp (harder to test, global state) |
+| 2026-02-22 | AsyncMock for service tests, patch get_context for CLI tests | Clean separation: service tests mock client, CLI tests mock services. No real config needed. | Transport-level mocks for CLI tests (too deep, couples layers) |
