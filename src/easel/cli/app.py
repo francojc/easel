@@ -1,28 +1,52 @@
+"""Main Typer app and global options for easel."""
+
+from __future__ import annotations
+
+import asyncio
 from typing import Optional
 
 import typer
 
 from easel import __version__
+from easel.cli._context import EaselContext, get_context
 from easel.cli._output import OutputFormat
 
 app = typer.Typer(name="easel", help="CLI for the Canvas LMS API")
 
 
-def _version_callback(value: bool):
+def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"easel {__version__}")
         raise typer.Exit()
 
 
-def _test_callback(value: bool):
+def _test_callback(value: bool) -> None:
     if value:
-        typer.echo("Connection test not yet implemented.")
-        raise typer.Exit()
+        ctx = EaselContext()
+        try:
+            ok, msg = asyncio.run(ctx.client.test_connection())
+        except ValueError as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(1)
+        finally:
+            asyncio.run(ctx.close())
+        typer.echo(msg)
+        raise typer.Exit(0 if ok else 1)
 
 
-def _config_callback(value: bool):
+def _config_callback(value: bool) -> None:
     if value:
-        typer.echo("Config display not yet implemented.")
+        ctx = EaselContext()
+        try:
+            cfg = ctx.config
+        except ValueError as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(1)
+        token = cfg.canvas_api_token
+        masked = f"{token[:4]}...{token[-4:]}" if len(token) > 8 else "***"
+        typer.echo(f"url:     {cfg.canvas_api_url}")
+        typer.echo(f"token:   {masked}")
+        typer.echo(f"timeout: {cfg.api_timeout}s")
         raise typer.Exit()
 
 
@@ -57,11 +81,12 @@ def callback(
         is_eager=True,
         help="Show current configuration.",
     ),
-):
+) -> None:
     """Global options for easel."""
     ctx.ensure_object(dict)
     ctx.obj["format"] = OutputFormat(fmt)
+    _ = get_context(ctx.obj)  # initialize EaselContext on ctx.obj
 
 
-def main():
+def main() -> None:
     app()

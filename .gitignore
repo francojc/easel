@@ -27,3 +27,4 @@ credentials.json
 # Nix
 result
 .aider*
+.direnv/
