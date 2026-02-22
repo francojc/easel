@@ -1,7 +1,7 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 2 - Courses (COMPLETE)
+**Status:** Phase 3 - Assignments + Rubrics + Grading (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Architecture
@@ -97,6 +97,39 @@ easel/
      `enrollments` commands
    - **Dependencies:** services/courses.py, cli/_context.py,
      cli/_async.py, cli/_output.py
+
+8. **services/assignments.py**
+   - **Purpose:** Assignments business logic (list, get, create, update)
+   - **Public Interface:** `list_assignments()`, `get_assignment()`,
+     `create_assignment()`, `update_assignment()` -- all async
+   - **Dependencies:** core/client.py, CanvasError
+   - **Notes:** Includes `_strip_html()` helper for description cleanup
+
+9. **services/rubrics.py**
+   - **Purpose:** Rubrics business logic and form data encoding
+   - **Public Interface:** `list_rubrics()`, `get_rubric()`,
+     `build_rubric_assessment_form_data()` (sync helper)
+   - **Dependencies:** core/client.py, CanvasError
+   - **Notes:** `build_rubric_assessment_form_data()` handles Canvas
+     bracket-notation encoding for rubric assessments
+
+10. **services/grading.py**
+    - **Purpose:** Submissions and grade posting
+    - **Public Interface:** `list_submissions()`, `get_submission()`,
+      `submit_grade()`, `submit_rubric_grade()` -- all async
+    - **Dependencies:** core/client.py, services/rubrics.py, CanvasError
+
+11. **cli/assignments.py**
+    - **Purpose:** Typer sub-app for assignment and rubric commands
+    - **Public Interface:** `assignments_app` with `list`, `show`,
+      `create`, `update`, `rubrics`, `rubric` commands
+    - **Dependencies:** services/assignments.py, services/rubrics.py
+
+12. **cli/grading.py**
+    - **Purpose:** Typer sub-app for grading commands
+    - **Public Interface:** `grading_app` with `submissions`, `show`,
+      `submit`, `submit-rubric` commands
+    - **Dependencies:** services/grading.py
 
 ### Data Model
 
@@ -227,3 +260,5 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | Mock httpx at transport level | Tests actual request construction, cleaner than monkeypatching | respx library (extra dep), monkeypatch (fragile) |
 | 2026-02-22 | CanvasClient class (not module functions) | Testable via DI, supports multiple configs, clean async lifecycle | Module-level functions like canvas-mcp (harder to test, global state) |
 | 2026-02-22 | AsyncMock for service tests, patch get_context for CLI tests | Clean separation: service tests mock client, CLI tests mock services. No real config needed. | Transport-level mocks for CLI tests (too deep, couples layers) |
+| 2026-02-22 | Rubric bracket-notation as a sync helper function | Reusable by grading service and future assessment workflow. Isolates Canvas encoding quirk. | Inline in grading service (harder to test), pydantic model (overkill) |
+| 2026-02-22 | HTML stripping in assignments service | Canvas returns HTML descriptions; stripping at service level keeps CLI clean | Strip in CLI layer (duplicates logic), use a library like beautifulsoup (heavy dep for simple case) |

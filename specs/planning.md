@@ -93,12 +93,15 @@
 - [x] Service tests with mocked client
 - [x] CLI tests with mocked services
 
-### Phase 3: Assignments + Rubrics + Grading
+### Phase 3: Assignments + Rubrics + Grading (COMPLETE)
 
-- [ ] Assignments service and CLI (list, details, create, update)
-- [ ] Rubrics service and CLI (list, details, bracket-notation helper)
-- [ ] Grading service and CLI (submissions, submit-grades)
-- [ ] Tests for each category
+- [x] Assignments service (list, get, create, update) with HTML stripping
+- [x] Assignments CLI (list, show, create, update, rubrics, rubric)
+- [x] Rubrics service (list, get, bracket-notation form data builder)
+- [x] Grading service (submissions, get, submit grade, submit rubric grade)
+- [x] Grading CLI (submissions, show, submit, submit-rubric)
+- [x] Tests: 14 assignments svc, 8 rubrics svc, 10 grading svc,
+  13 assignments CLI, 10 grading CLI (99 total)
 
 ### Phase 4: Assessment Workflow
 

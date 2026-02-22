@@ -1,16 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 2 - Courses (COMPLETE)
+**Status:** Phase 3 - Assignments + Rubrics + Grading (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 2 - Courses (COMPLETE)
+- **Current Phase:** Phase 3 - Assignments + Rubrics + Grading (COMPLETE)
 - **Phase Progress:** 100% complete
-- **Overall Project Progress:** ~45% complete (Phases 0-2 done)
+- **Overall Project Progress:** ~60% complete (Phases 0-3 done)
 
 ### Recent Accomplishments
 
@@ -24,10 +24,16 @@
   get_enrollments), courses CLI sub-app (list, show, enrollments),
   service tests mocking CanvasClient, CLI tests mocking services,
   44 tests passing, ruff clean
+- Phase 3 complete: Assignments service (list, get, create, update),
+  rubrics service (list, get, bracket-notation form builder), grading
+  service (submissions, get, submit grade, submit rubric grade),
+  assignments CLI (list, show, create, update, rubrics, rubric),
+  grading CLI (submissions, show, submit, submit-rubric),
+  99 tests passing, ruff clean
 
 ### Active Work
 
-(none -- Phase 2 complete, Phase 3 not started)
+(none -- Phase 3 complete, Phase 4 not started)
 
 ## Milestone Tracking
 
@@ -36,10 +42,10 @@
 - [x] Phase 0: Scaffolding complete -- `easel --help` works
 - [x] Phase 1: Core layer -- config, client, cache tested (27 tests)
 - [x] Phase 2: Courses -- service + CLI + tests (44 tests total)
+- [x] Phase 3: Assignments + rubrics + grading (99 tests total)
 
 ### Upcoming Milestones
 
-- [ ] Phase 3: Assignments + rubrics + grading
 - [ ] Phase 4: Assessment workflow
 
 ### At-Risk Milestones
@@ -55,10 +61,10 @@
 
 ### Test Results
 
-- **Unit Tests:** 44 passing
+- **Unit Tests:** 99 passing
   - core: config 4, client 11, cache 9
-  - services: courses 9
-  - cli: courses 8
+  - services: courses 9, assignments 14, rubrics 8, grading 10
+  - cli: courses 8, assignments 13, grading 10
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -85,6 +91,12 @@
 - [x] --test and --config callbacks (real implementations)
 - [x] Courses service: list_courses, get_course, get_enrollments
 - [x] Courses CLI: `easel courses list`, `show`, `enrollments`
+- [x] Assignments service: list, get, create, update (with HTML stripping)
+- [x] Rubrics service: list, get, bracket-notation form data builder
+- [x] Grading service: list submissions, get submission, submit grade,
+  submit rubric grade
+- [x] Assignments CLI: `easel assignments list|show|create|update|rubrics|rubric`
+- [x] Grading CLI: `easel grading submissions|show|submit|submit-rubric`
 
 ### In Progress
 
@@ -92,7 +104,6 @@
 
 ### Planned
 
-- [ ] Assignments + rubrics + grading - Phase 3
 - [ ] Assessment workflow - Phase 4
 - [ ] Remaining entities (student, modules, etc.) - Phase 5
 - [ ] Polish (shell completion, docs) - Phase 6
@@ -153,17 +164,15 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Implement assignments service (list, details, create, update)
-- [ ] Implement assignments CLI sub-app
-- [ ] Implement rubrics service (list, details, bracket-notation helper)
-- [ ] Implement grading service (submissions, submit-grades)
-- [ ] Tests for each Phase 3 category
+- [ ] Design assessment file format (JSON schema for rubric grading)
+- [ ] Implement assessment service (load, validate, update, submit)
+- [ ] Implement assessment CLI commands (init, review, approve, submit)
 - [ ] Live smoke test against Canvas API
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] Assessment workflow (Phase 4)
-- [ ] Remaining entities (Phase 5)
+- [ ] Remaining entities -- students, modules, discussions (Phase 5)
+- [ ] Shell completion and documentation (Phase 6)
 
 ### Decisions Needed
 
@@ -175,8 +184,9 @@
 
 - **Version:** 0.1.0
 - **Target Date:** TBD
-- **Included Features:** Scaffolding + core + courses (Phases 0-2)
-- **Release Blockers:** Live smoke test, Phase 3 nice to have
+- **Included Features:** Scaffolding + core + courses + assignments +
+  rubrics + grading (Phases 0-3)
+- **Release Blockers:** Live smoke test, assessment workflow (Phase 4)
 
 ### Release History
 
