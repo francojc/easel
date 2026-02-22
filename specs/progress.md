@@ -1,38 +1,41 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 0 - Scaffolding
+**Status:** Phase 1 - Core Layer
 **Last Updated:** 2026-02-22
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 0 - Scaffolding
+- **Current Phase:** Phase 1 - Core Layer
 - **Phase Progress:** 0% complete
-- **Overall Project Progress:** 0% complete
+- **Overall Project Progress:** ~15% complete (Phase 0 done)
 
 ### Recent Accomplishments
 
 - README.md committed with architecture and CLI usage docs
 - plan.md committed with full 7-phase implementation plan
 - Project scaffolding (CLAUDE.md, specs/, flake.nix) created
+- Phase 0 complete: pyproject.toml, src/easel/ package structure,
+  Typer app skeleton with --version/--format/--test/--config,
+  async bridge decorator, output formatting (table/json/plain),
+  CanvasError exception, smoke tests (3 passing), ruff clean
 
 ### Active Work
 
-- [ ] Create pyproject.toml with hatchling build and deps
-- [ ] Create src/easel/ directory structure
-- [ ] Implement Typer app skeleton and verify `easel --help`
+- [ ] Implement Config (pydantic-settings, env var loading)
+- [ ] Implement CanvasClient (httpx, pagination, retry on 429)
+- [ ] Implement CourseCache (bidirectional code/ID mapping)
 
 ## Milestone Tracking
 
 ### Completed Milestones
 
-(none yet)
+- [x] Phase 0: Scaffolding complete -- `easel --help` works
 
 ### Upcoming Milestones
 
-- [ ] Phase 0: Scaffolding complete -- `easel --help` works
 - [ ] Phase 1: Core layer -- config, client, cache tested
 - [ ] Phase 2: Courses -- first end-to-end service + CLI + tests
 
@@ -44,15 +47,14 @@
 
 ### Build Health
 
-- **Last Successful Build:** n/a (project not yet buildable)
-- **Build Time:** n/a
-- **Build Warnings:** n/a
+- **Last Successful Build:** 2026-02-22 (`uv sync` + `uv run easel --help`)
+- **Build Warnings:** None
 
 ### Test Results
 
-- **Unit Tests:** n/a
+- **Smoke Tests:** 3 passing (version import, CLI --version, CLI --help)
 - **Integration Tests:** n/a
-- **Test Coverage:** n/a
+- **Test Coverage:** Not yet measured
 
 ### Open Defects
 
@@ -65,12 +67,14 @@
 
 ### Completed Features
 
-(none yet)
+- [x] Typer CLI app with global options (--version, --format, --test, --config)
+- [x] Async bridge decorator (`_async.py`)
+- [x] Output formatting: table, json, plain (`_output.py`)
+- [x] CanvasError exception class
 
 ### In Progress
 
-- [ ] Project scaffolding (Phase 0) - 0% complete
-  - Next: create pyproject.toml and src/ structure
+- [ ] Core layer (config, client, cache) - Phase 1, 0% complete
 
 ### Planned
 
@@ -128,15 +132,16 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Create pyproject.toml with entry point and dependencies
-- [ ] Create src/easel/ package with core/, services/, cli/ subdirs
-- [ ] Implement Typer app skeleton (app.py, _async.py, _output.py)
-- [ ] Verify `uv sync && uv run easel --help`
+- [ ] Implement Config class with pydantic-settings
+- [ ] Implement CanvasClient with httpx (pagination, retry on 429)
+- [ ] Implement CourseCache (bidirectional code/ID mapping)
+- [ ] Create CLI context for lazy client/cache/config init
+- [ ] Unit tests for all core modules
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] Core layer complete with unit tests (Phase 1)
-- [ ] Courses end-to-end working (Phase 2)
+- [ ] Courses service + CLI commands end-to-end (Phase 2)
+- [ ] Assignments, rubrics, grading services (Phase 3)
 
 ### Decisions Needed
 

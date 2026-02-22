@@ -1,7 +1,7 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** Planning
+**Status:** In Progress
 **Last Updated:** 2026-02-22
 
 ## Project Overview
@@ -70,13 +70,13 @@
 
 ## Timeline and Milestones
 
-### Phase 0: Scaffolding
+### Phase 0: Scaffolding (COMPLETE)
 
-- [ ] Create pyproject.toml with hatchling build and entry point
-- [ ] Set up src/easel/ directory structure (core, services, cli)
-- [ ] Create Typer app skeleton with --version, --test, --config
-- [ ] Implement async bridging and output formatting
-- [ ] Verify `uv sync && uv run easel --help`
+- [x] Create pyproject.toml with hatchling build and entry point
+- [x] Set up src/easel/ directory structure (core, services, cli)
+- [x] Create Typer app skeleton with --version, --test, --config
+- [x] Implement async bridging and output formatting
+- [x] Verify `uv sync && uv run easel --help`
 
 ### Phase 1: Core Layer
 
