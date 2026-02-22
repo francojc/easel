@@ -1,7 +1,7 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 1 - Core Layer
+**Status:** Phase 2 - Courses
 **Last Updated:** 2026-02-22
 
 ## Architecture
@@ -62,8 +62,8 @@ easel/
 2. **core/config.py (Config)**
    - **Purpose:** Load and validate Canvas API configuration
    - **Public Interface:** `Config` (pydantic BaseSettings),
-     `validate()` method
-   - **Dependencies:** pydantic-settings, python-dotenv
+     `validate_config()` method
+   - **Dependencies:** pydantic-settings
 
 3. **core/cache.py (CourseCache)**
    - **Purpose:** Bidirectional mapping between course codes and IDs
@@ -211,3 +211,5 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | Extract from canvas-mcp as reference only | Keeps easel independent, avoids coupling to MCP framework | Import canvas-mcp as library (rejected: too much MCP baggage) |
 | 2026-02-22 | Use hatchling build backend | Lightweight, supports src layout natively | setuptools (heavier), flit (less flexible) |
 | 2026-02-22 | Two test layers (services + CLI) | Clean separation, services test logic, CLI tests integration | Single test layer (insufficient coverage), three layers with tools/ (no MCP tools in easel) |
+| 2026-02-22 | Mock httpx at transport level | Tests actual request construction, cleaner than monkeypatching | respx library (extra dep), monkeypatch (fragile) |
+| 2026-02-22 | CanvasClient class (not module functions) | Testable via DI, supports multiple configs, clean async lifecycle | Module-level functions like canvas-mcp (harder to test, global state) |

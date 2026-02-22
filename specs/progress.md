@@ -1,43 +1,44 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 1 - Core Layer
+**Status:** Phase 2 - Courses
 **Last Updated:** 2026-02-22
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 1 - Core Layer
+- **Current Phase:** Phase 2 - Courses (Proving Ground)
 - **Phase Progress:** 0% complete
-- **Overall Project Progress:** ~15% complete (Phase 0 done)
+- **Overall Project Progress:** ~30% complete (Phases 0-1 done)
 
 ### Recent Accomplishments
 
-- README.md committed with architecture and CLI usage docs
-- plan.md committed with full 7-phase implementation plan
-- Project scaffolding (CLAUDE.md, specs/, flake.nix) created
 - Phase 0 complete: pyproject.toml, src/easel/ package structure,
-  Typer app skeleton with --version/--format/--test/--config,
-  async bridge decorator, output formatting (table/json/plain),
-  CanvasError exception, smoke tests (3 passing), ruff clean
+  Typer app skeleton, async bridge, output formatting, CanvasError
+- Phase 1 complete: Config (pydantic-settings), CanvasClient (httpx
+  async with pagination and 429 retry), CourseCache (bidirectional
+  code/ID mapping), EaselContext (lazy init), --test and --config
+  callbacks wired to real implementations, 27 tests passing, ruff clean
 
 ### Active Work
 
-- [ ] Implement Config (pydantic-settings, env var loading)
-- [ ] Implement CanvasClient (httpx, pagination, retry on 429)
-- [ ] Implement CourseCache (bidirectional code/ID mapping)
+- [ ] Implement courses service (list, details, enrollments)
+- [ ] Implement courses CLI sub-commands
+- [ ] Service tests with mocked CanvasClient
+- [ ] CLI tests with mocked services
 
 ## Milestone Tracking
 
 ### Completed Milestones
 
 - [x] Phase 0: Scaffolding complete -- `easel --help` works
+- [x] Phase 1: Core layer -- config, client, cache tested (27 tests)
 
 ### Upcoming Milestones
 
-- [ ] Phase 1: Core layer -- config, client, cache tested
 - [ ] Phase 2: Courses -- first end-to-end service + CLI + tests
+- [ ] Phase 3: Assignments + rubrics + grading
 
 ### At-Risk Milestones
 
@@ -52,7 +53,7 @@
 
 ### Test Results
 
-- **Smoke Tests:** 3 passing (version import, CLI --version, CLI --help)
+- **Unit Tests:** 27 passing (config: 4, client: 11, cache: 9, smoke: 3)
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
 
@@ -71,14 +72,18 @@
 - [x] Async bridge decorator (`_async.py`)
 - [x] Output formatting: table, json, plain (`_output.py`)
 - [x] CanvasError exception class
+- [x] Config via pydantic-settings (env vars, validation)
+- [x] CanvasClient (httpx async, pagination, 429 retry, form data)
+- [x] CourseCache (bidirectional code/ID mapping, smart resolution)
+- [x] EaselContext (lazy init of config, client, cache)
+- [x] --test and --config callbacks (real implementations)
 
 ### In Progress
 
-- [ ] Core layer (config, client, cache) - Phase 1, 0% complete
+- [ ] Courses service + CLI commands - Phase 2, 0% complete
 
 ### Planned
 
-- [ ] Core layer (config, client, cache) - Phase 1
 - [ ] Courses commands - Phase 2
 - [ ] Assignments + rubrics + grading - Phase 3
 - [ ] Assessment workflow - Phase 4
@@ -122,26 +127,33 @@
 
 ### Resolved Challenges
 
-(none)
+- httpx mock transport for client tests: used custom
+  `AsyncBaseTransport` subclass instead of `respx` library
+- Pagination test hung because URL string matching was fragile;
+  switched to parsing `request.url.params` dict directly
 
 ### Lessons Learned
 
-(none yet)
+- Mock httpx at transport level, not with monkeypatching — cleaner
+  and tests actual request construction
+- Parse URL params from the request object, not string matching
 
 ## Next Steps
 
 ### Immediate Actions (Next Session)
 
-- [ ] Implement Config class with pydantic-settings
-- [ ] Implement CanvasClient with httpx (pagination, retry on 429)
-- [ ] Implement CourseCache (bidirectional code/ID mapping)
-- [ ] Create CLI context for lazy client/cache/config init
-- [ ] Unit tests for all core modules
+- [ ] Implement courses service: list_courses(), get_course(),
+      get_enrollments()
+- [ ] Implement courses CLI sub-app: `easel courses list`,
+      `easel courses show <id>`, `easel courses enrollments <id>`
+- [ ] Service tests mocking CanvasClient
+- [ ] CLI tests mocking service functions with CliRunner
+- [ ] Live smoke test against Canvas API
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] Courses service + CLI commands end-to-end (Phase 2)
 - [ ] Assignments, rubrics, grading services (Phase 3)
+- [ ] Assessment workflow (Phase 4)
 
 ### Decisions Needed
 

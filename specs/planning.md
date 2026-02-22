@@ -78,13 +78,13 @@
 - [x] Implement async bridging and output formatting
 - [x] Verify `uv sync && uv run easel --help`
 
-### Phase 1: Core Layer
+### Phase 1: Core Layer (COMPLETE)
 
-- [ ] Implement Config (pydantic-settings, env var loading)
-- [ ] Implement CanvasClient (httpx, pagination, retry on 429)
-- [ ] Implement CourseCache (bidirectional code/ID mapping)
-- [ ] Create CLI context (lazy init of client, cache, config)
-- [ ] Unit tests for core modules
+- [x] Implement Config (pydantic-settings, env var loading)
+- [x] Implement CanvasClient (httpx, pagination, retry on 429)
+- [x] Implement CourseCache (bidirectional code/ID mapping)
+- [x] Create CLI context (lazy init of client, cache, config)
+- [x] Unit tests for core modules (24 tests)
 
 ### Phase 2: Courses (Proving Ground)
 
@@ -114,7 +114,7 @@
 
 ### Phase 6: Polish
 
-- [ ] Wire --test and --config callbacks
+- [x] Wire --test and --config callbacks (done in Phase 1)
 - [ ] Shell completion support
 - [ ] Final documentation pass
 
