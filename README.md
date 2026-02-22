@@ -1,37 +1,30 @@
 # `easel` - A CLI for the Canvas LMS API
 
-A standalone CLI for the Canvas LMS API, extracted from the
-[canvas-mcp](https://github.com/francojc/canvas-mcp) project. Provides
-full coverage of Canvas operations as terminal commands, usable in
-scripts, pipelines, and Claude Code skills — independent of the MCP
-server.
+A standalone CLI for the Canvas LMS API. Provides full coverage of
+Canvas operations as terminal commands, usable in scripts, pipelines,
+and Claude Code skills.
 
 ## Motivation
 
-The canvas-mcp project exposes 84 tools through FastMCP. The core
-business logic (HTTP client, config, caching, utilities) has zero MCP
-coupling, but it is currently only accessible through the MCP protocol.
-easel extracts that logic into a shared service layer and wraps it with
-a Typer CLI, so the same operations work from any terminal.
+The [canvas-mcp](https://github.com/francojc/canvas-mcp) project
+exposes Canvas LMS operations through FastMCP. The core business logic
+(HTTP client, config, caching, utilities) has zero MCP coupling. easel
+extracts that logic into a shared service layer and wraps it with a
+Typer CLI, making Canvas operations available from any terminal.
 
 ## Architecture
 
-The project follows a three-layer design:
-
 ```
-FastMCP  <- thin MCP wrappers  <- services (async business logic) <- core
-Typer CLI <- thin CLI commands  <- services (async business logic) <- core
+Typer CLI <- commands <- services (async business logic) <- core
 ```
 
-- **Core** (`core/`) -- HTTP client, config, caching, date and
-  anonymization utilities. Unchanged from canvas-mcp.
-- **Services** (`services/`) -- Shared async functions that call the
-  Canvas API and return structured data. No formatting, no framework
+- **Core** (`core/`) -- HTTP client, config, caching, and utility
+  functions.
+- **Services** (`services/`) -- Async functions that call the Canvas
+  API and return structured data. No formatting, no framework
   awareness. Raises `CanvasError` on failure.
 - **CLI** (`cli/`) -- Typer commands that call services, format output,
   and handle errors with exit codes and stderr.
-- **Tools** (`tools/`) -- MCP tool wrappers that call the same services,
-  format output as strings for LLM consumption.
 
 ## CLI usage
 
@@ -71,25 +64,27 @@ easel --config        # show current configuration
 Requires Python 3.11+.
 
 ```sh
-pip install -e .
+uv pip install -e .
 ```
 
-This installs the `easel` CLI entry point alongside the existing
-`canvas-mcp-server`.
+This installs the `easel` command.
 
 ## Development
+
+```sh
+uv sync
+```
 
 ### Running tests
 
 ```sh
-pytest tests/
+uv run pytest tests/
 ```
 
-Tests are organized in three layers:
+Tests are organized in two layers:
 
 - `tests/services/` -- service functions with mocked API calls
 - `tests/cli/` -- CLI integration tests with `typer.testing.CliRunner`
-- `tests/tools/` -- thin MCP wrapper verification
 
 ### Implementation roadmap
 

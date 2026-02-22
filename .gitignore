@@ -1,0 +1,28 @@
+# Python
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+node_modules/
+
+# Secrets and credentials
+.env
+.env.local
+*.pem
+credentials.json
+
+# OS and editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Nix
+result
