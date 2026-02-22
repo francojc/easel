@@ -66,16 +66,12 @@ class CanvasClient:
                     if isinstance(form_data, list):
                         kwargs["content"] = urlencode(form_data)
                         kwargs["headers"] = {
-                            "Content-Type": (
-                                "application/x-www-form-urlencoded"
-                            ),
+                            "Content-Type": ("application/x-www-form-urlencoded"),
                         }
                     else:
                         kwargs["data"] = form_data
 
-                response = await self._client.request(
-                    method, endpoint, **kwargs
-                )
+                response = await self._client.request(method, endpoint, **kwargs)
                 response.raise_for_status()
                 if response.status_code == 204:
                     return {}

@@ -86,12 +86,12 @@
 - [x] Create CLI context (lazy init of client, cache, config)
 - [x] Unit tests for core modules (24 tests)
 
-### Phase 2: Courses (Proving Ground)
+### Phase 2: Courses (Proving Ground) (COMPLETE)
 
-- [ ] Implement courses service (list, details, enrollments)
-- [ ] Implement courses CLI commands
-- [ ] Service tests with mocked client
-- [ ] CLI tests with mocked services
+- [x] Implement courses service (list, details, enrollments)
+- [x] Implement courses CLI commands
+- [x] Service tests with mocked client
+- [x] CLI tests with mocked services
 
 ### Phase 3: Assignments + Rubrics + Grading
 

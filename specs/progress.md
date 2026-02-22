@@ -1,16 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 2 - Courses
+**Status:** Phase 2 - Courses (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 2 - Courses (Proving Ground)
-- **Phase Progress:** 0% complete
-- **Overall Project Progress:** ~30% complete (Phases 0-1 done)
+- **Current Phase:** Phase 2 - Courses (COMPLETE)
+- **Phase Progress:** 100% complete
+- **Overall Project Progress:** ~45% complete (Phases 0-2 done)
 
 ### Recent Accomplishments
 
@@ -20,13 +20,14 @@
   async with pagination and 429 retry), CourseCache (bidirectional
   code/ID mapping), EaselContext (lazy init), --test and --config
   callbacks wired to real implementations, 27 tests passing, ruff clean
+- Phase 2 complete: Courses service (list_courses, get_course,
+  get_enrollments), courses CLI sub-app (list, show, enrollments),
+  service tests mocking CanvasClient, CLI tests mocking services,
+  44 tests passing, ruff clean
 
 ### Active Work
 
-- [ ] Implement courses service (list, details, enrollments)
-- [ ] Implement courses CLI sub-commands
-- [ ] Service tests with mocked CanvasClient
-- [ ] CLI tests with mocked services
+(none -- Phase 2 complete, Phase 3 not started)
 
 ## Milestone Tracking
 
@@ -34,11 +35,12 @@
 
 - [x] Phase 0: Scaffolding complete -- `easel --help` works
 - [x] Phase 1: Core layer -- config, client, cache tested (27 tests)
+- [x] Phase 2: Courses -- service + CLI + tests (44 tests total)
 
 ### Upcoming Milestones
 
-- [ ] Phase 2: Courses -- first end-to-end service + CLI + tests
 - [ ] Phase 3: Assignments + rubrics + grading
+- [ ] Phase 4: Assessment workflow
 
 ### At-Risk Milestones
 
@@ -53,7 +55,11 @@
 
 ### Test Results
 
-- **Unit Tests:** 27 passing (config: 4, client: 11, cache: 9, smoke: 3)
+- **Unit Tests:** 44 passing
+  - core: config 4, client 11, cache 9
+  - services: courses 9
+  - cli: courses 8
+  - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
 
@@ -77,14 +83,15 @@
 - [x] CourseCache (bidirectional code/ID mapping, smart resolution)
 - [x] EaselContext (lazy init of config, client, cache)
 - [x] --test and --config callbacks (real implementations)
+- [x] Courses service: list_courses, get_course, get_enrollments
+- [x] Courses CLI: `easel courses list`, `show`, `enrollments`
 
 ### In Progress
 
-- [ ] Courses service + CLI commands - Phase 2, 0% complete
+(none)
 
 ### Planned
 
-- [ ] Courses commands - Phase 2
 - [ ] Assignments + rubrics + grading - Phase 3
 - [ ] Assessment workflow - Phase 4
 - [ ] Remaining entities (student, modules, etc.) - Phase 5
@@ -134,26 +141,29 @@
 
 ### Lessons Learned
 
-- Mock httpx at transport level, not with monkeypatching — cleaner
+- Mock httpx at transport level, not with monkeypatching -- cleaner
   and tests actual request construction
 - Parse URL params from the request object, not string matching
+- For CLI tests, mock at the service function level and patch
+  get_context to avoid needing real config/credentials
+- AsyncMock works well for service functions called from
+  async_command-bridged CLI commands
 
 ## Next Steps
 
 ### Immediate Actions (Next Session)
 
-- [ ] Implement courses service: list_courses(), get_course(),
-      get_enrollments()
-- [ ] Implement courses CLI sub-app: `easel courses list`,
-      `easel courses show <id>`, `easel courses enrollments <id>`
-- [ ] Service tests mocking CanvasClient
-- [ ] CLI tests mocking service functions with CliRunner
+- [ ] Implement assignments service (list, details, create, update)
+- [ ] Implement assignments CLI sub-app
+- [ ] Implement rubrics service (list, details, bracket-notation helper)
+- [ ] Implement grading service (submissions, submit-grades)
+- [ ] Tests for each Phase 3 category
 - [ ] Live smoke test against Canvas API
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] Assignments, rubrics, grading services (Phase 3)
 - [ ] Assessment workflow (Phase 4)
+- [ ] Remaining entities (Phase 5)
 
 ### Decisions Needed
 
@@ -166,7 +176,7 @@
 - **Version:** 0.1.0
 - **Target Date:** TBD
 - **Included Features:** Scaffolding + core + courses (Phases 0-2)
-- **Release Blockers:** All Phase 0-2 tasks
+- **Release Blockers:** Live smoke test, Phase 3 nice to have
 
 ### Release History
 
