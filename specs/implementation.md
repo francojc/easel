@@ -232,7 +232,7 @@ uv run pytest tests/ --cov=src/easel
 
 - **Platform:** Local CLI tool (pip/uv installable)
 - **Runtime:** Python interpreter
-- **Configuration:** `CANVAS_API_KEY` and `CANVAS_API_URL` env vars
+- **Configuration:** `CANVAS_API_KEY` and `CANVAS_BASE_URL` env vars
 
 ### CI/CD Pipeline
 

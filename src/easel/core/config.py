@@ -9,7 +9,7 @@ class Config(BaseSettings):
 
     Reads from environment variables:
       CANVAS_API_KEY  — required
-      CANVAS_API_URL    — default https://canvas.illinois.edu/api/v1
+      CANVAS_BASE_URL    — default https://canvas.illinois.edu/api/v1
       API_TIMEOUT       — default 30 (seconds)
       CACHE_TTL         — default 300 (seconds)
     """
