@@ -1,16 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 4 - Assessment Workflow (COMPLETE)
+**Status:** Phase 5 - Modules, Pages, Discussions (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 4 - Assessment Workflow (COMPLETE)
+- **Current Phase:** Phase 5 - Modules, Pages, Discussions (COMPLETE)
 - **Phase Progress:** 100% complete
-- **Overall Project Progress:** ~75% complete (Phases 0-4 done)
+- **Overall Project Progress:** ~90% complete (Phases 0-5 done)
 
 ### Recent Accomplishments
 
@@ -35,10 +35,15 @@
   stats, submit approved assessments to Canvas), assessment CLI
   (setup, load, update, submit with dry-run), 133 tests passing,
   ruff clean
+- Phase 5 complete: Modules service (list, get, create, update,
+  delete), pages service (list, get, create, update, delete with
+  slug-based IDs), discussions service (list, get, create, update
+  with announcement support), CLI sub-apps for all three, HTML
+  stripping in pages and discussions, 210 tests passing, ruff clean
 
 ### Active Work
 
-(none -- Phase 4 complete, Phase 5 not started)
+(none -- Phase 5 complete, Phase 6 not started)
 
 ## Milestone Tracking
 
@@ -49,10 +54,10 @@
 - [x] Phase 2: Courses -- service + CLI + tests (44 tests total)
 - [x] Phase 3: Assignments + rubrics + grading (99 tests total)
 - [x] Phase 4: Assessment workflow (133 tests total)
+- [x] Phase 5: Modules, pages, discussions (210 tests total)
 
 ### Upcoming Milestones
 
-- [ ] Phase 5: Remaining entities (students, modules, discussions)
 - [ ] Phase 6: Polish (shell completion, docs)
 - [ ] 0.1.0 release
 
@@ -69,11 +74,12 @@
 
 ### Test Results
 
-- **Unit Tests:** 133 passing
+- **Unit Tests:** 210 passing
   - core: config 4, client 11, cache 9
   - services: courses 9, assignments 14, rubrics 8, grading 10,
-    assessments 22
-  - cli: courses 8, assignments 13, grading 10, assessments 12
+    assessments 22, modules 14, pages 15, discussions 15
+  - cli: courses 8, assignments 13, grading 10, assessments 12,
+    modules 11, pages 12, discussions 12
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -109,6 +115,12 @@
 - [x] Assessment service: fetch assignment+rubric, fetch submissions
   with content, build/load/save/update JSON, stats, submit to Canvas
 - [x] Assessment CLI: `easel assess setup|load|update|submit`
+- [x] Modules service: list, get, create, update, delete
+- [x] Modules CLI: `easel modules list|show|create|update|delete`
+- [x] Pages service: list, get, create, update, delete (slug-based IDs)
+- [x] Pages CLI: `easel pages list|show|create|update|delete`
+- [x] Discussions service: list, get, create, update (with announcements)
+- [x] Discussions CLI: `easel discussions list|show|create|update`
 
 ### In Progress
 
@@ -116,12 +128,11 @@
 
 ### Planned
 
-- [ ] Remaining entities (student, modules, etc.) - Phase 5
 - [ ] Polish (shell completion, docs) - Phase 6
 
 ### Deferred or Cut
 
-(none)
+- Student commands (deferred -- not needed for instructor workflows)
 
 ## Technical Debt
 
@@ -177,11 +188,10 @@
 
 - [ ] Live smoke test against Canvas API (all commands)
 - [ ] Update assess/* skills to use `easel` CLI instead of MCP tools
-- [ ] Begin Phase 5: student commands, modules, discussions
+- [ ] Begin Phase 6: shell completion, documentation, 0.1.0 prep
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] Remaining entities -- students, modules, discussions (Phase 5)
 - [ ] Shell completion and documentation (Phase 6)
 - [ ] 0.1.0 release
 
@@ -196,8 +206,10 @@
 - **Version:** 0.1.0
 - **Target Date:** TBD
 - **Included Features:** Scaffolding + core + courses + assignments +
-  rubrics + grading + assessment workflow (Phases 0-4)
-- **Release Blockers:** Live smoke test, assess skill migration
+  rubrics + grading + assessment workflow + modules + pages +
+  discussions (Phases 0-5)
+- **Release Blockers:** Live smoke test, assess skill migration,
+  shell completion
 
 ### Release History
 

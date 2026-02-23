@@ -1,7 +1,7 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 4 - Assessment Workflow (COMPLETE)
+**Status:** Phase 5 - Modules, Pages, Discussions (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Architecture
@@ -30,7 +30,10 @@ easel/
 │   │   ├── assignments.py
 │   │   ├── rubrics.py
 │   │   ├── grading.py
-│   │   └── assessments.py
+│   │   ├── assessments.py
+│   │   ├── modules.py
+│   │   ├── pages.py
+│   │   └── discussions.py
 │   └── cli/              # Typer commands and helpers
 │       ├── __init__.py
 │       ├── app.py        # Main Typer app, global options
@@ -39,7 +42,11 @@ easel/
 │       ├── _context.py   # Lazy init of client, cache, config
 │       ├── courses.py    # Courses sub-app
 │       ├── assignments.py
-│       └── grading.py
+│       ├── grading.py
+│       ├── assessments.py
+│       ├── modules.py
+│       ├── pages.py
+│       └── discussions.py
 ├── tests/
 │   ├── conftest.py       # Shared fixtures
 │   ├── services/         # Service tests (mock CanvasClient)
@@ -147,6 +154,50 @@ easel/
     - **Public Interface:** `assess_app` with `setup`, `load`,
       `update`, `submit` commands
     - **Dependencies:** services/assessments.py
+
+15. **services/modules.py**
+    - **Purpose:** Modules business logic (list, get, create, update, delete)
+    - **Public Interface:** `list_modules()`, `get_module()`,
+      `create_module()`, `update_module()`, `delete_module()`
+    - **Dependencies:** core/client.py, CanvasError
+    - **Notes:** `get_module()` fetches items via separate paginated
+      endpoint. Payload wrapped as `{"module": {...}}`
+
+16. **cli/modules.py**
+    - **Purpose:** Typer sub-app for module commands
+    - **Public Interface:** `modules_app` with `list`, `show`,
+      `create`, `update`, `delete` commands
+    - **Dependencies:** services/modules.py
+
+17. **services/pages.py**
+    - **Purpose:** Pages business logic (list, get, create, update, delete)
+    - **Public Interface:** `list_pages()`, `get_page()`,
+      `create_page()`, `update_page()`, `delete_page()`
+    - **Dependencies:** core/client.py, CanvasError
+    - **Notes:** Pages identified by URL slug, not numeric ID.
+      Includes `_strip_html()` for body cleanup. Payload wrapped
+      as `{"wiki_page": {...}}`
+
+18. **cli/pages.py**
+    - **Purpose:** Typer sub-app for page commands
+    - **Public Interface:** `pages_app` with `list`, `show`,
+      `create`, `update`, `delete` commands
+    - **Dependencies:** services/pages.py
+
+19. **services/discussions.py**
+    - **Purpose:** Discussions business logic (list, get, create, update)
+    - **Public Interface:** `list_discussions()`, `get_discussion()`,
+      `create_discussion()`, `update_discussion()`
+    - **Dependencies:** core/client.py, CanvasError
+    - **Notes:** Includes `_strip_html()` for message cleanup.
+      Supports `only_announcements` filter. Flat JSON payload
+      (no wrapper key)
+
+20. **cli/discussions.py**
+    - **Purpose:** Typer sub-app for discussion commands
+    - **Public Interface:** `discussions_app` with `list`, `show`,
+      `create`, `update` commands
+    - **Dependencies:** services/discussions.py
 
 ### Data Model
 
@@ -281,3 +332,6 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | HTML stripping in assignments service | Canvas returns HTML descriptions; stripping at service level keeps CLI clean | Strip in CLI layer (duplicates logic), use a library like beautifulsoup (heavy dep for simple case) |
 | 2026-02-22 | Assessment JSON as file-based interchange | Skills (assess:ai-pass, assess:refine) read/write JSON files; easel handles Canvas I/O, skills handle AI evaluation | Database (overkill), MCP tools (coupling), in-memory only (no persistence between skill invocations) |
 | 2026-02-22 | Dry-run by default for assess submit | Prevents accidental grade submission; --confirm required for actual Canvas write | Auto-submit (dangerous), interactive prompt (harder to script) |
+| 2026-02-22 | Copy _strip_html into each service that needs it | Keeps services self-contained, no cross-service imports for a trivial helper | Shared utility module (premature abstraction for 3-line function) |
+| 2026-02-22 | Pages identified by URL slug, not numeric ID | Canvas API uses slugs for page endpoints; matches API semantics | Numeric IDs (not how Canvas pages work) |
+| 2026-02-22 | Defer student commands | Instructor workflows don't need student-facing endpoints; keeps scope focused for 0.1.0 | Include student commands (scope creep, low priority) |

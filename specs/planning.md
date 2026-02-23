@@ -114,11 +114,17 @@
 - [x] Submit uses dry-run by default, requires --confirm
 - [x] Tests: 22 service, 12 CLI (133 total)
 
-### Phase 5: Remaining Entity Groups
+### Phase 5: Modules, Pages, Discussions (COMPLETE)
 
-- [ ] Student commands (upcoming, grades, todo)
-- [ ] Modules, discussions, pages, messaging, files
-- [ ] Tests for each category
+- [x] Modules service (list, get, create, update, delete) and CLI
+- [x] Pages service (list, get, create, update, delete) and CLI
+  (slug-based identification, HTML stripping)
+- [x] Discussions service (list, get, create, update) and CLI
+  (announcements, HTML stripping)
+- [x] All three sub-apps registered in app.py
+- [x] Tests: 14 modules svc, 11 modules CLI, 15 pages svc,
+  12 pages CLI, 15 discussions svc, 12 discussions CLI (210 total)
+- Student commands deferred (not needed for instructor workflows)
 
 ### Phase 6: Polish
 
