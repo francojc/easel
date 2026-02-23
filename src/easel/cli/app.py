@@ -14,6 +14,7 @@ from easel.cli._output import OutputFormat
 from easel.cli.assessments import assess_app
 from easel.cli.assignments import assignments_app
 from easel.cli.commands import commands_app
+from easel.cli.config import config_app
 from easel.cli.courses import courses_app
 from easel.cli.discussions import discussions_app
 from easel.cli.grading import grading_app
@@ -24,6 +25,7 @@ app = typer.Typer(name="easel", help="CLI for the Canvas LMS API")
 app.add_typer(assess_app)
 app.add_typer(assignments_app)
 app.add_typer(commands_app)
+app.add_typer(config_app)
 app.add_typer(courses_app)
 app.add_typer(discussions_app)
 app.add_typer(grading_app)
@@ -39,14 +41,19 @@ def _version_callback(value: bool) -> None:
 
 def _test_callback(value: bool) -> None:
     if value:
-        ctx = EaselContext()
+
+        async def _run_test() -> tuple[bool, str]:
+            ctx = EaselContext()
+            try:
+                return await ctx.client.test_connection()
+            finally:
+                await ctx.close()
+
         try:
-            ok, msg = asyncio.run(ctx.client.test_connection())
+            ok, msg = asyncio.run(_run_test())
         except ValueError as exc:
             typer.echo(str(exc), err=True)
             raise typer.Exit(1)
-        finally:
-            asyncio.run(ctx.close())
         typer.echo(msg)
         raise typer.Exit(0 if ok else 1)
 
