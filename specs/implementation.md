@@ -1,7 +1,7 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 3 - Assignments + Rubrics + Grading (COMPLETE)
+**Status:** Phase 4 - Assessment Workflow (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Architecture
@@ -131,6 +131,23 @@ easel/
       `submit`, `submit-rubric` commands
     - **Dependencies:** services/grading.py
 
+13. **services/assessments.py**
+    - **Purpose:** Assessment workflow — build, load, save, update,
+      submit assessment JSON files
+    - **Public Interface:** `fetch_assignment_with_rubric()`,
+      `fetch_submissions_with_content()`,
+      `build_assessment_structure()`, `load_assessment()`,
+      `save_assessment()`, `update_assessment_record()`,
+      `get_assessment_stats()`, `submit_assessments()`
+    - **Dependencies:** core/client.py, services/assignments.py
+      (_strip_html), services/grading.py (submit_rubric_grade)
+
+14. **cli/assessments.py**
+    - **Purpose:** Typer sub-app for assessment workflow commands
+    - **Public Interface:** `assess_app` with `setup`, `load`,
+      `update`, `submit` commands
+    - **Dependencies:** services/assessments.py
+
 ### Data Model
 
 - **Primary Data Structures:** Dicts and lists from Canvas API
@@ -215,7 +232,7 @@ uv run pytest tests/ --cov=src/easel
 
 - **Platform:** Local CLI tool (pip/uv installable)
 - **Runtime:** Python interpreter
-- **Configuration:** `CANVAS_API_TOKEN` and `CANVAS_API_URL` env vars
+- **Configuration:** `CANVAS_API_KEY` and `CANVAS_API_URL` env vars
 
 ### CI/CD Pipeline
 
@@ -238,7 +255,7 @@ uv run pytest tests/ --cov=src/easel
 
 ### Authentication and Authorization
 
-- **Auth Method:** Canvas API token via `CANVAS_API_TOKEN` env var
+- **Auth Method:** Canvas API token via `CANVAS_API_KEY` env var
 - **Permission Model:** Inherits Canvas user permissions
 - **Secret Management:** Environment variable only, never read .env
   files programmatically in production, pydantic-settings handles
@@ -262,3 +279,5 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | AsyncMock for service tests, patch get_context for CLI tests | Clean separation: service tests mock client, CLI tests mock services. No real config needed. | Transport-level mocks for CLI tests (too deep, couples layers) |
 | 2026-02-22 | Rubric bracket-notation as a sync helper function | Reusable by grading service and future assessment workflow. Isolates Canvas encoding quirk. | Inline in grading service (harder to test), pydantic model (overkill) |
 | 2026-02-22 | HTML stripping in assignments service | Canvas returns HTML descriptions; stripping at service level keeps CLI clean | Strip in CLI layer (duplicates logic), use a library like beautifulsoup (heavy dep for simple case) |
+| 2026-02-22 | Assessment JSON as file-based interchange | Skills (assess:ai-pass, assess:refine) read/write JSON files; easel handles Canvas I/O, skills handle AI evaluation | Database (overkill), MCP tools (coupling), in-memory only (no persistence between skill invocations) |
+| 2026-02-22 | Dry-run by default for assess submit | Prevents accidental grade submission; --confirm required for actual Canvas write | Auto-submit (dangerous), interactive prompt (harder to script) |

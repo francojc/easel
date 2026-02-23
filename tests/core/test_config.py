@@ -23,7 +23,7 @@ def test_trailing_slash_stripped():
 
 def test_validate_missing_token():
     cfg = Config(canvas_api_token="")
-    with pytest.raises(ValueError, match="CANVAS_API_TOKEN"):
+    with pytest.raises(ValueError, match="CANVAS_API_KEY"):
         cfg.validate_config()
 
 

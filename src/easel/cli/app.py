@@ -11,11 +11,13 @@ from easel import __version__
 from easel.cli._context import EaselContext, get_context
 from easel.cli._output import OutputFormat
 
+from easel.cli.assessments import assess_app
 from easel.cli.assignments import assignments_app
 from easel.cli.courses import courses_app
 from easel.cli.grading import grading_app
 
 app = typer.Typer(name="easel", help="CLI for the Canvas LMS API")
+app.add_typer(assess_app)
 app.add_typer(assignments_app)
 app.add_typer(courses_app)
 app.add_typer(grading_app)

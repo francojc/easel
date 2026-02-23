@@ -1,16 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 3 - Assignments + Rubrics + Grading (COMPLETE)
+**Status:** Phase 4 - Assessment Workflow (COMPLETE)
 **Last Updated:** 2026-02-22
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 3 - Assignments + Rubrics + Grading (COMPLETE)
+- **Current Phase:** Phase 4 - Assessment Workflow (COMPLETE)
 - **Phase Progress:** 100% complete
-- **Overall Project Progress:** ~60% complete (Phases 0-3 done)
+- **Overall Project Progress:** ~75% complete (Phases 0-4 done)
 
 ### Recent Accomplishments
 
@@ -30,10 +30,15 @@
   assignments CLI (list, show, create, update, rubrics, rubric),
   grading CLI (submissions, show, submit, submit-rubric),
   99 tests passing, ruff clean
+- Phase 4 complete: Assessment service (fetch assignment+rubric, fetch
+  submissions with content, build/load/save/update assessment JSON,
+  stats, submit approved assessments to Canvas), assessment CLI
+  (setup, load, update, submit with dry-run), 133 tests passing,
+  ruff clean
 
 ### Active Work
 
-(none -- Phase 3 complete, Phase 4 not started)
+(none -- Phase 4 complete, Phase 5 not started)
 
 ## Milestone Tracking
 
@@ -43,10 +48,9 @@
 - [x] Phase 1: Core layer -- config, client, cache tested (27 tests)
 - [x] Phase 2: Courses -- service + CLI + tests (44 tests total)
 - [x] Phase 3: Assignments + rubrics + grading (99 tests total)
+- [x] Phase 4: Assessment workflow (133 tests total)
 
 ### Upcoming Milestones
-
-- [ ] Phase 4: Assessment workflow
 
 ### At-Risk Milestones
 
@@ -61,10 +65,11 @@
 
 ### Test Results
 
-- **Unit Tests:** 99 passing
+- **Unit Tests:** 133 passing
   - core: config 4, client 11, cache 9
-  - services: courses 9, assignments 14, rubrics 8, grading 10
-  - cli: courses 8, assignments 13, grading 10
+  - services: courses 9, assignments 14, rubrics 8, grading 10,
+    assessments 22
+  - cli: courses 8, assignments 13, grading 10, assessments 12
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -97,6 +102,9 @@
   submit rubric grade
 - [x] Assignments CLI: `easel assignments list|show|create|update|rubrics|rubric`
 - [x] Grading CLI: `easel grading submissions|show|submit|submit-rubric`
+- [x] Assessment service: fetch assignment+rubric, fetch submissions
+  with content, build/load/save/update JSON, stats, submit to Canvas
+- [x] Assessment CLI: `easel assess setup|load|update|submit`
 
 ### In Progress
 
@@ -104,7 +112,6 @@
 
 ### Planned
 
-- [ ] Assessment workflow - Phase 4
 - [ ] Remaining entities (student, modules, etc.) - Phase 5
 - [ ] Polish (shell completion, docs) - Phase 6
 
@@ -164,15 +171,15 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Design assessment file format (JSON schema for rubric grading)
-- [ ] Implement assessment service (load, validate, update, submit)
-- [ ] Implement assessment CLI commands (init, review, approve, submit)
-- [ ] Live smoke test against Canvas API
+- [ ] Live smoke test against Canvas API (all commands)
+- [ ] Update assess/* skills to use `easel` CLI instead of MCP tools
+- [ ] Begin Phase 5: student commands, modules, discussions
 
 ### Medium-term Goals (Next Few Sessions)
 
 - [ ] Remaining entities -- students, modules, discussions (Phase 5)
 - [ ] Shell completion and documentation (Phase 6)
+- [ ] 0.1.0 release
 
 ### Decisions Needed
 
@@ -185,8 +192,8 @@
 - **Version:** 0.1.0
 - **Target Date:** TBD
 - **Included Features:** Scaffolding + core + courses + assignments +
-  rubrics + grading (Phases 0-3)
-- **Release Blockers:** Live smoke test, assessment workflow (Phase 4)
+  rubrics + grading + assessment workflow (Phases 0-4)
+- **Release Blockers:** Live smoke test, assess skill migration
 
 ### Release History
 

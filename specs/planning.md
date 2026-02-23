@@ -103,11 +103,16 @@
 - [x] Tests: 14 assignments svc, 8 rubrics svc, 10 grading svc,
   13 assignments CLI, 10 grading CLI (99 total)
 
-### Phase 4: Assessment Workflow
+### Phase 4: Assessment Workflow (COMPLETE)
 
-- [ ] Assessment file management (load, update, submit)
-- [ ] Local JSON validation and review commands
-- [ ] Integration with grading service for submission
+- [x] Assessment service: fetch_assignment_with_rubric,
+  fetch_submissions_with_content, build_assessment_structure,
+  load/save/update_assessment, get_assessment_stats,
+  submit_assessments
+- [x] Assessment CLI: `easel assess setup|load|update|submit`
+- [x] Setup builds full assessment JSON (metadata + rubric + submissions)
+- [x] Submit uses dry-run by default, requires --confirm
+- [x] Tests: 22 service, 12 CLI (133 total)
 
 ### Phase 5: Remaining Entity Groups
 
