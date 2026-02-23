@@ -14,13 +14,19 @@ from easel.cli._output import OutputFormat
 from easel.cli.assessments import assess_app
 from easel.cli.assignments import assignments_app
 from easel.cli.courses import courses_app
+from easel.cli.discussions import discussions_app
 from easel.cli.grading import grading_app
+from easel.cli.modules import modules_app
+from easel.cli.pages import pages_app
 
 app = typer.Typer(name="easel", help="CLI for the Canvas LMS API")
 app.add_typer(assess_app)
 app.add_typer(assignments_app)
 app.add_typer(courses_app)
+app.add_typer(discussions_app)
 app.add_typer(grading_app)
+app.add_typer(modules_app)
+app.add_typer(pages_app)
 
 
 def _version_callback(value: bool) -> None:
