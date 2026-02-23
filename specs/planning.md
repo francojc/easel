@@ -126,10 +126,27 @@
   12 pages CLI, 15 discussions svc, 12 discussions CLI (210 total)
 - Student commands deferred (not needed for instructor workflows)
 
-### Phase 6: Polish
+### Phase 6: Polish (IN PROGRESS)
 
 - [x] Wire --test and --config callbacks (done in Phase 1)
+- [x] Migrate assess/* skill commands from MCP to easel CLI
+- [x] Add `easel commands install` CLI for distributing skill commands
+- [ ] `easel config` sub-app with three subcommands:
+  - `easel config init` -- interactive prompts to create
+    `.claude/course_parameters.yaml` in the current repo. If
+    `~/.config/easel/config.toml` exists, pre-fill defaults from it.
+  - `easel config global` -- create or update
+    `~/.config/easel/config.toml` with shared defaults (name,
+    institution, default feedback language, formality, level) that
+    `config init` inherits.
+  - `easel config show` -- display merged view of global config +
+    repo-level course_parameters.yaml, showing which values come
+    from where.
 - [ ] Shell completion support
+- [ ] README with "Extending with AI" section: explain what skill
+  commands are, how `easel commands install` works, how to create
+  custom skills that call easel via Bash, and the assess/* pipeline
+  as a worked example
 - [ ] Final documentation pass
 
 ## Resources and Requirements
@@ -186,6 +203,6 @@
 
 ### Adoption Criteria
 
-- [ ] assess/* skills can call easel via Bash instead of MCP tools
+- [x] assess/* skills can call easel via Bash instead of MCP tools
 - [ ] `easel --help` documents all available commands
 - [ ] Setup requires only `uv pip install -e .` and a Canvas API token

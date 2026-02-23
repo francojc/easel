@@ -19,6 +19,8 @@ src/easel/
 tests/
 ├── services/     # Service tests — mock at CanvasClient level
 └── cli/          # CLI tests — mock at service level, use CliRunner
+
+.claude/commands/assess/   # Skill commands installed via `easel commands install`
 ```
 
 ## Architecture

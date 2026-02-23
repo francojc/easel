@@ -1,16 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 5 - Modules, Pages, Discussions (COMPLETE)
+**Status:** Phase 6 - Polish (IN PROGRESS)
 **Last Updated:** 2026-02-22
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 5 - Modules, Pages, Discussions (COMPLETE)
-- **Phase Progress:** 100% complete
-- **Overall Project Progress:** ~90% complete (Phases 0-5 done)
+- **Current Phase:** Phase 6 - Polish (IN PROGRESS)
+- **Phase Progress:** ~40% complete (skills migrated, commands install done)
+- **Overall Project Progress:** ~93% complete (Phases 0-5 done, Phase 6 underway)
 
 ### Recent Accomplishments
 
@@ -43,7 +43,8 @@
 
 ### Active Work
 
-(none -- Phase 5 complete, Phase 6 not started)
+- Phase 6 (polish) in progress: `commands install` CLI added, assess
+  skill commands migrated from MCP to easel CLI
 
 ## Milestone Tracking
 
@@ -58,7 +59,7 @@
 
 ### Upcoming Milestones
 
-- [ ] Phase 6: Polish (shell completion, docs)
+- [ ] Phase 6: Polish (shell completion, docs) -- in progress
 - [ ] 0.1.0 release
 
 ### At-Risk Milestones
@@ -115,6 +116,8 @@
 - [x] Assessment service: fetch assignment+rubric, fetch submissions
   with content, build/load/save/update JSON, stats, submit to Canvas
 - [x] Assessment CLI: `easel assess setup|load|update|submit`
+- [x] Commands CLI: `easel commands install` (copies .claude/commands/assess/*.md)
+- [x] Assess skill commands migrated from MCP to easel CLI (setup, ai-pass, refine, submit)
 - [x] Modules service: list, get, create, update, delete
 - [x] Modules CLI: `easel modules list|show|create|update|delete`
 - [x] Pages service: list, get, create, update, delete (slug-based IDs)
@@ -124,11 +127,16 @@
 
 ### In Progress
 
-(none)
+- [ ] Phase 6: Polish and release prep
 
 ### Planned
 
-- [ ] Polish (shell completion, docs) - Phase 6
+- [ ] `easel config` sub-app (init, global, show) -- repo-level
+  course_parameters.yaml setup with global config inheritance
+- [ ] Shell completion support
+- [ ] README with "Extending with AI" section (skills, custom
+  workflows, assess/* pipeline walkthrough)
+- [ ] Final documentation pass
 
 ### Deferred or Cut
 
@@ -187,12 +195,14 @@
 ### Immediate Actions (Next Session)
 
 - [ ] Live smoke test against Canvas API (all commands)
-- [ ] Update assess/* skills to use `easel` CLI instead of MCP tools
-- [ ] Begin Phase 6: shell completion, documentation, 0.1.0 prep
+- [ ] Live smoke test of migrated assess/* skills against a real assignment
+- [ ] Implement `easel config` sub-app (init/global/show)
+- [ ] Shell completion support
+- [ ] Write README with "Extending with AI" section
+- [ ] Final documentation pass
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] Shell completion and documentation (Phase 6)
 - [ ] 0.1.0 release
 
 ### Decisions Needed
@@ -208,8 +218,8 @@
 - **Included Features:** Scaffolding + core + courses + assignments +
   rubrics + grading + assessment workflow + modules + pages +
   discussions (Phases 0-5)
-- **Release Blockers:** Live smoke test, assess skill migration,
-  shell completion
+- **Release Blockers:** Live smoke test, config sub-app, shell
+  completion, README/documentation
 
 ### Release History
 
