@@ -65,8 +65,8 @@ Adapt from canvas-mcp `core/` (reference only, not imported).
 **Create:**
 
 - `src/easel/core/config.py` — `pydantic-settings` `BaseSettings`
-  subclass. Fields: `canvas_api_token`, `canvas_api_url`
-  (default `https://canvas.illinois.edu/api/v1`), `api_timeout` (30),
+  subclass. Fields: `canvas_api_key`, `canvas_base_url`
+  (default `https://canvas.illinois.edu`), `api_timeout` (30),
   `debug` (false). `validate()` method checks token/URL.
   Ref: `canvas-mcp/src/canvas_mcp/core/config.py`
 - `src/easel/core/client.py` — `CanvasClient` class wrapping

@@ -9,6 +9,6 @@ from easel.core.config import Config
 def config():
     """Config with a fake token for testing."""
     return Config(
-        canvas_api_token="fake-test-token",
-        canvas_api_url="https://canvas.test/api/v1",
+        canvas_api_key="fake-test-token",
+        canvas_base_url="https://canvas.test",
     )

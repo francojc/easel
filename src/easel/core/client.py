@@ -22,7 +22,7 @@ class CanvasClient:
         self._client = httpx.AsyncClient(
             base_url=config.canvas_api_url,
             headers={
-                "Authorization": f"Bearer {config.canvas_api_token}",
+                "Authorization": f"Bearer {config.canvas_api_key}",
                 "Accept": "application/json",
             },
             timeout=httpx.Timeout(config.api_timeout),
@@ -134,4 +134,4 @@ class CanvasClient:
         except httpx.HTTPStatusError as exc:
             return False, f"HTTP {exc.response.status_code}: {exc.response.text}"
         except httpx.ConnectError:
-            return False, f"Cannot reach {self._config.canvas_api_url}"
+            return False, f"Cannot reach {self._config.canvas_base_url}"

@@ -51,9 +51,9 @@ def _config_callback(value: bool) -> None:
         except ValueError as exc:
             typer.echo(str(exc), err=True)
             raise typer.Exit(1)
-        token = cfg.canvas_api_token
+        token = cfg.canvas_api_key
         masked = f"{token[:4]}...{token[-4:]}" if len(token) > 8 else "***"
-        typer.echo(f"url:     {cfg.canvas_api_url}")
+        typer.echo(f"url:     {cfg.canvas_base_url}")
         typer.echo(f"token:   {masked}")
         typer.echo(f"timeout: {cfg.api_timeout}s")
         raise typer.Exit()

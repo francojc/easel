@@ -10,8 +10,8 @@ from easel.core.config import Config
 @pytest.fixture()
 def config():
     return Config(
-        canvas_api_token="fake-token",
-        canvas_api_url="https://canvas.test/api/v1",
+        canvas_api_key="fake-token",
+        canvas_base_url="https://canvas.test",
     )
 
 
@@ -43,7 +43,7 @@ def client(config, mock_transport):
         transport=transport,
         base_url=config.canvas_api_url,
         headers={
-            "Authorization": f"Bearer {config.canvas_api_token}",
+            "Authorization": f"Bearer {config.canvas_api_key}",
             "Accept": "application/json",
         },
     )

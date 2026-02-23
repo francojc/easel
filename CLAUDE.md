@@ -41,7 +41,8 @@ patterns easel adapts. Reference only -- no runtime dependency.
   The CourseCache handles bidirectional mapping. Always resolve
   through the cache.
 - Never read .env files directly. Canvas API token comes from
-  `CANVAS_API_TOKEN` env var via pydantic-settings.
+  `CANVAS_API_KEY` env var via pydantic-settings. The base URL
+  comes from `CANVAS_BASE_URL`; `/api/v1` is appended automatically.
 - Async bridging: services are async, Typer callbacks are sync.
   Use the `_async.py` bridge decorator to call services from CLI.
 - Output formatting: all commands support `--format` (table/json/plain).

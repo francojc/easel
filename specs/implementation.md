@@ -232,7 +232,7 @@ uv run pytest tests/ --cov=src/easel
 
 - **Platform:** Local CLI tool (pip/uv installable)
 - **Runtime:** Python interpreter
-- **Configuration:** `CANVAS_API_TOKEN` and `CANVAS_API_URL` env vars
+- **Configuration:** `CANVAS_API_KEY` and `CANVAS_BASE_URL` env vars
 
 ### CI/CD Pipeline
 
@@ -255,7 +255,7 @@ uv run pytest tests/ --cov=src/easel
 
 ### Authentication and Authorization
 
-- **Auth Method:** Canvas API token via `CANVAS_API_TOKEN` env var
+- **Auth Method:** Canvas API token via `CANVAS_API_KEY` env var
 - **Permission Model:** Inherits Canvas user permissions
 - **Secret Management:** Environment variable only, never read .env
   files programmatically in production, pydantic-settings handles
