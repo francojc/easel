@@ -9,8 +9,8 @@
 ### Development Phase
 
 - **Current Phase:** Phase 6 - Polish (IN PROGRESS)
-- **Phase Progress:** ~40% complete (skills migrated, commands install done)
-- **Overall Project Progress:** ~93% complete (Phases 0-5 done, Phase 6 underway)
+- **Phase Progress:** ~70% complete (config sub-app done, live smoke tests passed)
+- **Overall Project Progress:** ~96% complete (Phases 0-5 done, Phase 6 nearing completion)
 
 ### Recent Accomplishments
 
@@ -43,8 +43,9 @@
 
 ### Active Work
 
-- Phase 6 (polish) in progress: `commands install` CLI added, assess
-  skill commands migrated from MCP to easel CLI
+- Phase 6 (polish) in progress: `commands install` CLI done, assess
+  skill commands migrated, config sub-app (init/global/show) done,
+  live smoke tests passed (17/17 commands), --test event loop bug fixed
 
 ## Milestone Tracking
 
@@ -75,12 +76,12 @@
 
 ### Test Results
 
-- **Unit Tests:** 210 passing
-  - core: config 4, client 11, cache 9
+- **Unit Tests:** 227 passing
+  - core: config 4, client 11, cache 9, config_files 9
   - services: courses 9, assignments 14, rubrics 8, grading 10,
     assessments 22, modules 14, pages 15, discussions 15
   - cli: courses 8, assignments 13, grading 10, assessments 12,
-    modules 11, pages 12, discussions 12
+    modules 11, pages 12, discussions 12, config 8
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -118,6 +119,11 @@
 - [x] Assessment CLI: `easel assess setup|load|update|submit`
 - [x] Commands CLI: `easel commands install` (copies .claude/commands/assess/*.md)
 - [x] Assess skill commands migrated from MCP to easel CLI (setup, ai-pass, refine, submit)
+- [x] Config sub-app: `easel config init|global|show` with YAML/TOML
+  file management and global-to-local inheritance
+- [x] Live smoke test: all 17 CLI commands verified against Canvas API
+- [x] Bug fix: --test callback event loop crash (combined into single
+  async function)
 - [x] Modules service: list, get, create, update, delete
 - [x] Modules CLI: `easel modules list|show|create|update|delete`
 - [x] Pages service: list, get, create, update, delete (slug-based IDs)
@@ -131,12 +137,11 @@
 
 ### Planned
 
-- [ ] `easel config` sub-app (init, global, show) -- repo-level
-  course_parameters.yaml setup with global config inheritance
 - [ ] Shell completion support
 - [ ] README with "Extending with AI" section (skills, custom
   workflows, assess/* pipeline walkthrough)
 - [ ] Final documentation pass
+- [ ] Live smoke test of assess/* skills against a real assignment
 
 ### Deferred or Cut
 
@@ -150,7 +155,9 @@
 
 ### Recently Resolved
 
-(none)
+- --test callback used two separate asyncio.run() calls; httpx client
+  bound to first event loop caused crash on cleanup. Fixed by combining
+  test + close into single async function.
 
 ## Dependency Status
 
@@ -160,6 +167,8 @@
 - **typer:** CLI framework with rich integration
 - **pydantic / pydantic-settings:** config and data validation
 - **rich:** terminal output formatting (tables, panels)
+- **pyyaml:** YAML read/write for course_parameters.yaml
+- **tomli-w:** TOML write for global config (stdlib tomllib for reads)
 - **ruff:** linting and formatting (dev dependency)
 - **pytest / pytest-asyncio:** testing (dev dependency)
 
@@ -194,9 +203,7 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Live smoke test against Canvas API (all commands)
-- [ ] Live smoke test of migrated assess/* skills against a real assignment
-- [ ] Implement `easel config` sub-app (init/global/show)
+- [ ] Live smoke test of assess/* skills against a real assignment
 - [ ] Shell completion support
 - [ ] Write README with "Extending with AI" section
 - [ ] Final documentation pass
@@ -218,8 +225,8 @@
 - **Included Features:** Scaffolding + core + courses + assignments +
   rubrics + grading + assessment workflow + modules + pages +
   discussions (Phases 0-5)
-- **Release Blockers:** Live smoke test, config sub-app, shell
-  completion, README/documentation
+- **Release Blockers:** Shell completion, README/documentation,
+  assess skills live test
 
 ### Release History
 

@@ -12,7 +12,7 @@
 - **Target Platform:** macOS / Linux (cross-platform Python)
 - **Primary Language:** Python 3.11+
 - **Key Libraries/Frameworks:** Typer, httpx, pydantic, pydantic-settings,
-  rich, python-dateutil
+  rich, python-dateutil, pyyaml, tomli-w
 
 ### Problem Statement
 
@@ -131,7 +131,7 @@
 - [x] Wire --test and --config callbacks (done in Phase 1)
 - [x] Migrate assess/* skill commands from MCP to easel CLI
 - [x] Add `easel commands install` CLI for distributing skill commands
-- [ ] `easel config` sub-app with three subcommands:
+- [x] `easel config` sub-app with three subcommands:
   - `easel config init` -- interactive prompts to create
     `.claude/course_parameters.yaml` in the current repo. If
     `~/.config/easel/config.toml` exists, pre-fill defaults from it.
@@ -142,6 +142,8 @@
   - `easel config show` -- display merged view of global config +
     repo-level course_parameters.yaml, showing which values come
     from where.
+- [x] Live smoke test against Canvas API (all 17 commands passed)
+- [x] Bug fix: --test event loop crash
 - [ ] Shell completion support
 - [ ] README with "Extending with AI" section: explain what skill
   commands are, how `easel commands install` works, how to create

@@ -12,7 +12,7 @@
 
 ```
 src/easel/
-├── core/         # HTTP client, config, caching, date utils
+├── core/         # HTTP client, config, caching, date utils, config files
 ├── services/     # Async business logic per Canvas entity
 └── cli/          # Typer commands, async bridging, output formatting
 
@@ -49,3 +49,10 @@ patterns easel adapts. Reference only -- no runtime dependency.
   Use the `_async.py` bridge decorator to call services from CLI.
 - Output formatting: all commands support `--format` (table/json/plain).
   Use `_output.py`'s `format_output()` for consistent rendering.
+- Config files: global config is TOML at `~/.config/easel/config.toml`,
+  local config is YAML at `.claude/course_parameters.yaml`. The config
+  sub-app (cli/config.py) handles both; core/config_files.py has the
+  read/write helpers. No service layer needed (pure file I/O).
+- Event loop lifecycle: never call `asyncio.run()` twice for the same
+  httpx client. The client must be created and closed on the same loop.
+  See the `--test` callback pattern in app.py.

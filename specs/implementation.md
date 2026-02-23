@@ -1,7 +1,7 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 5 - Modules, Pages, Discussions (COMPLETE)
+**Status:** Phase 6 - Polish (IN PROGRESS)
 **Last Updated:** 2026-02-22
 
 ## Architecture
@@ -22,6 +22,7 @@ easel/
 │   ├── core/             # HTTP client, config, caching
 │   │   ├── client.py     # CanvasClient (httpx async)
 │   │   ├── config.py     # Config (pydantic-settings)
+│   │   ├── config_files.py # YAML/TOML config file I/O
 │   │   ├── cache.py      # CourseCache (code/ID mapping)
 │   │   └── dates.py      # Date formatting utilities
 │   ├── services/         # Async business logic per entity
@@ -44,6 +45,7 @@ easel/
 │       ├── assignments.py
 │       ├── grading.py
 │       ├── assessments.py
+│       ├── config.py      # Config sub-app (init, global, show)
 │       ├── modules.py
 │       ├── pages.py
 │       └── discussions.py
@@ -199,6 +201,24 @@ easel/
       `create`, `update` commands
     - **Dependencies:** services/discussions.py
 
+21. **core/config_files.py**
+    - **Purpose:** Read/write YAML and TOML config files for easel
+    - **Public Interface:** `read_global_config()`,
+      `write_global_config()`, `read_local_config()`,
+      `write_local_config()`, `merge_configs()`
+    - **Dependencies:** pyyaml, tomli-w, tomllib (stdlib)
+    - **Notes:** Global config at `~/.config/easel/config.toml`,
+      local config at `.claude/course_parameters.yaml`
+
+22. **cli/config.py**
+    - **Purpose:** Typer sub-app for config management
+    - **Public Interface:** `config_app` with `init`, `global`,
+      `show` commands
+    - **Dependencies:** core/config_files.py
+    - **Notes:** `init` creates local YAML with interactive prompts,
+      pre-filling from global TOML. `global` manages instructor
+      defaults. `show` displays merged view with source annotations.
+
 ### Data Model
 
 - **Primary Data Structures:** Dicts and lists from Canvas API
@@ -335,3 +355,6 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | Copy _strip_html into each service that needs it | Keeps services self-contained, no cross-service imports for a trivial helper | Shared utility module (premature abstraction for 3-line function) |
 | 2026-02-22 | Pages identified by URL slug, not numeric ID | Canvas API uses slugs for page endpoints; matches API semantics | Numeric IDs (not how Canvas pages work) |
 | 2026-02-22 | Defer student commands | Instructor workflows don't need student-facing endpoints; keeps scope focused for 0.1.0 | Include student commands (scope creep, low priority) |
+| 2026-02-22 | TOML for global config, YAML for local | TOML suits key-value instructor defaults; YAML matches existing course_parameters schema used by assess skills | Both TOML (unfamiliar to users for course params), both YAML (no stdlib YAML parser) |
+| 2026-02-22 | No service layer for config sub-app | Config commands do local file I/O only (no Canvas API calls); service layer would be unnecessary indirection | Add services/config.py (overkill for pure file ops) |
+| 2026-02-22 | Single asyncio.run() for --test callback | Avoids event loop lifecycle issues; httpx client must be created and closed on the same loop | Separate asyncio.run() calls for test and cleanup (caused crash) |
