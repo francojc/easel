@@ -1,8 +1,8 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 6 - Polish (IN PROGRESS)
-**Last Updated:** 2026-02-22
+**Status:** Phase 6 - Polish (COMPLETE)
+**Last Updated:** 2026-02-23
 
 ## Architecture
 
@@ -48,7 +48,8 @@ easel/
 │       ├── config.py      # Config sub-app (init, global, show)
 │       ├── modules.py
 │       ├── pages.py
-│       └── discussions.py
+│       ├── discussions.py
+│       └── commands.py    # Commands sub-app (install)
 ├── tests/
 │   ├── conftest.py       # Shared fixtures
 │   ├── services/         # Service tests (mock CanvasClient)

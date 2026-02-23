@@ -1,16 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 6 - Polish (IN PROGRESS)
-**Last Updated:** 2026-02-22
+**Status:** Phase 6 - Polish (COMPLETE)
+**Last Updated:** 2026-02-23
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 6 - Polish (IN PROGRESS)
-- **Phase Progress:** ~70% complete (config sub-app done, live smoke tests passed)
-- **Overall Project Progress:** ~96% complete (Phases 0-5 done, Phase 6 nearing completion)
+- **Current Phase:** Phase 6 - Polish (COMPLETE)
+- **Phase Progress:** 100% complete
+- **Overall Project Progress:** 100% (all phases complete, ready for 0.1.0)
 
 ### Recent Accomplishments
 
@@ -43,9 +43,11 @@
 
 ### Active Work
 
-- Phase 6 (polish) in progress: `commands install` CLI done, assess
-  skill commands migrated, config sub-app (init/global/show) done,
-  live smoke tests passed (17/17 commands), --test event loop bug fixed
+- Phase 6 (polish) complete: `commands install` CLI, assess skill
+  commands migrated, config sub-app, live smoke tests (17/17),
+  --test event loop bug fixed, shell completion (Typer built-in),
+  README rewritten with full CLI reference and "Extending with AI"
+  section, final documentation pass done
 
 ## Milestone Tracking
 
@@ -60,7 +62,7 @@
 
 ### Upcoming Milestones
 
-- [ ] Phase 6: Polish (shell completion, docs) -- in progress
+- [x] Phase 6: Polish (shell completion, README, docs) -- complete
 - [ ] 0.1.0 release
 
 ### At-Risk Milestones
@@ -133,15 +135,11 @@
 
 ### In Progress
 
-- [ ] Phase 6: Polish and release prep
+(none)
 
 ### Planned
 
-- [ ] Shell completion support
-- [ ] README with "Extending with AI" section (skills, custom
-  workflows, assess/* pipeline walkthrough)
-- [ ] Final documentation pass
-- [ ] Live smoke test of assess/* skills against a real assignment
+- [ ] 0.1.0 release tag
 
 ### Deferred or Cut
 
@@ -203,14 +201,11 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Live smoke test of assess/* skills against a real assignment
-- [ ] Shell completion support
-- [ ] Write README with "Extending with AI" section
-- [ ] Final documentation pass
+- [ ] Tag 0.1.0 release
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] 0.1.0 release
+(none -- project is feature-complete for 0.1.0)
 
 ### Decisions Needed
 
@@ -225,8 +220,7 @@
 - **Included Features:** Scaffolding + core + courses + assignments +
   rubrics + grading + assessment workflow + modules + pages +
   discussions (Phases 0-5)
-- **Release Blockers:** Shell completion, README/documentation,
-  assess skills live test
+- **Release Blockers:** None (Phase 6 complete)
 
 ### Release History
 

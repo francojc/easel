@@ -1,8 +1,8 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** In Progress
-**Last Updated:** 2026-02-22
+**Status:** Complete (Phase 6 done, ready for 0.1.0)
+**Last Updated:** 2026-02-23
 
 ## Project Overview
 
@@ -126,30 +126,17 @@
   12 pages CLI, 15 discussions svc, 12 discussions CLI (210 total)
 - Student commands deferred (not needed for instructor workflows)
 
-### Phase 6: Polish (IN PROGRESS)
+### Phase 6: Polish (COMPLETE)
 
 - [x] Wire --test and --config callbacks (done in Phase 1)
 - [x] Migrate assess/* skill commands from MCP to easel CLI
 - [x] Add `easel commands install` CLI for distributing skill commands
-- [x] `easel config` sub-app with three subcommands:
-  - `easel config init` -- interactive prompts to create
-    `.claude/course_parameters.yaml` in the current repo. If
-    `~/.config/easel/config.toml` exists, pre-fill defaults from it.
-  - `easel config global` -- create or update
-    `~/.config/easel/config.toml` with shared defaults (name,
-    institution, default feedback language, formality, level) that
-    `config init` inherits.
-  - `easel config show` -- display merged view of global config +
-    repo-level course_parameters.yaml, showing which values come
-    from where.
+- [x] `easel config` sub-app (init, global, show)
 - [x] Live smoke test against Canvas API (all 17 commands passed)
 - [x] Bug fix: --test event loop crash
-- [ ] Shell completion support
-- [ ] README with "Extending with AI" section: explain what skill
-  commands are, how `easel commands install` works, how to create
-  custom skills that call easel via Bash, and the assess/* pipeline
-  as a worked example
-- [ ] Final documentation pass
+- [x] Shell completion support (Typer built-in --install-completion)
+- [x] README with full CLI reference and "Extending with AI" section
+- [x] Final documentation pass
 
 ## Resources and Requirements
 
