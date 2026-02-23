@@ -52,6 +52,10 @@
 
 ### Upcoming Milestones
 
+- [ ] Phase 5: Remaining entities (students, modules, discussions)
+- [ ] Phase 6: Polish (shell completion, docs)
+- [ ] 0.1.0 release
+
 ### At-Risk Milestones
 
 (none)

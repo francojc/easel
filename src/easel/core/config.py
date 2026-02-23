@@ -8,8 +8,8 @@ class Config(BaseSettings):
     """Canvas LMS API configuration.
 
     Reads from environment variables:
-      CANVAS_API_KEY  — required
-      CANVAS_BASE_URL    — default https://canvas.illinois.edu/api/v1
+      CANVAS_API_TOKEN  — required
+      CANVAS_API_URL    — default https://canvas.illinois.edu/api/v1
       API_TIMEOUT       — default 30 (seconds)
       CACHE_TTL         — default 300 (seconds)
     """
@@ -28,6 +28,6 @@ class Config(BaseSettings):
         """Raise ValueError if required settings are missing."""
         if not self.canvas_api_token:
             raise ValueError(
-                "CANVAS_API_KEY environment variable is required. "
+                "CANVAS_API_TOKEN environment variable is required. "
                 "Set it to your Canvas API access token."
             )
