@@ -20,7 +20,13 @@ tests/
 ├── services/     # Service tests — mock at CanvasClient level
 └── cli/          # CLI tests — mock at service level, use CliRunner
 
-.claude/commands/assess/   # Skill commands installed via `easel commands install`
+.claude/commands/
+├── assess/        # Rubric-based grading pipeline (setup, ai-pass, refine, submit)
+├── assignments/   # Assignment creation workflows
+├── content/       # Local-to-Canvas content publishing
+├── course/        # Course setup and status dashboard
+├── discuss/       # Announcement drafting and posting
+└── grading/       # Grade distribution analysis
 ```
 
 ## Architecture
