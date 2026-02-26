@@ -22,7 +22,10 @@ from easel.services.assessments import (
     update_assessment_record,
 )
 
-assess_app = typer.Typer(name="assess", help="Assessment workflow.")
+assess_app = typer.Typer(
+    name="assess",
+    help="Rubric-based assessment workflow (setup, load, update, submit).",
+)
 
 
 @assess_app.command("setup")

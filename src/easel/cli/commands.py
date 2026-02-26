@@ -7,7 +7,10 @@ from pathlib import Path
 
 import typer
 
-commands_app = typer.Typer(name="commands", help="Manage easel skill commands.")
+commands_app = typer.Typer(
+    name="commands",
+    help="Install Claude Code skill commands to ~/.claude/commands/.",
+)
 
 _COMMAND_GROUPS = [
     "assess",
@@ -25,7 +28,12 @@ def commands_install(
         False, "--overwrite", help="Overwrite existing files without asking."
     ),
 ) -> None:
-    """Install all easel commands to ~/.claude/commands/."""
+    """Copy bundled skill commands to ~/.claude/commands/.
+
+    Installs all command groups: assess, assignments, content, course,
+    discuss, and grading. Existing files are skipped unless --overwrite
+    is passed.
+    """
     repo_root = Path(__file__).resolve().parent.parent.parent.parent
     dst_root = Path.home() / ".claude" / "commands"
 

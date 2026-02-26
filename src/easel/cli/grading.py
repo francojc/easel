@@ -18,7 +18,10 @@ from easel.services.grading import (
     submit_rubric_grade,
 )
 
-grading_app = typer.Typer(name="grading", help="Grade submissions.")
+grading_app = typer.Typer(
+    name="grading",
+    help="View submissions and post grades.",
+)
 
 
 @grading_app.command("submissions")

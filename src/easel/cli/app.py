@@ -21,7 +21,11 @@ from easel.cli.grading import grading_app
 from easel.cli.modules import modules_app
 from easel.cli.pages import pages_app
 
-app = typer.Typer(name="easel", help="CLI for the Canvas LMS API")
+app = typer.Typer(
+    name="easel",
+    help="Canvas LMS CLI — manage courses, assignments, grading, "
+    "and content from the terminal.",
+)
 app.add_typer(assess_app)
 app.add_typer(assignments_app)
 app.add_typer(commands_app)

@@ -16,7 +16,10 @@ from easel.core.config_files import (
     write_local_config,
 )
 
-config_app = typer.Typer(name="config", help="Manage easel configuration files.")
+config_app = typer.Typer(
+    name="config",
+    help="Manage global and local configuration (TOML).",
+)
 
 
 def _prompt_bool(prompt: str, default: bool) -> bool:
@@ -43,7 +46,12 @@ def config_init(
         ".", "--base", help="Repository root directory."
     ),
 ) -> None:
-    """Create easel/config.toml with interactive prompts."""
+    """Create or update local course config (./easel/config.toml).
+
+    Prompts for course title, code, Canvas ID, term, feedback language,
+    and other per-course settings. Pre-fills from global config when
+    available.
+    """
     base_path = Path(base).resolve()
     global_cfg = read_global_config()
     existing = read_local_config(base_path)
@@ -79,7 +87,12 @@ def config_global(
         help="Write default config without prompting.",
     ),
 ) -> None:
-    """Create or update $XDG_CONFIG_HOME/easel/config.toml with shared defaults."""
+    """Set instructor-level defaults ($XDG_CONFIG_HOME/easel/config.toml).
+
+    Prompts for name, institution, educational level, feedback language,
+    and other defaults shared across all courses. Use --defaults to
+    write a starter config without prompting.
+    """
     existing = read_global_config()
 
     if defaults:
@@ -107,7 +120,12 @@ def config_global(
 
 @config_app.command("show")
 def config_show() -> None:
-    """Display merged global + local configuration with source annotations."""
+    """Show merged configuration with source annotations.
+
+    Displays all config keys with their values and whether each comes
+    from global config, local config, or is not set. Local values
+    override global.
+    """
     global_cfg = read_global_config()
     local_cfg = read_local_config()
     merged = merge_configs(global_cfg, local_cfg)
