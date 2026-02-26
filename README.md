@@ -56,22 +56,23 @@ easel --test
 easel courses list
 
 # List assignments for a course (accepts codes or numeric IDs)
-easel assignments list IS505
+easel assignments list --course IS505
 
 # View submissions for an assignment
-easel grading submissions IS505 42
+easel grading submissions --course IS505 42
 
 # Set up course-level config
 easel config init
 ```
 
-All commands accept `--format` (`-f`) with three output modes:
+All commands accept `--format` (`-f`) with four output modes:
 
 | Mode    | Use case                          |
 |---------|-----------------------------------|
 | `table` | Aligned columns (default)         |
 | `json`  | Machine-readable, for piping      |
 | `plain` | Simple key-value pairs            |
+| `csv`   | Header + rows, pipe to file/tools |
 
 ## Configuration
 
@@ -112,22 +113,23 @@ easel config show                # shows each value with [global] or [local] sou
 
 ```
 easel courses list [--concluded]
-easel courses show <course>
-easel courses enrollments <course>
+easel courses show [--course COURSE]
+easel courses enrollments [--course COURSE]
 ```
 
-List, inspect, and view enrollments for your courses. The `<course>`
-argument accepts course codes (e.g., `IS505`) or numeric Canvas IDs.
+List, inspect, and view enrollments for your courses. The `--course`
+option accepts course codes (e.g., `IS505`) or numeric Canvas IDs.
+When omitted, falls back to `canvas_course_id` in your config file.
 
 ### assignments
 
 ```
-easel assignments list <course>
-easel assignments show <course> <assignment-id>
-easel assignments create <course> <name> [--points N] [--due ISO] [--publish]
-easel assignments update <course> <assignment-id> [--name ...] [--points N]
-easel assignments rubrics <course>
-easel assignments rubric <course> <assignment-id>
+easel assignments list [--course COURSE]
+easel assignments show [--course COURSE] <assignment-id>
+easel assignments create [--course COURSE] <name> [--points N] [--due ISO] [--publish]
+easel assignments update [--course COURSE] <assignment-id> [--name ...] [--points N]
+easel assignments rubrics [--course COURSE]
+easel assignments rubric [--course COURSE] <assignment-id>
 ```
 
 Create, update, list, and inspect assignments. `rubrics` lists all
@@ -137,22 +139,22 @@ specific assignment.
 ### grading
 
 ```
-easel grading submissions <course> <assignment-id> [--anonymize]
-easel grading show <course> <assignment-id> <user-id> [--anonymize]
-easel grading submit <course> <assignment-id> <user-id> <grade> [--comment ...]
-easel grading submit-rubric <course> <assignment-id> <user-id> <json> [--comment ...]
+easel grading submissions [--course COURSE] <assignment-id> [--anonymize]
+easel grading show [--course COURSE] <assignment-id> <user-id> [--anonymize]
+easel grading submit [--course COURSE] <assignment-id> <user-id> <grade> [--comment ...]
+easel grading submit-rubric [--course COURSE] <assignment-id> <user-id> <file> [--comment ...]
 ```
 
 View submissions, inspect individual student work, and post grades.
-`submit-rubric` accepts a JSON string of rubric criterion scores.
+`submit-rubric` reads rubric criterion scores from a JSON file.
 
 ### assess
 
 ```
-easel assess setup <course> <assignment-id> [--exclude-graded] [--anonymize]
+easel assess setup [--course COURSE] <assignment-id> [--exclude-graded] [--anonymize]
 easel assess load <file>
 easel assess update <file> <user-id> [--rubric-json ...] [--approved]
-easel assess submit <file> <course> <assignment-id> [--confirm]
+easel assess submit <file> [--course COURSE] <assignment-id> [--confirm]
 ```
 
 Full rubric-based assessment workflow: fetch assignment data into a
@@ -163,21 +165,21 @@ back to Canvas. Submit runs in dry-run mode by default; pass
 ### modules
 
 ```
-easel modules list <course> [--items] [--search ...]
-easel modules show <course> <module-id>
-easel modules create <course> <name> [--position N] [--publish]
-easel modules update <course> <module-id> [--name ...] [--publish/--unpublish]
-easel modules delete <course> <module-id>
+easel modules list [--course COURSE] [--items] [--search ...]
+easel modules show [--course COURSE] <module-id>
+easel modules create [--course COURSE] <name> [--position N] [--publish]
+easel modules update [--course COURSE] <module-id> [--name ...] [--publish/--unpublish]
+easel modules delete [--course COURSE] <module-id>
 ```
 
 ### pages
 
 ```
-easel pages list <course> [--search ...] [--sort title|created_at|updated_at]
-easel pages show <course> <page-url>
-easel pages create <course> <title> [--body ...] [--publish]
-easel pages update <course> <page-url> [--title ...] [--body ...]
-easel pages delete <course> <page-url>
+easel pages list [--course COURSE] [--search ...] [--sort title|created_at|updated_at]
+easel pages show [--course COURSE] <page-url>
+easel pages create [--course COURSE] <title> [--body ...] [--publish]
+easel pages update [--course COURSE] <page-url> [--title ...] [--body ...]
+easel pages delete [--course COURSE] <page-url>
 ```
 
 Pages are identified by their URL slug (e.g., `syllabus-spring-2026`).
@@ -185,10 +187,10 @@ Pages are identified by their URL slug (e.g., `syllabus-spring-2026`).
 ### discussions
 
 ```
-easel discussions list <course> [--announcements]
-easel discussions show <course> <topic-id>
-easel discussions create <course> <title> [--message ...] [--announcement] [--publish]
-easel discussions update <course> <topic-id> [--title ...] [--message ...]
+easel discussions list [--course COURSE] [--announcements]
+easel discussions show [--course COURSE] <topic-id>
+easel discussions create [--course COURSE] <title> [--message ...] [--announcement] [--publish]
+easel discussions update [--course COURSE] <topic-id> [--title ...] [--message ...]
 ```
 
 Pass `--announcements` to list only announcements. Use `--announcement`
@@ -236,8 +238,8 @@ and `user_email` are replaced with empty strings. The numeric
 Affected commands: `assess setup`, `grading submissions`, `grading show`.
 
 ```sh
-easel assess setup IS505 42 --anonymize --format json
-easel grading submissions IS505 42 --anonymize
+easel assess setup --course IS505 42 --anonymize --format json
+easel grading submissions --course IS505 42 --anonymize
 ```
 
 This is opt-in. Without `--anonymize`, output includes full names and
@@ -274,7 +276,7 @@ Any script or Claude Code skill can call easel. A minimal example
 that lists ungraded submissions:
 
 ```sh
-easel grading submissions IS505 42 --format json \
+easel grading submissions --course IS505 42 --format json \
   | jq '[.[] | select(.grade == null)]'
 ```
 

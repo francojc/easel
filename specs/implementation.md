@@ -142,6 +142,8 @@ easel/
     - **Public Interface:** `grading_app` with `submissions`, `show`,
       `submit`, `submit-rubric` commands
     - **Dependencies:** services/grading.py
+    - **Notes:** `submit-rubric` accepts a file path (not inline JSON)
+      for the rubric assessment argument
 
 13. **services/assessments.py**
     - **Purpose:** Assessment workflow — build, load, save, update,
@@ -379,3 +381,5 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | Single asyncio.run() for --test callback | Avoids event loop lifecycle issues; httpx client must be created and closed on the same loop | Separate asyncio.run() calls for test and cleanup (caused crash) |
 | 2026-02-25 | Opt-in `--anonymize` flag strips PII at service layer | FERPA compliance when assessment JSON passes through LLM; simple strip (not reversible mapping) keeps implementation minimal; service-layer stripping follows existing HTML stripping pattern | Default-on anonymization (breaking change for existing workflows), reversible mapping with lookup table (unnecessary complexity, user_id suffices for round-tripping), submission text scanning (out of scope, low risk for structured fields) |
 | 2026-02-25 | `course` changed from positional Argument to `--course`/`-c` Option | Optional positional args greedily consume required args (Typer/Click limitation). Named option eliminates ambiguity. | Keep positional with workaround ordering (fragile), make course required (bad UX with config fallback) |
+| 2026-02-25 | CSV output via `csv.writer` to `sys.stdout` (not Rich console) | CSV must be pipe-friendly with no ANSI markup. Writing directly to stdout keeps output clean for `> file.csv` and `\| cut -f2`. | Rich CSV rendering (adds markup), custom string builder (csv module handles quoting correctly) |
+| 2026-02-25 | `submit-rubric` accepts file path instead of inline JSON | Assessment JSON is typically in a file from the assess workflow. File path is easier to use and avoids shell quoting issues with complex JSON. | Keep inline JSON (poor UX for large assessments), accept both file and inline (ambiguous, over-engineered) |

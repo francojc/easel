@@ -29,7 +29,8 @@
 
 - [ ] Full Canvas API coverage for common instructor workflows
       (courses, assignments, rubrics, grading, modules, discussions)
-- [ ] Three output formats: table (human), JSON (machine), plain (simple)
+- [x] Four output formats: table (human), JSON (machine), plain (simple),
+      CSV (pipeable)
 - [ ] Scriptable and composable -- exit codes, stderr for errors,
       stdout for data
 - [ ] Usable as a backend for Claude Code assess/* skills via
@@ -166,16 +167,15 @@
       swallowed by optional `course` (Issue #6)
 - [x] Updated all CLI tests to use `--course` flag
 
-### v0.1.5: Output and Usability Improvements (CURRENT)
+### v0.1.5: Output and Usability Improvements (COMPLETE)
 
-- [ ] Add `--format csv` output format for pipeable tabular data
-      (Issue #8). Applies to commands that currently support table
-      output. CSV should write header row + data rows to stdout,
-      suitable for piping to files or other commands.
-- [ ] Change `grading submit-rubric` `assessment_json` argument from
-      inline JSON text to a file path (Issue #9). Read and parse the
-      JSON from the specified file. Improves usability for rubric
-      grading workflows where the assessment is already in a file.
+- [x] Add `--format csv` output format for pipeable tabular data
+      (Issue #8). Header row + data rows via `csv.writer` to stdout.
+      262 tests passing.
+- [x] Change `grading submit-rubric` `assessment_json` argument from
+      inline JSON text to a file path (Issue #9). Reads and parses
+      JSON from the specified file with file-not-found and invalid-JSON
+      error handling.
 
 ## Resources and Requirements
 

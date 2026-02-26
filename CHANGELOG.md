@@ -3,6 +3,20 @@
 All notable changes to easel are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.5] - 2026-02-25
+
+### Added
+
+- `--format csv` output mode: writes header row + data rows via
+  `csv.writer` to stdout. Pipe-friendly (no Rich markup). Works on
+  all commands that support table output (Issue #8)
+
+### Changed
+
+- `grading submit-rubric` now accepts a file path to a JSON file
+  instead of an inline JSON string. Errors on missing file or
+  invalid JSON with clear messages (Issue #9)
+
 ## [0.1.4] - 2026-02-25
 
 ### Fixed
@@ -103,6 +117,7 @@ Initial release. Full Canvas LMS CLI for instructor workflows.
 - `--test` flag for Canvas API connectivity check
 - 234 tests passing across services and CLI layers
 
+[0.1.5]: https://github.com/francojc/easel/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/francojc/easel/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/francojc/easel/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/francojc/easel/compare/v0.1.1...v0.1.2

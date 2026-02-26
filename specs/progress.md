@@ -9,9 +9,9 @@
 ### Development Phase
 
 - **Current Phase:** v0.1.5 feature development
-- **Phase Progress:** v0.1.4 released (course option fix); starting
-  v0.1.5 work on CSV output and file-based rubric grading
-- **Overall Project Progress:** v0.1.0–v0.1.4 released and tagged
+- **Phase Progress:** v0.1.5 features implemented (CSV output, file-based
+  rubric grading); ready for version bump, changelog, and release tag
+- **Overall Project Progress:** v0.1.0–v0.1.4 released; v0.1.5 code complete
 
 ### Recent Accomplishments
 
@@ -44,10 +44,10 @@
 
 ### Active Work
 
-- v0.1.5 planned:
-  - Issue #8: Add `--format csv` output format for pipeable tabular data
-  - Issue #9: Change `grading submit-rubric` assessment_json from inline
-    text to file path
+- v0.1.5 implemented (pending release):
+  - Issue #8: Added `--format csv` output format (csv.writer to stdout)
+  - Issue #9: `grading submit-rubric` now accepts a file path instead
+    of inline JSON text
 
 ## Milestone Tracking
 
@@ -83,13 +83,13 @@
 
 ### Test Results
 
-- **Unit Tests:** 254 passing
+- **Unit Tests:** 262 passing
   - core: config 4, client 11, cache 9, config_files 9
   - services: courses 9, assignments 14, rubrics 8, grading 12,
     assessments 24, modules 14, pages 15, discussions 15
-  - cli: courses 8, assignments 13, grading 13, assessments 13,
+  - cli: courses 9, assignments 13, grading 14, assessments 13,
     modules 11, pages 12, discussions 12, config 8,
-    config_defaults 14
+    config_defaults 14, output 6
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -107,7 +107,7 @@
 
 - [x] Typer CLI app with global options (--version, --format, --test, --config)
 - [x] Async bridge decorator (`_async.py`)
-- [x] Output formatting: table, json, plain (`_output.py`)
+- [x] Output formatting: table, json, plain, csv (`_output.py`)
 - [x] CanvasError exception class
 - [x] Config via pydantic-settings (env vars, validation)
 - [x] CanvasClient (httpx async, pagination, 429 retry, form data)
@@ -156,8 +156,7 @@
 
 ### Planned
 
-- [ ] `--format csv` output format (Issue #8)
-- [ ] `grading submit-rubric` file path argument (Issue #9)
+- [ ] Version bump, changelog, and release tag for v0.1.5
 
 ### Deferred or Cut
 
@@ -218,12 +217,11 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Implement `--format csv` output (Issue #8)
-- [ ] Implement file-path argument for `grading submit-rubric` (Issue #9)
+- [ ] Bump version to 0.1.5, update CHANGELOG, tag, push
 
 ### Medium-term Goals (Next Few Sessions)
 
-- [ ] Tag and release v0.1.5
+(none)
 
 ### Decisions Needed
 
