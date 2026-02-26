@@ -97,10 +97,22 @@ def merge_configs(
     """
     result: list[tuple[str, Any, str]] = []
 
+    # All known keys: global-only first, then local (preserving order,
+    # skipping duplicates that appear in both).
+    seen: set[str] = set()
+    all_keys: list[str] = []
+    for key in GLOBAL_FIELDS:
+        all_keys.append(key)
+        seen.add(key)
     for key in LOCAL_FIELDS:
-        if key in local_cfg:
+        if key not in seen:
+            all_keys.append(key)
+            seen.add(key)
+
+    for key in all_keys:
+        if key in local_cfg and local_cfg[key] != "":
             result.append((key, local_cfg[key], "local"))
-        elif key in global_cfg:
+        elif key in global_cfg and global_cfg[key] != "":
             result.append((key, global_cfg[key], "global"))
         else:
             result.append((key, None, "not set"))
