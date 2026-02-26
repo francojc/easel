@@ -33,6 +33,7 @@ LOCAL_FIELDS = {
     "language_learning": "Language learning course (true/false)",
     "language_level": "ACTFL proficiency level (or NA)",
     "formality": "Feedback tone (casual/formal)",
+    "anonymize": "Anonymize student PII in assessment files (true/false)",
 }
 
 

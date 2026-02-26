@@ -9,8 +9,8 @@
 ### Development Phase
 
 - **Current Phase:** Post-0.1.0 feature development
-- **Phase Progress:** Anonymize feature implemented, awaiting commit
-- **Overall Project Progress:** All core phases complete; incremental features in progress
+- **Phase Progress:** Anonymize feature committed; command docs added
+- **Overall Project Progress:** All core phases complete; ready for 0.1.0 tag
 
 ### Recent Accomplishments
 
@@ -43,10 +43,12 @@
 
 ### Active Work
 
-- `--anonymize` flag for FERPA-compliant PII stripping: implemented
-  in grading and assessment services/CLI, 7 new tests added (234
-  total), all passing. Strips `user_name` and `user_email` fields
-  when enabled; retains `user_id` for grade submission round-tripping.
+- `--anonymize` flag for FERPA-compliant PII stripping: committed
+  (`ea83c99`). Strips `user_name` and `user_email` at service layer;
+  retains `user_id` for grade submission round-tripping. 7 new tests
+  added (234 total).
+- `.claude/commands/` expanded with new skill command directories:
+  assignments, content, course, discuss, grading (`d6963a4`).
 
 ## Milestone Tracking
 
@@ -72,7 +74,7 @@
 
 ### Build Health
 
-- **Last Successful Build:** 2026-02-22 (`uv sync` + `uv run easel --help`)
+- **Last Successful Build:** 2026-02-25 (`uv sync` + `uv run pytest tests/`)
 - **Build Warnings:** None
 
 ### Test Results
@@ -131,11 +133,13 @@
 - [x] Pages CLI: `easel pages list|show|create|update|delete`
 - [x] Discussions service: list, get, create, update (with announcements)
 - [x] Discussions CLI: `easel discussions list|show|create|update`
+- [x] `--anonymize` flag for FERPA-compliant PII stripping
+- [x] Expanded `.claude/commands/` with skill commands for assignments,
+  content, course, discuss, grading
 
 ### In Progress
 
-- [x] `--anonymize` flag for FERPA-compliant PII stripping (implemented,
-  awaiting commit)
+(none)
 
 ### Planned
 
@@ -201,7 +205,6 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Commit and tag `--anonymize` feature
 - [ ] Tag 0.1.0 release
 
 ### Medium-term Goals (Next Few Sessions)
@@ -220,8 +223,9 @@
 - **Target Date:** TBD
 - **Included Features:** Scaffolding + core + courses + assignments +
   rubrics + grading + assessment workflow + modules + pages +
-  discussions (Phases 0-5)
-- **Release Blockers:** None (Phase 6 complete)
+  discussions (Phases 0-6) + FERPA anonymization + expanded skill
+  commands
+- **Release Blockers:** None
 
 ### Release History
 

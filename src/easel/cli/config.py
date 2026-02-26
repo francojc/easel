@@ -32,7 +32,7 @@ def _coerce_value(key: str, raw: str) -> object:
         return int(raw)
     if key == "year":
         return int(raw)
-    if key in ("language_learning",):
+    if key in ("language_learning", "anonymize"):
         return raw.strip().lower() in ("true", "yes", "y")
     return raw
 

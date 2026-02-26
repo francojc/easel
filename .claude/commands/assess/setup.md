@@ -33,6 +33,7 @@ feedback_language: "Spanish"
 language_learning: true
 language_level: "ACTFL Intermediate Mid"
 formality: "casual"
+anonymize: true
 ```
 
 Notes on field values:
@@ -41,6 +42,7 @@ Notes on field values:
 - `formality` controls tone across all feedback: "casual" or "formal". For Spanish courses, "casual" implies tú and "formal" implies usted. For English feedback, "casual" means academic casual tone and "formal" means standard academic tone.
 - `language_learning: false` means `language_level` should be `"NA"`
 - `feedback_language` accepts full names ("Spanish", "English")
+- `anonymize` controls FERPA-compliant PII stripping: when `true`, student names and emails are blanked in the assessment JSON. The numeric `user_id` is retained for grade submission. Default `false`.
 
 **If present**: Parse YAML and validate all fields are populated. If any field is missing, prompt user for the missing values and update the file.
 
@@ -67,6 +69,7 @@ uv run easel assess setup {canvas_course_id} {assignment_id} \
   --language-level "{language_level}" \
   --formality "{formality}" \
   --exclude-graded \
+  --anonymize \
   --format json
 ```
 
@@ -75,6 +78,7 @@ Notes:
 - `{canvas_course_id}` comes from `course_parameters.yaml`
 - `{assignment_id}` is the argument passed to this command
 - Only include `--language-learning` if `language_learning: true` in course_parameters.yaml
+- Only include `--anonymize` if `anonymize: true` in course_parameters.yaml
 - `--feedback-language` uses the mapped code ("es" or "en")
 - `--exclude-graded` skips already-graded submissions (default behavior)
 - `--format json` returns structured output for parsing
@@ -181,6 +185,7 @@ This allows subsequent commands to auto-discover the assessment file.
 - Automatically skips students who haven't submitted
 - **Excludes already-graded submissions by default** to prevent overwriting existing grades
 - **FERPA COMPLIANCE: Enrollment filtering enabled** - Only includes submissions from students enrolled in the specified course, preventing cross-section contamination in cross-listed assignments
+- **FERPA COMPLIANCE: PII anonymization** - When `anonymize: true` in course_parameters.yaml, student names and emails are stripped from the assessment JSON. The numeric `user_id` is retained for grade submission back to Canvas
 - Creates fresh assessment file each time (timestamped to avoid conflicts)
 - Preserves all rubric details for AI evaluation step
 

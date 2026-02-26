@@ -89,6 +89,9 @@ four questions across one or two rounds:
 5. **Formality**: "What tone should feedback use?"
    - Options: ["casual (tú / conversational)", "formal (usted / academic)"]
 
+6. **Anonymize**: "Strip student names and emails from assessment files (FERPA compliance for LLM workflows)?"
+   - Options: ["Yes", "No"]
+
 For non-language-learning courses, set `language_level: "NA"`.
 
 ### 2f. Write course_parameters.yaml
@@ -106,6 +109,7 @@ feedback_language: "{feedback_language}"
 language_learning: {true_or_false}
 language_level: "{language_level}"
 formality: "{formality}"
+anonymize: {true_or_false}
 ```
 
 ## Step 3: Verify Course Access

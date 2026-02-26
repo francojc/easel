@@ -61,8 +61,8 @@ easel assignments rubric <course> <assignment-id>
 ### grading
 
 ```
-easel grading submissions <course> <assignment-id>
-easel grading show <course> <assignment-id> <user-id>
+easel grading submissions <course> <assignment-id> [--anonymize]
+easel grading show <course> <assignment-id> <user-id> [--anonymize]
 easel grading submit <course> <assignment-id> <user-id> <grade> [--comment ...]
 easel grading submit-rubric <course> <assignment-id> <user-id> <json> [--comment ...]
 ```
@@ -70,7 +70,7 @@ easel grading submit-rubric <course> <assignment-id> <user-id> <json> [--comment
 ### assess
 
 ```
-easel assess setup <course> <assignment-id> [--exclude-graded] [--format json]
+easel assess setup <course> <assignment-id> [--exclude-graded] [--anonymize] [--format json]
 easel assess load <file>
 easel assess update <file> <user-id> [--rubric-json ...] [--approved]
 easel assess submit <file> <course> <assignment-id> [--confirm]
@@ -80,6 +80,25 @@ The `assess` sub-app manages the full assessment workflow: fetch
 assignment data, build an assessment JSON file, update individual
 scores, and submit approved grades back to Canvas. Submit runs in
 dry-run mode by default — pass `--confirm` to post grades.
+
+### Anonymizing student data
+
+Commands that return student information support `--anonymize` to strip
+personally identifiable information before output. When enabled,
+`user_name` and `user_email` are replaced with empty strings. The
+numeric `user_id` (Canvas's opaque integer) is retained — it carries no
+identifying information outside the institution and is required for
+grade submission round-tripping.
+
+Affected commands: `assess setup`, `grading submissions`, `grading show`.
+
+```sh
+easel assess setup IS505 42 --anonymize -o assessment.json
+easel grading submissions IS505 42 --anonymize --format json
+```
+
+This is opt-in. Without `--anonymize`, output includes full names and
+emails as returned by the Canvas API.
 
 ### modules
 
@@ -216,7 +235,7 @@ assess skills read this file to configure their behavior.
 ```sh
 uv sync                         # install dependencies
 uv run easel --help             # verify install
-uv run pytest tests/            # run tests (227 passing)
+uv run pytest tests/            # run tests (234 passing)
 uv run ruff check src/ tests/   # lint
 uv run ruff format src/ tests/  # format
 ```

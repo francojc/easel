@@ -68,6 +68,7 @@ def test_config_init_interactive(tmp_path):
         "n",                # language_learning
         "NA",               # language_level
         "casual",           # formality
+        "n",                # anonymize
     ])
     with (
         patch("easel.cli.config.read_global_config", return_value={}),
@@ -103,6 +104,7 @@ def test_config_init_prefills_from_global(tmp_path):
         "n",            # language_learning
         "NA",           # language_level
         "casual",       # formality
+        "n",            # anonymize
     ])
     with (
         patch("easel.cli.config.read_global_config", return_value=global_cfg),
