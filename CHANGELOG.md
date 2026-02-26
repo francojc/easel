@@ -3,6 +3,15 @@
 All notable changes to easel are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.4] - 2026-02-25
+
+### Fixed
+
+- `course` changed from positional argument to `--course`/`-c` option
+  across all 29 commands in 7 CLI modules. Fixes greedy positional
+  parsing where `easel assignments rubric 660168` consumed `660168`
+  as the course instead of `assignment_id` (Issue #6)
+
 ## [0.1.3] - 2026-02-25
 
 ### Added
@@ -94,6 +103,7 @@ Initial release. Full Canvas LMS CLI for instructor workflows.
 - `--test` flag for Canvas API connectivity check
 - 234 tests passing across services and CLI layers
 
+[0.1.4]: https://github.com/francojc/easel/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/francojc/easel/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/francojc/easel/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/francojc/easel/compare/v0.1.0...v0.1.1
