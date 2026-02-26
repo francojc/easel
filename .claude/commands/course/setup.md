@@ -6,7 +6,7 @@ allowed-tools: Read, Write, AskUserQuestion, Bash, Glob
 # Course Setup - Initialize Course Workspace
 
 Guide the user through first-time course configuration, validate Canvas
-connectivity, and create `.claude/course_parameters.yaml`.
+connectivity, and create `easel/config.toml`.
 
 ## Task Overview
 
@@ -16,7 +16,7 @@ parameter file creation so that all downstream workflows have valid context.
 
 ## Step 1: Check Existing Configuration
 
-Look for `.claude/course_parameters.yaml` in the current repository.
+Look for `easel/config.toml` in the current repository.
 
 **If present**: Read and display current values. Use `AskUserQuestion` to ask:
 
@@ -94,22 +94,22 @@ four questions across one or two rounds:
 
 For non-language-learning courses, set `language_level: "NA"`.
 
-### 2f. Write course_parameters.yaml
+### 2f. Write easel/config.toml
 
-Create `.claude/course_parameters.yaml` with all collected values:
+Create `easel/config.toml` with all collected values:
 
-```yaml
-course_title: "{course_name}"
-course_code: "{course_code}"
-canvas_course_id: {course_id}
-term: "{term}"
-year: {current_year}
-level: "{level}"
-feedback_language: "{feedback_language}"
-language_learning: {true_or_false}
-language_level: "{language_level}"
-formality: "{formality}"
-anonymize: {true_or_false}
+```toml
+course_title = "{course_name}"
+course_code = "{course_code}"
+canvas_course_id = {course_id}
+term = "{term}"
+year = {current_year}
+level = "{level}"
+feedback_language = "{feedback_language}"
+language_learning = {true_or_false}
+language_level = "{language_level}"
+formality = "{formality}"
+anonymize = {true_or_false}
 ```
 
 ## Step 3: Verify Course Access
@@ -160,7 +160,7 @@ Course Content:
   Assignments: A (B published)
   Modules: C
 
-Parameters saved to: .claude/course_parameters.yaml
+Parameters saved to: easel/config.toml
 
 Available workflows:
   /course:overview  - Course status dashboard
@@ -176,6 +176,6 @@ Available workflows:
 - If Canvas connectivity fails: Report error, ask user to check environment variables
 - If course not found: Report error with available courses list
 - If enrollment fetch fails: Report warning but continue (non-critical)
-- If `.claude/` directory missing: Create it before writing parameters file
+- If `easel/` directory missing: Create it before writing config file
 
 Begin setup now.

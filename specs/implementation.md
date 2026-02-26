@@ -209,14 +209,14 @@ easel/
     - **Dependencies:** services/discussions.py
 
 21. **core/config_files.py**
-    - **Purpose:** Read/write YAML and TOML config files for easel
+    - **Purpose:** Read/write TOML config files for easel
     - **Public Interface:** `read_global_config()`,
       `write_global_config()`, `read_local_config()`,
       `write_local_config()`, `merge_configs()`
-    - **Dependencies:** pyyaml, tomli-w, tomllib (stdlib)
-    - **Notes:** Global config at `~/.config/easel/config.toml`,
-      local config at `.claude/course_parameters.yaml`.
-      `LOCAL_FIELDS` defines the schema for `course_parameters.yaml`
+    - **Dependencies:** tomli-w, tomllib (stdlib)
+    - **Notes:** Global config at `$XDG_CONFIG_HOME/easel/config.toml`,
+      local config at `./easel/config.toml`.
+      `LOCAL_FIELDS` defines the schema for the local config
       including `anonymize` (boolean) for FERPA PII stripping
 
 22. **cli/config.py**
@@ -224,9 +224,10 @@ easel/
     - **Public Interface:** `config_app` with `init`, `global`,
       `show` commands
     - **Dependencies:** core/config_files.py
-    - **Notes:** `init` creates local YAML with interactive prompts,
-      pre-filling from global TOML. `global` manages instructor
-      defaults. `show` displays merged view with source annotations.
+    - **Notes:** `init` creates local TOML with interactive prompts,
+      pre-filling from global config. `global` manages instructor
+      defaults with optional `--defaults` flag. `show` displays
+      merged view with source annotations.
 
 ### Data Model
 

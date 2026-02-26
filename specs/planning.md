@@ -12,7 +12,7 @@
 - **Target Platform:** macOS / Linux (cross-platform Python)
 - **Primary Language:** Python 3.11+
 - **Key Libraries/Frameworks:** Typer, httpx, pydantic, pydantic-settings,
-  rich, python-dateutil, pyyaml, tomli-w
+  rich, python-dateutil, tomli-w
 
 ### Problem Statement
 
@@ -137,6 +137,15 @@
 - [x] Shell completion support (Typer built-in --install-completion)
 - [x] README with full CLI reference and "Extending with AI" section
 - [x] Final documentation pass
+
+### v0.1.2: XDG Configuration (CURRENT)
+
+- [ ] Global config respects `$XDG_CONFIG_HOME` (default `~/.config`)
+- [ ] Local config moved from `.claude/course_parameters.yaml` to
+      `./easel/config.toml` (TOML, not YAML)
+- [ ] `--defaults` flag on `easel config global` for non-interactive setup
+- [ ] `easel commands install` covers all 6 command groups
+- [ ] pyyaml dependency removed
 
 ## Resources and Requirements
 

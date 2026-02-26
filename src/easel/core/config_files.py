@@ -1,17 +1,20 @@
-"""Read and write easel config files (YAML and TOML)."""
+"""Read and write easel config files (TOML)."""
 
 from __future__ import annotations
 
+import os
 import tomllib
 from pathlib import Path
 from typing import Any
 
 import tomli_w
-import yaml
 
-GLOBAL_CONFIG_DIR = Path.home() / ".config" / "easel"
+_xdg = Path(
+    os.environ.get("XDG_CONFIG_HOME", "") or (Path.home() / ".config")
+)
+GLOBAL_CONFIG_DIR = _xdg / "easel"
 GLOBAL_CONFIG_PATH = GLOBAL_CONFIG_DIR / "config.toml"
-LOCAL_CONFIG_PATH = Path(".claude") / "course_parameters.yaml"
+LOCAL_CONFIG_PATH = Path("easel") / "config.toml"
 
 GLOBAL_FIELDS = {
     "name": "Instructor name",
@@ -38,7 +41,7 @@ LOCAL_FIELDS = {
 
 
 def read_global_config() -> dict[str, Any]:
-    """Read global config from ~/.config/easel/config.toml.
+    """Read global config from $XDG_CONFIG_HOME/easel/config.toml.
 
     Returns empty dict if file does not exist.
     """
@@ -49,7 +52,7 @@ def read_global_config() -> dict[str, Any]:
 
 
 def write_global_config(data: dict[str, Any]) -> Path:
-    """Write global config to ~/.config/easel/config.toml.
+    """Write global config to $XDG_CONFIG_HOME/easel/config.toml.
 
     Creates parent directories if needed. Returns the path written.
     """
@@ -60,7 +63,7 @@ def write_global_config(data: dict[str, Any]) -> Path:
 
 
 def read_local_config(base: Path | None = None) -> dict[str, Any]:
-    """Read local course_parameters.yaml from .claude/ directory.
+    """Read local config from easel/config.toml.
 
     Args:
         base: Repository root. Defaults to cwd.
@@ -70,19 +73,19 @@ def read_local_config(base: Path | None = None) -> dict[str, Any]:
     path = (base or Path.cwd()) / LOCAL_CONFIG_PATH
     if not path.is_file():
         return {}
-    with open(path) as f:
-        return yaml.safe_load(f) or {}
+    with open(path, "rb") as f:
+        return tomllib.load(f)
 
 
 def write_local_config(data: dict[str, Any], base: Path | None = None) -> Path:
-    """Write local course_parameters.yaml to .claude/ directory.
+    """Write local config to easel/config.toml.
 
     Creates parent directories if needed. Returns the path written.
     """
     path = (base or Path.cwd()) / LOCAL_CONFIG_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
-        yaml.dump(data, f, default_flow_style=False, sort_keys=False)
+    with open(path, "wb") as f:
+        tomli_w.dump(data, f)
     return path
 
 

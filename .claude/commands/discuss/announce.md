@@ -22,7 +22,7 @@ routine communications.
 
 ## Step 1: Load Course Parameters
 
-Read `.claude/course_parameters.yaml` to get `canvas_course_id`,
+Read `easel/config.toml` to get `canvas_course_id`,
 `course_title`, `course_code`, `feedback_language`, and `formality`.
 
 **If missing**: Report error and tell user to run `/course:setup` first. Stop.
@@ -145,7 +145,7 @@ To edit later:
 
 ## Error Handling
 
-- If course_parameters.yaml missing: Direct to `/course:setup`
+- If easel/config.toml missing: Direct to `/course:setup`
 - If posting fails: Report the Canvas API error, offer to retry or save
   the draft text so the user doesn't lose it
 - If shell escaping issues with body text: Write body to temp file and use

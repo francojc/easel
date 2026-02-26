@@ -137,10 +137,10 @@ easel config global
 easel config show
 ```
 
-`config init` creates `.claude/course_parameters.yaml` in the current
-repo with interactive prompts. `config global` manages shared defaults
-at `~/.config/easel/config.toml`. `config show` displays the merged
-view of both, annotated by source.
+`config init` creates `easel/config.toml` in the current repo with
+interactive prompts. `config global` manages shared defaults at
+`$XDG_CONFIG_HOME/easel/config.toml` (default `~/.config`).
+`config show` displays the merged view of both, annotated by source.
 
 ### commands
 
@@ -148,8 +148,8 @@ view of both, annotated by source.
 easel commands install [--overwrite]
 ```
 
-Copies the bundled assess skill commands into
-`.claude/commands/assess/` in the current repo.
+Copies all bundled skill commands (assess, assignments, content,
+course, discuss, grading) into `~/.claude/commands/`.
 
 ### Global options
 
@@ -226,9 +226,9 @@ writes to a local file, and submit pushes grades to Canvas.
 ### Configuration for skills
 
 Skills that use easel for grading need course context. Run
-`easel config init` to create `.claude/course_parameters.yaml` with
-fields like course code, feedback language, and formality level. The
-assess skills read this file to configure their behavior.
+`easel config init` to create `easel/config.toml` with fields like
+course code, feedback language, and formality level. The assess skills
+read this file to configure their behavior.
 
 ## Development
 

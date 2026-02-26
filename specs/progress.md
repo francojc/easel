@@ -44,12 +44,10 @@
 
 ### Active Work
 
-- Anonymize integration pass (uncommitted): README updated with
-  `--anonymize` in command signatures and new "Anonymizing student
-  data" section. `assess:setup` and `course:setup` skill commands
-  updated to read `anonymize` from `course_parameters.yaml`.
-  `anonymize` field added to `LOCAL_FIELDS` in config_files.py
-  and boolean coercion in config.py. Config tests updated.
+- v0.1.2 XDG config system: global config respects `$XDG_CONFIG_HOME`,
+  local config moved from `.claude/course_parameters.yaml` (YAML) to
+  `./easel/config.toml` (TOML). `--defaults` flag on `config global`.
+  `commands install` expanded to all 6 command groups. pyyaml removed.
 
 ## Milestone Tracking
 
@@ -66,6 +64,7 @@
 
 - [x] Phase 6: Polish (shell completion, README, docs) -- complete
 - [ ] 0.1.0 release
+- [ ] v0.1.2: XDG-compliant config system
 
 ### At-Risk Milestones
 
@@ -123,8 +122,8 @@
 - [x] Assessment CLI: `easel assess setup|load|update|submit`
 - [x] Commands CLI: `easel commands install` (copies .claude/commands/assess/*.md)
 - [x] Assess skill commands migrated from MCP to easel CLI (setup, ai-pass, refine, submit)
-- [x] Config sub-app: `easel config init|global|show` with YAML/TOML
-  file management and global-to-local inheritance
+- [x] Config sub-app: `easel config init|global|show` with TOML
+  file management, XDG support, and global-to-local inheritance
 - [x] Live smoke test: all 17 CLI commands verified against Canvas API
 - [x] Bug fix: --test callback event loop crash (combined into single
   async function)
@@ -137,7 +136,7 @@
 - [x] `--anonymize` flag for FERPA-compliant PII stripping
 - [x] Expanded `.claude/commands/` with skill commands for assignments,
   content, course, discuss, grading
-- [x] `anonymize` field in `course_parameters.yaml` and `easel config init`
+- [x] `anonymize` field in local config and `easel config init`
 - [x] README `--anonymize` documentation and command signature updates
 - [x] `assess:setup` and `course:setup` skill commands updated for anonymize
 
@@ -173,8 +172,7 @@
 - **typer:** CLI framework with rich integration
 - **pydantic / pydantic-settings:** config and data validation
 - **rich:** terminal output formatting (tables, panels)
-- **pyyaml:** YAML read/write for course_parameters.yaml
-- **tomli-w:** TOML write for global config (stdlib tomllib for reads)
+- **tomli-w:** TOML write for config files (stdlib tomllib for reads)
 - **ruff:** linting and formatting (dev dependency)
 - **pytest / pytest-asyncio:** testing (dev dependency)
 

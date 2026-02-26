@@ -49,7 +49,7 @@ def test_write_and_read_local_config(tmp_path):
         "formality": "casual",
     }
     path = write_local_config(data, tmp_path)
-    assert path == tmp_path / ".claude" / "course_parameters.yaml"
+    assert path == tmp_path / "easel" / "config.toml"
     assert path.is_file()
 
     loaded = read_local_config(tmp_path)
@@ -99,3 +99,18 @@ def test_write_global_creates_directories(tmp_path, monkeypatch):
     )
     write_global_config({"name": "Test"})
     assert (nested / "config.toml").is_file()
+
+
+def test_xdg_config_home_respected(tmp_path, monkeypatch):
+    """XDG_CONFIG_HOME is respected when the module constants are recomputed."""
+    xdg_dir = tmp_path / "custom-xdg"
+    monkeypatch.setattr(
+        "easel.core.config_files.GLOBAL_CONFIG_DIR", xdg_dir / "easel"
+    )
+    monkeypatch.setattr(
+        "easel.core.config_files.GLOBAL_CONFIG_PATH",
+        xdg_dir / "easel" / "config.toml",
+    )
+    write_global_config({"name": "XDG User"})
+    loaded = read_global_config()
+    assert loaded["name"] == "XDG User"

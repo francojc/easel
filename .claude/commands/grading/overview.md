@@ -20,7 +20,7 @@ report. Provides analytics not available in the Canvas UI.
 
 ## Step 1: Load Course Parameters
 
-Read `.claude/course_parameters.yaml` to get `canvas_course_id` and
+Read `easel/config.toml` to get `canvas_course_id` and
 `course_title`.
 
 **If missing**: Report error and tell user to run `/course:setup` first. Stop.
@@ -155,7 +155,7 @@ Assignments Needing Attention
 
 ## Error Handling
 
-- If course_parameters.yaml missing: Direct to `/course:setup`
+- If easel/config.toml missing: Direct to `/course:setup`
 - If assignment not found: Report error with the ID attempted
 - If no submissions exist: Report "No submissions yet" rather than empty stats
 - If Canvas API rate limited: Wait briefly and retry (up to 3 attempts)

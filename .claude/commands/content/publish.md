@@ -21,7 +21,7 @@ Quarto output) with Canvas publishing.
 
 ## Step 1: Load Course Parameters
 
-Read `.claude/course_parameters.yaml` to get `canvas_course_id`.
+Read `easel/config.toml` to get `canvas_course_id`.
 
 **If missing**: Report error and tell user to run `/course:setup` first. Stop.
 

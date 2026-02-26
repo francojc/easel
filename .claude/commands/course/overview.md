@@ -16,7 +16,7 @@ This replaces running 3-4 separate easel commands manually.
 
 ## Step 1: Load Course Parameters
 
-Read `.claude/course_parameters.yaml` to get `canvas_course_id`,
+Read `easel/config.toml` to get `canvas_course_id`,
 `course_title`, `course_code`, `term`, and `year`.
 
 **If missing**: Report error and tell user to run `/course:setup` first. Stop.
@@ -115,7 +115,7 @@ Modules ({total})
 
 ## Error Handling
 
-- If course_parameters.yaml missing: Report error, direct to `/course:setup`
+- If easel/config.toml missing: Report error, direct to `/course:setup`
 - If any Canvas fetch fails: Report the error for that section, continue
   with remaining sections (partial dashboard is better than none)
 - If course has no assignments or modules: Display "None" for those sections

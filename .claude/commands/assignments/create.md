@@ -16,7 +16,7 @@ for common mistakes like missing submission types or forgetting to publish.
 
 ## Step 1: Load Course Parameters
 
-Read `.claude/course_parameters.yaml` to get `canvas_course_id` and
+Read `easel/config.toml` to get `canvas_course_id` and
 `course_title`.
 
 **If missing**: Report error and tell user to run `/course:setup` first. Stop.
@@ -153,7 +153,7 @@ Next steps:
 
 ## Error Handling
 
-- If course_parameters.yaml missing: Direct to `/course:setup`
+- If easel/config.toml missing: Direct to `/course:setup`
 - If assignment creation fails: Report the Canvas API error
 - If invalid date format: Ask user to re-enter in ISO 8601 format
 - If duplicate assignment name: Warn but proceed (Canvas allows duplicates)

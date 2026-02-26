@@ -9,7 +9,14 @@ import typer
 
 commands_app = typer.Typer(name="commands", help="Manage easel skill commands.")
 
-_COMMAND_GROUPS = ["assess"]
+_COMMAND_GROUPS = [
+    "assess",
+    "assignments",
+    "content",
+    "course",
+    "discuss",
+    "grading",
+]
 
 
 @commands_app.command("install")
@@ -18,7 +25,7 @@ def commands_install(
         False, "--overwrite", help="Overwrite existing files without asking."
     ),
 ) -> None:
-    """Install easel assess commands to ~/.claude/commands/."""
+    """Install all easel commands to ~/.claude/commands/."""
     repo_root = Path(__file__).resolve().parent.parent.parent.parent
     dst_root = Path.home() / ".claude" / "commands"
 

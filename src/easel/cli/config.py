@@ -43,7 +43,7 @@ def config_init(
         ".", "--base", help="Repository root directory."
     ),
 ) -> None:
-    """Create .claude/course_parameters.yaml with interactive prompts."""
+    """Create easel/config.toml with interactive prompts."""
     base_path = Path(base).resolve()
     global_cfg = read_global_config()
     existing = read_local_config(base_path)
@@ -61,10 +61,32 @@ def config_init(
     typer.echo(f"Wrote {path}")
 
 
+DEFAULT_GLOBAL = {
+    "name": "",
+    "institution": "",
+    "level": "undergraduate",
+    "feedback_language": "English",
+    "formality": "casual",
+    "language_learning": False,
+}
+
+
 @config_app.command("global")
-def config_global() -> None:
-    """Create or update ~/.config/easel/config.toml with shared defaults."""
+def config_global(
+    defaults: bool = typer.Option(
+        False,
+        "--defaults",
+        help="Write default config without prompting.",
+    ),
+) -> None:
+    """Create or update $XDG_CONFIG_HOME/easel/config.toml with shared defaults."""
     existing = read_global_config()
+
+    if defaults:
+        data = {**DEFAULT_GLOBAL, **existing}
+        path = write_global_config(data)
+        typer.echo(f"Wrote {path}")
+        return
 
     data: dict[str, object] = {}
     for key, description in GLOBAL_FIELDS.items():
@@ -74,7 +96,9 @@ def config_global() -> None:
                 description, bool(default) if default != "" else False
             )
         else:
-            raw = typer.prompt(description, default=str(default) if default else "")
+            raw = typer.prompt(
+                description, default=str(default) if default else ""
+            )
             data[key] = raw
 
     path = write_global_config(data)
@@ -90,7 +114,13 @@ def config_show() -> None:
 
     if not global_cfg and not local_cfg:
         typer.echo("No configuration found.")
-        typer.echo("Run 'easel config global' or 'easel config init' to get started.")
+        typer.echo(
+            "Run 'easel config global' or 'easel config init' to get started."
+        )
+        typer.echo(
+            "Global: $XDG_CONFIG_HOME/easel/config.toml  "
+            "Local: ./easel/config.toml"
+        )
         raise typer.Exit()
 
     max_key = max(len(t[0]) for t in merged)

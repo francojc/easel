@@ -16,24 +16,24 @@ Initialize the grading workflow for Canvas assignment {{assignment_id}}.
 
 Create the assessment JSON file with all student submissions and rubric structure, ready for AI evaluation.
 
-## Step 1: Validate course_parameters.yaml
+## Step 1: Validate easel/config.toml
 
-Check for `.claude/course_parameters.yaml` in the current repository.
+Check for `easel/config.toml` in the current repository.
 
 **If missing**: Use `AskUserQuestion` to collect all fields, then create the file:
 
-```yaml
-course_title: "Exploring the Hispanic World"
-course_code: "SPA-212-T"
-canvas_course_id: 79384
-term: "Spring"
-year: 2026
-level: "undergraduate"
-feedback_language: "Spanish"
-language_learning: true
-language_level: "ACTFL Intermediate Mid"
-formality: "casual"
-anonymize: true
+```toml
+course_title = "Exploring the Hispanic World"
+course_code = "SPA-212-T"
+canvas_course_id = 79384
+term = "Spring"
+year = 2026
+level = "undergraduate"
+feedback_language = "Spanish"
+language_learning = true
+language_level = "ACTFL Intermediate Mid"
+formality = "casual"
+anonymize = true
 ```
 
 Notes on field values:
@@ -44,7 +44,7 @@ Notes on field values:
 - `feedback_language` accepts full names ("Spanish", "English")
 - `anonymize` controls FERPA-compliant PII stripping: when `true`, student names and emails are blanked in the assessment JSON. The numeric `user_id` is retained for grade submission. Default `false`.
 
-**If present**: Parse YAML and validate all fields are populated. If any field is missing, prompt user for the missing values and update the file.
+**If present**: Parse TOML and validate all fields are populated. If any field is missing, prompt user for the missing values and update the file.
 
 **Extract values for downstream use**:
 
@@ -75,10 +75,10 @@ uv run easel assess setup {canvas_course_id} {assignment_id} \
 
 Notes:
 
-- `{canvas_course_id}` comes from `course_parameters.yaml`
+- `{canvas_course_id}` comes from `easel/config.toml`
 - `{assignment_id}` is the argument passed to this command
-- Only include `--language-learning` if `language_learning: true` in course_parameters.yaml
-- Only include `--anonymize` if `anonymize: true` in course_parameters.yaml
+- Only include `--language-learning` if `language_learning: true` in easel/config.toml
+- Only include `--anonymize` if `anonymize: true` in easel/config.toml
 - `--feedback-language` uses the mapped code ("es" or "en")
 - `--exclude-graded` skips already-graded submissions (default behavior)
 - `--format json` returns structured output for parsing
@@ -185,7 +185,7 @@ This allows subsequent commands to auto-discover the assessment file.
 - Automatically skips students who haven't submitted
 - **Excludes already-graded submissions by default** to prevent overwriting existing grades
 - **FERPA COMPLIANCE: Enrollment filtering enabled** - Only includes submissions from students enrolled in the specified course, preventing cross-section contamination in cross-listed assignments
-- **FERPA COMPLIANCE: PII anonymization** - When `anonymize: true` in course_parameters.yaml, student names and emails are stripped from the assessment JSON. The numeric `user_id` is retained for grade submission back to Canvas
+- **FERPA COMPLIANCE: PII anonymization** - When `anonymize: true` in easel/config.toml, student names and emails are stripped from the assessment JSON. The numeric `user_id` is retained for grade submission back to Canvas
 - Creates fresh assessment file each time (timestamped to avoid conflicts)
 - Preserves all rubric details for AI evaluation step
 

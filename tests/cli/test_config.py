@@ -75,7 +75,7 @@ def test_config_init_interactive(tmp_path):
         patch("easel.cli.config.read_local_config", return_value={}),
         patch(
             "easel.cli.config.write_local_config",
-            return_value=tmp_path / ".claude" / "course_parameters.yaml",
+            return_value=tmp_path / "easel" / "config.toml",
         ) as mock_write,
     ):
         result = runner.invoke(
@@ -111,7 +111,7 @@ def test_config_init_prefills_from_global(tmp_path):
         patch("easel.cli.config.read_local_config", return_value={}),
         patch(
             "easel.cli.config.write_local_config",
-            return_value=tmp_path / ".claude" / "course_parameters.yaml",
+            return_value=tmp_path / "easel" / "config.toml",
         ) as mock_write,
     ):
         result = runner.invoke(
@@ -171,3 +171,40 @@ def test_config_global_prefills_existing(tmp_path):
         assert data["name"] == "Old Name"
         assert data["institution"] == "Old U"
         assert data["language_learning"] is True
+
+
+def test_config_global_defaults_flag(tmp_path):
+    """--defaults writes config without prompting."""
+    with (
+        patch("easel.cli.config.read_global_config", return_value={}),
+        patch(
+            "easel.cli.config.write_global_config",
+            return_value=tmp_path / "config.toml",
+        ) as mock_write,
+    ):
+        result = runner.invoke(app, ["config", "global", "--defaults"])
+        assert result.exit_code == 0
+        assert "Wrote" in result.output
+        mock_write.assert_called_once()
+        data = mock_write.call_args[0][0]
+        assert data["level"] == "undergraduate"
+        assert data["feedback_language"] == "English"
+        assert data["language_learning"] is False
+
+
+def test_config_global_defaults_preserves_existing(tmp_path):
+    """--defaults merges existing values over defaults."""
+    existing = {"name": "Jane Doe", "institution": "State U"}
+    with (
+        patch("easel.cli.config.read_global_config", return_value=existing),
+        patch(
+            "easel.cli.config.write_global_config",
+            return_value=tmp_path / "config.toml",
+        ) as mock_write,
+    ):
+        result = runner.invoke(app, ["config", "global", "--defaults"])
+        assert result.exit_code == 0
+        data = mock_write.call_args[0][0]
+        assert data["name"] == "Jane Doe"
+        assert data["institution"] == "State U"
+        assert data["level"] == "undergraduate"
