@@ -76,6 +76,17 @@ def test_courses_list_json(mock_list):
 
 
 @patch("easel.cli.courses.list_courses", new_callable=AsyncMock)
+def test_courses_list_csv(mock_list):
+    mock_list.return_value = MOCK_COURSES
+    with _patch_context():
+        result = runner.invoke(app, ["--format", "csv", "courses", "list"])
+    assert result.exit_code == 0
+    lines = result.output.strip().splitlines()
+    assert lines[0] == "id,course_code,name,term,total_students"
+    assert "IS505" in lines[1]
+
+
+@patch("easel.cli.courses.list_courses", new_callable=AsyncMock)
 def test_courses_list_concluded(mock_list):
     mock_list.return_value = []
     with _patch_context():

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Optional
 
 import typer
@@ -150,9 +151,8 @@ async def grading_submit_rubric(
     ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),
-    assessment_json: str = typer.Argument(
-        help="Rubric assessment as JSON string, e.g. "
-        '\'{"_8027": {"points": 25, "comments": "Good"}}\'.',
+    assessment_file: str = typer.Argument(
+        help="Path to a JSON file containing the rubric assessment.",
     ),
     comment: Optional[str] = typer.Option(
         None, "--comment", help="Overall submission comment."
@@ -160,10 +160,14 @@ async def grading_submit_rubric(
 ) -> None:
     """Submit a rubric-based grade for a submission."""
     course = resolve_course(course)
+    path = Path(assessment_file)
+    if not path.is_file():
+        typer.echo(f"File not found: {assessment_file}", err=True)
+        raise typer.Exit(1)
     try:
-        rubric_assessment = json.loads(assessment_json)
+        rubric_assessment = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        typer.echo(f"Invalid JSON: {exc}", err=True)
+        typer.echo(f"Invalid JSON in {assessment_file}: {exc}", err=True)
         raise typer.Exit(1)
 
     ectx = get_context(ctx.obj)

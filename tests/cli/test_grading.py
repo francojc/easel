@@ -202,36 +202,52 @@ def test_grading_submit_error(mock_submit):
 
 
 @patch("easel.cli.grading.submit_rubric_grade", new_callable=AsyncMock)
-def test_grading_submit_rubric(mock_submit):
+def test_grading_submit_rubric(mock_submit, tmp_path):
     mock_submit.return_value = MOCK_GRADE_RESULT
     assessment = {"_8027": {"points": 25, "comments": "Good"}}
+    f = tmp_path / "rubric.json"
+    f.write_text(json.dumps(assessment), encoding="utf-8")
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit-rubric", "--course", "IS505", "101", "10", json.dumps(assessment)],
+            ["grading", "submit-rubric", "--course", "IS505", "101", "10", str(f)],
         )
     assert result.exit_code == 0
     assert "85" in result.output
 
 
-def test_grading_submit_rubric_invalid_json():
+def test_grading_submit_rubric_invalid_json(tmp_path):
+    f = tmp_path / "bad.json"
+    f.write_text("not-json", encoding="utf-8")
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit-rubric", "--course", "IS505", "101", "10", "not-json"],
+            ["grading", "submit-rubric", "--course", "IS505", "101", "10", str(f)],
         )
     assert result.exit_code == 1
     assert "Invalid JSON" in result.output
 
 
-@patch("easel.cli.grading.submit_rubric_grade", new_callable=AsyncMock)
-def test_grading_submit_rubric_error(mock_submit):
-    mock_submit.side_effect = CanvasError("server error", status_code=500)
-    assessment = {"_8027": {"points": 10}}
+def test_grading_submit_rubric_file_not_found():
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit-rubric", "--course", "IS505", "101", "10", json.dumps(assessment)],
+            ["grading", "submit-rubric", "--course", "IS505", "101", "10", "/nonexistent/rubric.json"],
+        )
+    assert result.exit_code == 1
+    assert "File not found" in result.output
+
+
+@patch("easel.cli.grading.submit_rubric_grade", new_callable=AsyncMock)
+def test_grading_submit_rubric_error(mock_submit, tmp_path):
+    mock_submit.side_effect = CanvasError("server error", status_code=500)
+    assessment = {"_8027": {"points": 10}}
+    f = tmp_path / "rubric.json"
+    f.write_text(json.dumps(assessment), encoding="utf-8")
+    with _patch_context():
+        result = runner.invoke(
+            app,
+            ["grading", "submit-rubric", "--course", "IS505", "101", "10", str(f)],
         )
     assert result.exit_code == 1
     assert "server error" in result.output

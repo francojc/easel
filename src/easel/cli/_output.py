@@ -1,4 +1,6 @@
+import csv
 import json
+import sys
 from enum import Enum
 
 from rich.console import Console
@@ -11,6 +13,7 @@ class OutputFormat(str, Enum):
     TABLE = "table"
     JSON = "json"
     PLAIN = "plain"
+    CSV = "csv"
 
 
 def format_output(
@@ -35,6 +38,18 @@ def format_output(
                     console.print("---")
                 else:
                     console.print(str(item))
+        return
+
+    if fmt == OutputFormat.CSV:
+        if isinstance(data, dict):
+            data = [data]
+        if not data:
+            return
+        cols = headers or list(data[0].keys())
+        writer = csv.writer(sys.stdout)
+        writer.writerow(cols)
+        for row in data:
+            writer.writerow([str(row.get(col, "")) for col in cols])
         return
 
     # TABLE format

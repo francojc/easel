@@ -53,8 +53,9 @@ patterns easel adapts. Reference only -- no runtime dependency.
   comes from `CANVAS_BASE_URL`; `/api/v1` is appended automatically.
 - Async bridging: services are async, Typer callbacks are sync.
   Use the `_async.py` bridge decorator to call services from CLI.
-- Output formatting: all commands support `--format` (table/json/plain).
-  Use `_output.py`'s `format_output()` for consistent rendering.
+- Output formatting: all commands support `--format` (table/json/plain/csv).
+  Use `_output.py`'s `format_output()` for consistent rendering. CSV
+  writes header + data rows to stdout via `csv.writer` (no Rich markup).
 - Config files: global config is TOML at
   `$XDG_CONFIG_HOME/easel/config.toml` (default `~/.config/easel/config.toml`),
   local config is TOML at `./easel/config.toml`. The config sub-app
