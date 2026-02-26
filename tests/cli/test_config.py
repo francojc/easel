@@ -57,19 +57,21 @@ def test_config_show_not_set_fields():
 
 
 def test_config_init_interactive(tmp_path):
-    inputs = "\n".join([
-        "Test Course",      # course_title
-        "TST-101",          # course_code
-        "99999",            # canvas_course_id
-        "Spring",           # term
-        "2026",             # year
-        "undergraduate",    # level
-        "English",          # feedback_language
-        "n",                # language_learning
-        "NA",               # language_level
-        "casual",           # formality
-        "n",                # anonymize
-    ])
+    inputs = "\n".join(
+        [
+            "Test Course",  # course_title
+            "TST-101",  # course_code
+            "99999",  # canvas_course_id
+            "Spring",  # term
+            "2026",  # year
+            "undergraduate",  # level
+            "English",  # feedback_language
+            "n",  # language_learning
+            "NA",  # language_level
+            "casual",  # formality
+            "n",  # anonymize
+        ]
+    )
     with (
         patch("easel.cli.config.read_global_config", return_value={}),
         patch("easel.cli.config.read_local_config", return_value={}),
@@ -93,19 +95,21 @@ def test_config_init_interactive(tmp_path):
 def test_config_init_prefills_from_global(tmp_path):
     global_cfg = {"level": "graduate", "feedback_language": "Spanish"}
     # Just press enter for each prompt to accept defaults
-    inputs = "\n".join([
-        "Test Course",  # course_title (no global default)
-        "TST-101",      # course_code
-        "99999",        # canvas_course_id
-        "Spring",       # term
-        "2026",         # year
-        "",             # level (should prefill "graduate")
-        "",             # feedback_language (should prefill "Spanish")
-        "n",            # language_learning
-        "NA",           # language_level
-        "casual",       # formality
-        "n",            # anonymize
-    ])
+    inputs = "\n".join(
+        [
+            "Test Course",  # course_title (no global default)
+            "TST-101",  # course_code
+            "99999",  # canvas_course_id
+            "Spring",  # term
+            "2026",  # year
+            "",  # level (should prefill "graduate")
+            "",  # feedback_language (should prefill "Spanish")
+            "n",  # language_learning
+            "NA",  # language_level
+            "casual",  # formality
+            "n",  # anonymize
+        ]
+    )
     with (
         patch("easel.cli.config.read_global_config", return_value=global_cfg),
         patch("easel.cli.config.read_local_config", return_value={}),
@@ -124,14 +128,16 @@ def test_config_init_prefills_from_global(tmp_path):
 
 
 def test_config_global_interactive(tmp_path):
-    inputs = "\n".join([
-        "Test User",        # name
-        "Test University",  # institution
-        "undergraduate",    # level
-        "English",          # feedback_language
-        "casual",           # formality
-        "n",                # language_learning
-    ])
+    inputs = "\n".join(
+        [
+            "Test User",  # name
+            "Test University",  # institution
+            "undergraduate",  # level
+            "English",  # feedback_language
+            "casual",  # formality
+            "n",  # language_learning
+        ]
+    )
     with (
         patch("easel.cli.config.read_global_config", return_value={}),
         patch(
@@ -150,14 +156,16 @@ def test_config_global_interactive(tmp_path):
 
 def test_config_global_prefills_existing(tmp_path):
     existing = {"name": "Old Name", "institution": "Old U"}
-    inputs = "\n".join([
-        "",                # name (accept Old Name)
-        "",                # institution (accept Old U)
-        "graduate",        # level
-        "Spanish",         # feedback_language
-        "formal",          # formality
-        "y",               # language_learning
-    ])
+    inputs = "\n".join(
+        [
+            "",  # name (accept Old Name)
+            "",  # institution (accept Old U)
+            "graduate",  # level
+            "Spanish",  # feedback_language
+            "formal",  # formality
+            "y",  # language_learning
+        ]
+    )
     with (
         patch("easel.cli.config.read_global_config", return_value=existing),
         patch(
