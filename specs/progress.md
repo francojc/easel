@@ -44,10 +44,9 @@
 
 ### Active Work
 
-- v0.1.2 XDG config system: global config respects `$XDG_CONFIG_HOME`,
-  local config moved from `.claude/course_parameters.yaml` (YAML) to
-  `./easel/config.toml` (TOML). `--defaults` flag on `config global`.
-  `commands install` expanded to all 6 command groups. pyyaml removed.
+- v0.1.3 config-driven defaults: `course` argument now optional on all
+  commands, falls back to `canvas_course_id` in local/global config.
+  `assess setup` options and grading `anonymize` also read from config.
 
 ## Milestone Tracking
 
@@ -64,7 +63,8 @@
 
 - [x] Phase 6: Polish (shell completion, README, docs) -- complete
 - [ ] 0.1.0 release
-- [ ] v0.1.2: XDG-compliant config system
+- [x] v0.1.2: XDG-compliant config system
+- [ ] v0.1.3: Config-driven defaults
 
 ### At-Risk Milestones
 
@@ -79,12 +79,13 @@
 
 ### Test Results
 
-- **Unit Tests:** 234 passing
+- **Unit Tests:** 254 passing
   - core: config 4, client 11, cache 9, config_files 9
   - services: courses 9, assignments 14, rubrics 8, grading 12,
     assessments 24, modules 14, pages 15, discussions 15
   - cli: courses 8, assignments 13, grading 13, assessments 13,
-    modules 11, pages 12, discussions 12, config 8
+    modules 11, pages 12, discussions 12, config 8,
+    config_defaults 14
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -139,6 +140,11 @@
 - [x] `anonymize` field in local config and `easel config init`
 - [x] README `--anonymize` documentation and command signature updates
 - [x] `assess:setup` and `course:setup` skill commands updated for anonymize
+- [x] Config-driven defaults: `course` argument optional, reads from config
+- [x] `resolve_course()`, `resolve_assess_defaults()`, `resolve_anonymize()`
+  helpers in `cli/_config_defaults.py`
+- [x] `assess setup` options read defaults from config files
+- [x] `grading submissions`/`grading show` read `anonymize` from config
 
 ### In Progress
 

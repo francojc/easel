@@ -8,6 +8,7 @@ from typing import Optional
 import typer
 
 from easel.cli._async import async_command
+from easel.cli._config_defaults import resolve_anonymize, resolve_course
 from easel.cli._context import get_context
 from easel.cli._output import format_output
 from easel.services import CanvasError
@@ -28,15 +29,19 @@ grading_app = typer.Typer(
 @async_command
 async def grading_submissions(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
-    anonymize: bool = typer.Option(
-        False,
-        "--anonymize",
+    anonymize: Optional[bool] = typer.Option(
+        None,
+        "--anonymize/--no-anonymize",
         help="Strip PII (user_name) for FERPA compliance.",
     ),
 ) -> None:
     """List all submissions for an assignment."""
+    course = resolve_course(course)
+    anonymize = resolve_anonymize(anonymize)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -67,16 +72,20 @@ async def grading_submissions(
 @async_command
 async def grading_show(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),
-    anonymize: bool = typer.Option(
-        False,
-        "--anonymize",
+    anonymize: Optional[bool] = typer.Option(
+        None,
+        "--anonymize/--no-anonymize",
         help="Strip PII (user_name) for FERPA compliance.",
     ),
 ) -> None:
     """Show a single submission with rubric assessment detail."""
+    course = resolve_course(course)
+    anonymize = resolve_anonymize(anonymize)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -100,7 +109,9 @@ async def grading_show(
 @async_command
 async def grading_submit(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),
     grade: str = typer.Argument(help="Grade value (points or letter)."),
@@ -109,6 +120,7 @@ async def grading_submit(
     ),
 ) -> None:
     """Submit a simple grade for a submission."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -133,7 +145,9 @@ async def grading_submit(
 @async_command
 async def grading_submit_rubric(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),
     assessment_json: str = typer.Argument(
@@ -145,6 +159,7 @@ async def grading_submit_rubric(
     ),
 ) -> None:
     """Submit a rubric-based grade for a submission."""
+    course = resolve_course(course)
     try:
         rubric_assessment = json.loads(assessment_json)
     except json.JSONDecodeError as exc:

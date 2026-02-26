@@ -7,6 +7,7 @@ from typing import Optional
 import typer
 
 from easel.cli._async import async_command
+from easel.cli._config_defaults import resolve_course
 from easel.cli._context import get_context
 from easel.cli._output import format_output
 from easel.services import CanvasError
@@ -25,7 +26,9 @@ pages_app = typer.Typer(name="pages", help="Manage Canvas course pages.")
 @async_command
 async def pages_list(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     published: Optional[bool] = typer.Option(
         None,
         "--published/--unpublished",
@@ -39,6 +42,7 @@ async def pages_list(
     ),
 ) -> None:
     """List all pages for a course."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -66,10 +70,13 @@ async def pages_list(
 @async_command
 async def pages_show(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     page_url: str = typer.Argument(help="Page URL slug."),
 ) -> None:
     """Show details for a single page."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -87,7 +94,9 @@ async def pages_show(
 @async_command
 async def pages_create(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     title: str = typer.Argument(help="Page title."),
     body: str = typer.Option("", "--body", help="Page body content."),
     publish: bool = typer.Option(False, "--publish", help="Publish immediately."),
@@ -97,6 +106,7 @@ async def pages_create(
     ),
 ) -> None:
     """Create a new page."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -122,7 +132,9 @@ async def pages_create(
 @async_command
 async def pages_update(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     page_url: str = typer.Argument(help="Page URL slug."),
     title: Optional[str] = typer.Option(None, "--title", help="New title."),
     body: Optional[str] = typer.Option(None, "--body", help="New body content."),
@@ -131,6 +143,7 @@ async def pages_update(
     ),
 ) -> None:
     """Update an existing page."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -155,10 +168,13 @@ async def pages_update(
 @async_command
 async def pages_delete(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     page_url: str = typer.Argument(help="Page URL slug."),
 ) -> None:
     """Delete a page."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     try:
         course_id = await ectx.cache.resolve(course)

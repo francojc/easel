@@ -7,6 +7,7 @@ from typing import Optional
 import typer
 
 from easel.cli._async import async_command
+from easel.cli._config_defaults import resolve_course
 from easel.cli._context import get_context
 from easel.cli._output import format_output
 from easel.services import CanvasError
@@ -27,9 +28,12 @@ assignments_app = typer.Typer(
 @async_command
 async def assignments_list(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
 ) -> None:
     """List all assignments for a course."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -51,10 +55,13 @@ async def assignments_list(
 @async_command
 async def assignments_show(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
 ) -> None:
     """Show details for a single assignment (includes rubric if attached)."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -72,7 +79,9 @@ async def assignments_show(
 @async_command
 async def assignments_create(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     name: str = typer.Argument(help="Assignment name."),
     points: Optional[float] = typer.Option(None, "--points", help="Points possible."),
     due: Optional[str] = typer.Option(None, "--due", help="Due date (ISO 8601)."),
@@ -84,6 +93,7 @@ async def assignments_create(
     publish: bool = typer.Option(False, "--publish", help="Publish immediately."),
 ) -> None:
     """Create a new assignment."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     sub_types = [t.strip() for t in types.split(",")] if types else None
@@ -110,7 +120,9 @@ async def assignments_create(
 @async_command
 async def assignments_update(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     name: Optional[str] = typer.Option(None, "--name", help="New name."),
     points: Optional[float] = typer.Option(None, "--points", help="Points possible."),
@@ -120,6 +132,7 @@ async def assignments_update(
     ),
 ) -> None:
     """Update an existing assignment."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -145,9 +158,12 @@ async def assignments_update(
 @async_command
 async def assignments_rubrics(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
 ) -> None:
     """List all rubrics for a course."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -169,10 +185,13 @@ async def assignments_rubrics(
 @async_command
 async def assignments_rubric(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
 ) -> None:
     """Show the rubric attached to an assignment."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:

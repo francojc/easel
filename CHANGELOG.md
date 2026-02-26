@@ -3,6 +3,26 @@
 All notable changes to easel are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.3] - 2026-02-25
+
+### Added
+
+- Config-driven defaults: commands read `canvas_course_id` from
+  `easel/config.toml` when the course argument is omitted
+- `resolve_course()` helper falls back to local then global config
+- `assess setup` options (`--level`, `--feedback-language`,
+  `--language-learning`, `--language-level`, `--formality`,
+  `--anonymize`, `--course-name`) now read defaults from config
+- `grading submissions` and `grading show` read `anonymize` from config
+  when the flag is not explicitly passed
+
+### Changed
+
+- `course` argument is now optional on all commands that accept it
+  (25 commands across 7 CLI modules)
+- `--anonymize` on grading commands changed from simple flag to
+  `--anonymize/--no-anonymize` to support config override
+
 ## [0.1.2] - 2026-02-25
 
 ### Added
@@ -74,6 +94,7 @@ Initial release. Full Canvas LMS CLI for instructor workflows.
 - `--test` flag for Canvas API connectivity check
 - 234 tests passing across services and CLI layers
 
+[0.1.3]: https://github.com/francojc/easel/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/francojc/easel/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/francojc/easel/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/francojc/easel/releases/tag/v0.1.0

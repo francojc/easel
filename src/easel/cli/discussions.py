@@ -7,6 +7,7 @@ from typing import Optional
 import typer
 
 from easel.cli._async import async_command
+from easel.cli._config_defaults import resolve_course
 from easel.cli._context import get_context
 from easel.cli._output import format_output
 from easel.services import CanvasError
@@ -26,12 +27,15 @@ discussions_app = typer.Typer(
 @async_command
 async def discussions_list(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     announcements: bool = typer.Option(
         False, "--announcements", help="Show only announcements."
     ),
 ) -> None:
     """List all discussion topics for a course."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -57,10 +61,13 @@ async def discussions_list(
 @async_command
 async def discussions_show(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     topic_id: str = typer.Argument(help="Discussion topic ID."),
 ) -> None:
     """Show details for a single discussion topic."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -78,7 +85,9 @@ async def discussions_show(
 @async_command
 async def discussions_create(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     title: str = typer.Argument(help="Discussion title."),
     message: str = typer.Option("", "--message", help="Discussion body."),
     announcement: bool = typer.Option(
@@ -88,6 +97,7 @@ async def discussions_create(
     pinned: bool = typer.Option(False, "--pinned", help="Pin the topic."),
 ) -> None:
     """Create a new discussion topic."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -113,7 +123,9 @@ async def discussions_create(
 @async_command
 async def discussions_update(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     topic_id: str = typer.Argument(help="Discussion topic ID."),
     title: Optional[str] = typer.Option(None, "--title", help="New title."),
     message: Optional[str] = typer.Option(None, "--message", help="New message body."),
@@ -123,6 +135,7 @@ async def discussions_update(
     pinned: Optional[bool] = typer.Option(None, "--pin/--unpin", help="Pin or unpin."),
 ) -> None:
     """Update an existing discussion topic."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:

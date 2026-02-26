@@ -8,6 +8,7 @@ from typing import Optional
 import typer
 
 from easel.cli._async import async_command
+from easel.cli._config_defaults import resolve_assess_defaults, resolve_course
 from easel.cli._context import get_context
 from easel.cli._output import format_output
 from easel.services import CanvasError
@@ -32,7 +33,9 @@ assess_app = typer.Typer(
 @async_command
 async def assess_setup(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     output: Optional[str] = typer.Option(
         None,
@@ -40,36 +43,60 @@ async def assess_setup(
         "-o",
         help="Output file path. Default: .claude/assessments/<auto>.json",
     ),
-    course_name: str = typer.Option(
-        "",
+    course_name: Optional[str] = typer.Option(
+        None,
         "--course-name",
         help="Course display name for metadata.",
     ),
-    level: str = typer.Option("undergraduate", "--level", help="Educational level."),
-    feedback_language: str = typer.Option(
-        "en", "--feedback-language", help="Feedback language code."
+    level: Optional[str] = typer.Option(None, "--level", help="Educational level."),
+    feedback_language: Optional[str] = typer.Option(
+        None, "--feedback-language", help="Feedback language code."
     ),
-    language_learning: bool = typer.Option(
-        False, "--language-learning", help="Language learning course."
+    language_learning: Optional[bool] = typer.Option(
+        None,
+        "--language-learning/--no-language-learning",
+        help="Language learning course.",
     ),
-    language_level: str = typer.Option(
-        "NA", "--language-level", help="ACTFL proficiency level."
+    language_level: Optional[str] = typer.Option(
+        None, "--language-level", help="ACTFL proficiency level."
     ),
-    formality: str = typer.Option(
-        "casual", "--formality", help="Feedback tone: casual or formal."
+    formality: Optional[str] = typer.Option(
+        None, "--formality", help="Feedback tone: casual or formal."
     ),
     exclude_graded: bool = typer.Option(
         True,
         "--exclude-graded/--include-graded",
         help="Exclude already-graded submissions.",
     ),
-    anonymize: bool = typer.Option(
-        False,
-        "--anonymize",
+    anonymize: Optional[bool] = typer.Option(
+        None,
+        "--anonymize/--no-anonymize",
         help="Strip PII (user_name, user_email) for FERPA compliance.",
     ),
 ) -> None:
     """Fetch assignment data and build an assessment JSON file."""
+    course = resolve_course(course)
+
+    # Resolve assess defaults from config (explicit CLI flags win).
+    defaults = resolve_assess_defaults(
+        {
+            "course_name": course_name,
+            "level": level,
+            "feedback_language": feedback_language,
+            "language_learning": language_learning,
+            "language_level": language_level,
+            "formality": formality,
+            "anonymize": anonymize,
+        }
+    )
+    course_name = defaults.get("course_name") or ""
+    level = defaults.get("level") or "undergraduate"
+    feedback_language = defaults.get("feedback_language") or "en"
+    language_learning = defaults.get("language_learning") or False
+    language_level = defaults.get("language_level") or "NA"
+    formality = defaults.get("formality") or "casual"
+    anonymize = defaults.get("anonymize") or False
+
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -222,7 +249,9 @@ def assess_update(
 async def assess_submit(
     ctx: typer.Context,
     file: str = typer.Argument(help="Path to assessment JSON file."),
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     confirm: bool = typer.Option(
         False,
@@ -231,6 +260,7 @@ async def assess_submit(
     ),
 ) -> None:
     """Submit approved assessments to Canvas."""
+    course = resolve_course(course)
     fmt = ctx.obj["format"]
     try:
         data = load_assessment(file)

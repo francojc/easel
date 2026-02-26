@@ -9,9 +9,7 @@ from typing import Any
 
 import tomli_w
 
-_xdg = Path(
-    os.environ.get("XDG_CONFIG_HOME", "") or (Path.home() / ".config")
-)
+_xdg = Path(os.environ.get("XDG_CONFIG_HOME", "") or (Path.home() / ".config"))
 GLOBAL_CONFIG_DIR = _xdg / "easel"
 GLOBAL_CONFIG_PATH = GLOBAL_CONFIG_DIR / "config.toml"
 LOCAL_CONFIG_PATH = Path("easel") / "config.toml"

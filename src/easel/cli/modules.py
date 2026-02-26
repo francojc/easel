@@ -7,6 +7,7 @@ from typing import Optional
 import typer
 
 from easel.cli._async import async_command
+from easel.cli._config_defaults import resolve_course
 from easel.cli._context import get_context
 from easel.cli._output import format_output
 from easel.services import CanvasError
@@ -25,13 +26,16 @@ modules_app = typer.Typer(name="modules", help="Manage Canvas course modules.")
 @async_command
 async def modules_list(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     items: bool = typer.Option(False, "--items", help="Include module items."),
     search: Optional[str] = typer.Option(
         None, "--search", help="Filter by search term."
     ),
 ) -> None:
     """List all modules for a course."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -58,10 +62,13 @@ async def modules_list(
 @async_command
 async def modules_show(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     module_id: str = typer.Argument(help="Module ID."),
 ) -> None:
     """Show details for a single module with its items."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -79,7 +86,9 @@ async def modules_show(
 @async_command
 async def modules_create(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     name: str = typer.Argument(help="Module name."),
     position: Optional[int] = typer.Option(
         None, "--position", help="Position in module list."
@@ -93,6 +102,7 @@ async def modules_create(
     publish: bool = typer.Option(False, "--publish", help="Publish immediately."),
 ) -> None:
     """Create a new module."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -118,7 +128,9 @@ async def modules_create(
 @async_command
 async def modules_update(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     module_id: str = typer.Argument(help="Module ID."),
     name: Optional[str] = typer.Option(None, "--name", help="New name."),
     position: Optional[int] = typer.Option(None, "--position", help="New position."),
@@ -127,6 +139,7 @@ async def modules_update(
     ),
 ) -> None:
     """Update an existing module."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
@@ -151,10 +164,13 @@ async def modules_update(
 @async_command
 async def modules_delete(
     ctx: typer.Context,
-    course: str = typer.Argument(help="Course code or numeric ID."),
+    course: Optional[str] = typer.Argument(
+        None, help="Course code or numeric ID. Falls back to config."
+    ),
     module_id: str = typer.Argument(help="Module ID."),
 ) -> None:
     """Delete a module."""
+    course = resolve_course(course)
     ectx = get_context(ctx.obj)
     try:
         course_id = await ectx.cache.resolve(course)

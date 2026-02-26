@@ -42,9 +42,7 @@ def _coerce_value(key: str, raw: str) -> object:
 
 @config_app.command("init")
 def config_init(
-    base: str = typer.Option(
-        ".", "--base", help="Repository root directory."
-    ),
+    base: str = typer.Option(".", "--base", help="Repository root directory."),
 ) -> None:
     """Create or update local course config (./easel/config.toml).
 
@@ -109,9 +107,7 @@ def config_global(
                 description, bool(default) if default != "" else False
             )
         else:
-            raw = typer.prompt(
-                description, default=str(default) if default else ""
-            )
+            raw = typer.prompt(description, default=str(default) if default else "")
             data[key] = raw
 
     path = write_global_config(data)
@@ -132,12 +128,9 @@ def config_show() -> None:
 
     if not global_cfg and not local_cfg:
         typer.echo("No configuration found.")
+        typer.echo("Run 'easel config global' or 'easel config init' to get started.")
         typer.echo(
-            "Run 'easel config global' or 'easel config init' to get started."
-        )
-        typer.echo(
-            "Global: $XDG_CONFIG_HOME/easel/config.toml  "
-            "Local: ./easel/config.toml"
+            "Global: $XDG_CONFIG_HOME/easel/config.toml  Local: ./easel/config.toml"
         )
         raise typer.Exit()
 

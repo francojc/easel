@@ -138,14 +138,25 @@
 - [x] README with full CLI reference and "Extending with AI" section
 - [x] Final documentation pass
 
-### v0.1.2: XDG Configuration (CURRENT)
+### v0.1.2: XDG Configuration (COMPLETE)
 
-- [ ] Global config respects `$XDG_CONFIG_HOME` (default `~/.config`)
-- [ ] Local config moved from `.claude/course_parameters.yaml` to
+- [x] Global config respects `$XDG_CONFIG_HOME` (default `~/.config`)
+- [x] Local config moved from `.claude/course_parameters.yaml` to
       `./easel/config.toml` (TOML, not YAML)
-- [ ] `--defaults` flag on `easel config global` for non-interactive setup
-- [ ] `easel commands install` covers all 6 command groups
-- [ ] pyyaml dependency removed
+- [x] `--defaults` flag on `easel config global` for non-interactive setup
+- [x] `easel commands install` covers all 6 command groups
+- [x] pyyaml dependency removed
+
+### v0.1.3: Config-Driven Defaults (CURRENT)
+
+- [x] `course` argument optional on all commands — falls back to
+      `canvas_course_id` in local/global config
+- [x] `resolve_course()` and `resolve_assess_defaults()` helpers in
+      `cli/_config_defaults.py`
+- [x] `assess setup` options read defaults from config
+- [x] `grading submissions` and `grading show` read `anonymize` from
+      config
+- [x] Tests for config-resolution helpers (254 tests total)
 
 ## Resources and Requirements
 

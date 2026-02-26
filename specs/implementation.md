@@ -229,6 +229,15 @@ easel/
       defaults with optional `--defaults` flag. `show` displays
       merged view with source annotations.
 
+23. **cli/_config_defaults.py**
+    - **Purpose:** Resolve CLI argument defaults from config files
+    - **Public Interface:** `resolve_course()`, `resolve_assess_defaults()`,
+      `resolve_anonymize()`
+    - **Dependencies:** core/config_files.py
+    - **Notes:** Checks local config first, then global. Explicit CLI
+      arguments always win. `resolve_course()` exits with code 1 if
+      no course is available from any source.
+
 ### Data Model
 
 - **Primary Data Structures:** Dicts and lists from Canvas API

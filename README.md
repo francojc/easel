@@ -61,7 +61,7 @@ easel assignments list IS505
 # View submissions for an assignment
 easel grading submissions IS505 42
 
-# Set up course-level config for skill commands
+# Set up course-level config
 easel config init
 ```
 
