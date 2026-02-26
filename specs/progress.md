@@ -9,7 +9,8 @@
 ### Development Phase
 
 - **Current Phase:** Post-0.1.0 feature development
-- **Phase Progress:** Anonymize feature committed; command docs added
+- **Phase Progress:** Anonymize feature fully integrated (code, docs,
+  config, skill commands); awaiting commit
 - **Overall Project Progress:** All core phases complete; ready for 0.1.0 tag
 
 ### Recent Accomplishments
@@ -43,12 +44,12 @@
 
 ### Active Work
 
-- `--anonymize` flag for FERPA-compliant PII stripping: committed
-  (`ea83c99`). Strips `user_name` and `user_email` at service layer;
-  retains `user_id` for grade submission round-tripping. 7 new tests
-  added (234 total).
-- `.claude/commands/` expanded with new skill command directories:
-  assignments, content, course, discuss, grading (`d6963a4`).
+- Anonymize integration pass (uncommitted): README updated with
+  `--anonymize` in command signatures and new "Anonymizing student
+  data" section. `assess:setup` and `course:setup` skill commands
+  updated to read `anonymize` from `course_parameters.yaml`.
+  `anonymize` field added to `LOCAL_FIELDS` in config_files.py
+  and boolean coercion in config.py. Config tests updated.
 
 ## Milestone Tracking
 
@@ -136,6 +137,9 @@
 - [x] `--anonymize` flag for FERPA-compliant PII stripping
 - [x] Expanded `.claude/commands/` with skill commands for assignments,
   content, course, discuss, grading
+- [x] `anonymize` field in `course_parameters.yaml` and `easel config init`
+- [x] README `--anonymize` documentation and command signature updates
+- [x] `assess:setup` and `course:setup` skill commands updated for anonymize
 
 ### In Progress
 

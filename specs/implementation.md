@@ -215,7 +215,9 @@ easel/
       `write_local_config()`, `merge_configs()`
     - **Dependencies:** pyyaml, tomli-w, tomllib (stdlib)
     - **Notes:** Global config at `~/.config/easel/config.toml`,
-      local config at `.claude/course_parameters.yaml`
+      local config at `.claude/course_parameters.yaml`.
+      `LOCAL_FIELDS` defines the schema for `course_parameters.yaml`
+      including `anonymize` (boolean) for FERPA PII stripping
 
 22. **cli/config.py**
     - **Purpose:** Typer sub-app for config management
