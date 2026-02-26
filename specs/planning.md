@@ -1,7 +1,7 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** Post-0.1.0 development
+**Status:** v0.1.5 development
 **Last Updated:** 2026-02-25
 
 ## Project Overview
@@ -147,7 +147,7 @@
 - [x] `easel commands install` covers all 6 command groups
 - [x] pyyaml dependency removed
 
-### v0.1.3: Config-Driven Defaults (CURRENT)
+### v0.1.3: Config-Driven Defaults (COMPLETE)
 
 - [x] `course` argument optional on all commands — falls back to
       `canvas_course_id` in local/global config
@@ -157,6 +157,25 @@
 - [x] `grading submissions` and `grading show` read `anonymize` from
       config
 - [x] Tests for config-resolution helpers (254 tests total)
+
+### v0.1.4: Course Option Fix (COMPLETE)
+
+- [x] Changed `course` from positional `Argument` to named
+      `--course`/`-c` `Option` across all 29 commands in 7 CLI modules
+- [x] Fixes greedy positional parsing where required args were
+      swallowed by optional `course` (Issue #6)
+- [x] Updated all CLI tests to use `--course` flag
+
+### v0.1.5: Output and Usability Improvements (CURRENT)
+
+- [ ] Add `--format csv` output format for pipeable tabular data
+      (Issue #8). Applies to commands that currently support table
+      output. CSV should write header row + data rows to stdout,
+      suitable for piping to files or other commands.
+- [ ] Change `grading submit-rubric` `assessment_json` argument from
+      inline JSON text to a file path (Issue #9). Read and parse the
+      JSON from the specified file. Improves usability for rubric
+      grading workflows where the assessment is already in a file.
 
 ## Resources and Requirements
 

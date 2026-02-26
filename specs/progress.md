@@ -1,17 +1,17 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Post-0.1.0 development
+**Status:** v0.1.5 development
 **Last Updated:** 2026-02-25
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Post-0.1.0 feature development
-- **Phase Progress:** Anonymize feature fully integrated (code, docs,
-  config, skill commands); awaiting commit
-- **Overall Project Progress:** All core phases complete; ready for 0.1.0 tag
+- **Current Phase:** v0.1.5 feature development
+- **Phase Progress:** v0.1.4 released (course option fix); starting
+  v0.1.5 work on CSV output and file-based rubric grading
+- **Overall Project Progress:** v0.1.0–v0.1.4 released and tagged
 
 ### Recent Accomplishments
 
@@ -44,9 +44,10 @@
 
 ### Active Work
 
-- v0.1.3 config-driven defaults: `course` argument now optional on all
-  commands, falls back to `canvas_course_id` in local/global config.
-  `assess setup` options and grading `anonymize` also read from config.
+- v0.1.5 planned:
+  - Issue #8: Add `--format csv` output format for pipeable tabular data
+  - Issue #9: Change `grading submit-rubric` assessment_json from inline
+    text to file path
 
 ## Milestone Tracking
 
@@ -62,9 +63,12 @@
 ### Upcoming Milestones
 
 - [x] Phase 6: Polish (shell completion, README, docs) -- complete
-- [ ] 0.1.0 release
-- [x] v0.1.2: XDG-compliant config system
-- [ ] v0.1.3: Config-driven defaults
+- [x] 0.1.0 release (tagged)
+- [x] v0.1.1: Anonymize + skill commands (tagged)
+- [x] v0.1.2: XDG-compliant config system (tagged)
+- [x] v0.1.3: Config-driven defaults (tagged)
+- [x] v0.1.4: Course option fix, issue #6 (tagged)
+- [ ] v0.1.5: CSV output format (#8) + file-based rubric grading (#9)
 
 ### At-Risk Milestones
 
@@ -152,7 +156,8 @@
 
 ### Planned
 
-- [ ] 0.1.0 release tag
+- [ ] `--format csv` output format (Issue #8)
+- [ ] `grading submit-rubric` file path argument (Issue #9)
 
 ### Deferred or Cut
 
@@ -213,11 +218,12 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Tag 0.1.0 release
+- [ ] Implement `--format csv` output (Issue #8)
+- [ ] Implement file-path argument for `grading submit-rubric` (Issue #9)
 
 ### Medium-term Goals (Next Few Sessions)
 
-(none -- project is feature-complete for 0.1.0)
+- [ ] Tag and release v0.1.5
 
 ### Decisions Needed
 
@@ -227,16 +233,18 @@
 
 ### Next Release
 
-- **Version:** 0.1.0
+- **Version:** 0.1.5
 - **Target Date:** TBD
-- **Included Features:** Scaffolding + core + courses + assignments +
-  rubrics + grading + assessment workflow + modules + pages +
-  discussions (Phases 0-6) + FERPA anonymization + expanded skill
-  commands
+- **Included Features:** CSV output format (#8), file-based rubric
+  grading (#9)
 - **Release Blockers:** None
 
 ### Release History
 
-| Version | Date | Key Changes |
-|---------|------|-------------|
-| (none)  |      |             |
+| Version | Date       | Key Changes                                      |
+|---------|------------|--------------------------------------------------|
+| 0.1.4   | 2026-02-25 | Course changed to --course/-c option (fix #6)    |
+| 0.1.3   | 2026-02-25 | Config-driven defaults, optional course arg      |
+| 0.1.2   | 2026-02-25 | XDG config, TOML local config, --defaults flag   |
+| 0.1.1   | 2026-02-25 | --anonymize flag, expanded skill commands        |
+| 0.1.0   | 2026-02-23 | Initial release (all core phases)                |
