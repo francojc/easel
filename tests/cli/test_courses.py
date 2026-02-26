@@ -104,7 +104,7 @@ def test_courses_list_error(mock_list):
 def test_courses_show(mock_get):
     mock_get.return_value = MOCK_COURSE_DETAIL
     with _patch_context():
-        result = runner.invoke(app, ["courses", "show", "IS505"])
+        result = runner.invoke(app, ["courses", "show", "--course", "IS505"])
     assert result.exit_code == 0
     assert "IS505" in result.output
 
@@ -113,7 +113,7 @@ def test_courses_show(mock_get):
 def test_courses_show_error(mock_get):
     mock_get.side_effect = CanvasError("not found", status_code=404)
     with _patch_context():
-        result = runner.invoke(app, ["courses", "show", "99999"])
+        result = runner.invoke(app, ["courses", "show", "--course", "99999"])
     assert result.exit_code == 1
     assert "not found" in result.output
 
@@ -125,7 +125,7 @@ def test_courses_show_error(mock_get):
 def test_courses_enrollments(mock_enroll):
     mock_enroll.return_value = MOCK_ENROLLMENTS
     with _patch_context():
-        result = runner.invoke(app, ["courses", "enrollments", "IS505"])
+        result = runner.invoke(app, ["courses", "enrollments", "--course", "IS505"])
     assert result.exit_code == 0
     assert "Alice Smith" in result.output
 
@@ -134,6 +134,6 @@ def test_courses_enrollments(mock_enroll):
 def test_courses_enrollments_error(mock_enroll):
     mock_enroll.side_effect = CanvasError("server error", status_code=500)
     with _patch_context():
-        result = runner.invoke(app, ["courses", "enrollments", "1"])
+        result = runner.invoke(app, ["courses", "enrollments", "--course", "1"])
     assert result.exit_code == 1
     assert "server error" in result.output

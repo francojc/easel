@@ -51,8 +51,8 @@ async def courses_list(
 @async_command
 async def courses_show(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
 ) -> None:
     """Show details for a single course."""
@@ -74,8 +74,8 @@ async def courses_show(
 @async_command
 async def courses_enrollments(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
 ) -> None:
     """List enrolled users for a course."""

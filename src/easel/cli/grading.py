@@ -29,8 +29,8 @@ grading_app = typer.Typer(
 @async_command
 async def grading_submissions(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     anonymize: Optional[bool] = typer.Option(
@@ -72,8 +72,8 @@ async def grading_submissions(
 @async_command
 async def grading_show(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),
@@ -109,8 +109,8 @@ async def grading_show(
 @async_command
 async def grading_submit(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),
@@ -145,8 +145,8 @@ async def grading_submit(
 @async_command
 async def grading_submit_rubric(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),

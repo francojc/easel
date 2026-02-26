@@ -62,7 +62,7 @@ def test_grading_submissions(mock_list):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submissions", "IS505", "101"],
+            ["grading", "submissions", "--course", "IS505", "101"],
         )
     assert result.exit_code == 0
     assert "Alice Smith" in result.output
@@ -74,7 +74,7 @@ def test_grading_submissions_error(mock_list):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submissions", "IS505", "101"],
+            ["grading", "submissions", "--course", "IS505", "101"],
         )
     assert result.exit_code == 1
     assert "forbidden" in result.output
@@ -96,7 +96,7 @@ def test_grading_submissions_anonymize(mock_list):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submissions", "IS505", "101", "--anonymize"],
+            ["grading", "submissions", "--course", "IS505", "101", "--anonymize"],
         )
     assert result.exit_code == 0
     mock_list.assert_called_once()
@@ -113,7 +113,7 @@ def test_grading_show(mock_get):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "show", "IS505", "101", "10"],
+            ["grading", "show", "--course", "IS505", "101", "10"],
         )
     assert result.exit_code == 0
     assert "501" in result.output
@@ -135,7 +135,7 @@ def test_grading_show_anonymize(mock_get):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "show", "IS505", "101", "10", "--anonymize"],
+            ["grading", "show", "--course", "IS505", "101", "10", "--anonymize"],
         )
     assert result.exit_code == 0
     mock_get.assert_called_once()
@@ -149,7 +149,7 @@ def test_grading_show_error(mock_get):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "show", "IS505", "101", "99"],
+            ["grading", "show", "--course", "IS505", "101", "99"],
         )
     assert result.exit_code == 1
     assert "not found" in result.output
@@ -164,7 +164,7 @@ def test_grading_submit(mock_submit):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit", "IS505", "101", "10", "85"],
+            ["grading", "submit", "--course", "IS505", "101", "10", "85"],
         )
     assert result.exit_code == 0
     assert "85" in result.output
@@ -176,7 +176,7 @@ def test_grading_submit_with_comment(mock_submit):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit", "IS505", "101", "10", "85", "--comment", "Nice work"],
+            ["grading", "submit", "--course", "IS505", "101", "10", "85", "--comment", "Nice work"],
         )
     assert result.exit_code == 0
     mock_submit.assert_called_once()
@@ -192,7 +192,7 @@ def test_grading_submit_error(mock_submit):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit", "IS505", "101", "10", "85"],
+            ["grading", "submit", "--course", "IS505", "101", "10", "85"],
         )
     assert result.exit_code == 1
     assert "invalid" in result.output
@@ -208,7 +208,7 @@ def test_grading_submit_rubric(mock_submit):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit-rubric", "IS505", "101", "10", json.dumps(assessment)],
+            ["grading", "submit-rubric", "--course", "IS505", "101", "10", json.dumps(assessment)],
         )
     assert result.exit_code == 0
     assert "85" in result.output
@@ -218,7 +218,7 @@ def test_grading_submit_rubric_invalid_json():
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit-rubric", "IS505", "101", "10", "not-json"],
+            ["grading", "submit-rubric", "--course", "IS505", "101", "10", "not-json"],
         )
     assert result.exit_code == 1
     assert "Invalid JSON" in result.output
@@ -231,7 +231,7 @@ def test_grading_submit_rubric_error(mock_submit):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit-rubric", "IS505", "101", "10", json.dumps(assessment)],
+            ["grading", "submit-rubric", "--course", "IS505", "101", "10", json.dumps(assessment)],
         )
     assert result.exit_code == 1
     assert "server error" in result.output

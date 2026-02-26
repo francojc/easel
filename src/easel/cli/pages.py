@@ -26,8 +26,8 @@ pages_app = typer.Typer(name="pages", help="Manage Canvas course pages.")
 @async_command
 async def pages_list(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     published: Optional[bool] = typer.Option(
         None,
@@ -70,8 +70,8 @@ async def pages_list(
 @async_command
 async def pages_show(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     page_url: str = typer.Argument(help="Page URL slug."),
 ) -> None:
@@ -94,8 +94,8 @@ async def pages_show(
 @async_command
 async def pages_create(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     title: str = typer.Argument(help="Page title."),
     body: str = typer.Option("", "--body", help="Page body content."),
@@ -132,8 +132,8 @@ async def pages_create(
 @async_command
 async def pages_update(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     page_url: str = typer.Argument(help="Page URL slug."),
     title: Optional[str] = typer.Option(None, "--title", help="New title."),
@@ -168,8 +168,8 @@ async def pages_update(
 @async_command
 async def pages_delete(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     page_url: str = typer.Argument(help="Page URL slug."),
 ) -> None:

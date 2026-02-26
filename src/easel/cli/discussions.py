@@ -27,8 +27,8 @@ discussions_app = typer.Typer(
 @async_command
 async def discussions_list(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     announcements: bool = typer.Option(
         False, "--announcements", help="Show only announcements."
@@ -61,8 +61,8 @@ async def discussions_list(
 @async_command
 async def discussions_show(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     topic_id: str = typer.Argument(help="Discussion topic ID."),
 ) -> None:
@@ -85,8 +85,8 @@ async def discussions_show(
 @async_command
 async def discussions_create(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     title: str = typer.Argument(help="Discussion title."),
     message: str = typer.Option("", "--message", help="Discussion body."),
@@ -123,8 +123,8 @@ async def discussions_create(
 @async_command
 async def discussions_update(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     topic_id: str = typer.Argument(help="Discussion topic ID."),
     title: Optional[str] = typer.Option(None, "--title", help="New title."),

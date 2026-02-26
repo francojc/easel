@@ -26,8 +26,8 @@ modules_app = typer.Typer(name="modules", help="Manage Canvas course modules.")
 @async_command
 async def modules_list(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     items: bool = typer.Option(False, "--items", help="Include module items."),
     search: Optional[str] = typer.Option(
@@ -62,8 +62,8 @@ async def modules_list(
 @async_command
 async def modules_show(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     module_id: str = typer.Argument(help="Module ID."),
 ) -> None:
@@ -86,8 +86,8 @@ async def modules_show(
 @async_command
 async def modules_create(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     name: str = typer.Argument(help="Module name."),
     position: Optional[int] = typer.Option(
@@ -128,8 +128,8 @@ async def modules_create(
 @async_command
 async def modules_update(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     module_id: str = typer.Argument(help="Module ID."),
     name: Optional[str] = typer.Option(None, "--name", help="New name."),
@@ -164,8 +164,8 @@ async def modules_update(
 @async_command
 async def modules_delete(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     module_id: str = typer.Argument(help="Module ID."),
 ) -> None:

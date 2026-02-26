@@ -33,8 +33,8 @@ assess_app = typer.Typer(
 @async_command
 async def assess_setup(
     ctx: typer.Context,
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     output: Optional[str] = typer.Option(
@@ -249,8 +249,8 @@ def assess_update(
 async def assess_submit(
     ctx: typer.Context,
     file: str = typer.Argument(help="Path to assessment JSON file."),
-    course: Optional[str] = typer.Argument(
-        None, help="Course code or numeric ID. Falls back to config."
+    course: Optional[str] = typer.Option(
+        None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     confirm: bool = typer.Option(

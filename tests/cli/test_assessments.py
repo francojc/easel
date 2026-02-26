@@ -91,6 +91,7 @@ def test_assess_setup(mock_fetch_assign, mock_fetch_subs, tmp_path):
             [
                 "assess",
                 "setup",
+                "--course",
                 "IS505",
                 "101",
                 "--output",
@@ -114,7 +115,7 @@ def test_assess_setup_error(mock_fetch):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assess", "setup", "IS505", "999"],
+            ["assess", "setup", "--course", "IS505", "999"],
         )
     assert result.exit_code == 1
     assert "not found" in result.output
@@ -139,6 +140,7 @@ def test_assess_setup_with_options(mock_fetch_assign, mock_fetch_subs, tmp_path)
             [
                 "assess",
                 "setup",
+                "--course",
                 "IS505",
                 "101",
                 "--output",
@@ -180,6 +182,7 @@ def test_assess_setup_anonymize(mock_fetch_assign, mock_fetch_subs, tmp_path):
             [
                 "assess",
                 "setup",
+                "--course",
                 "IS505",
                 "101",
                 "--output",
@@ -324,7 +327,7 @@ def test_assess_submit_dry_run(tmp_path):
 
     result = runner.invoke(
         app,
-        ["assess", "submit", path, "IS505", "101"],
+        ["assess", "submit", path, "--course", "IS505", "101"],
     )
     assert result.exit_code == 0
     assert "Dry run" in result.output
@@ -335,7 +338,7 @@ def test_assess_submit_no_approved(tmp_path):
     path = _write_assessment(tmp_path)
     result = runner.invoke(
         app,
-        ["assess", "submit", path, "IS505", "101", "--confirm"],
+        ["assess", "submit", path, "--course", "IS505", "101", "--confirm"],
     )
     assert result.exit_code == 1
     assert "No approved" in result.output
@@ -363,6 +366,7 @@ def test_assess_submit_confirmed(mock_submit, tmp_path):
                 "assess",
                 "submit",
                 path,
+                "--course",
                 "IS505",
                 "101",
                 "--confirm",
@@ -393,6 +397,7 @@ def test_assess_submit_canvas_error(mock_submit, tmp_path):
                 "assess",
                 "submit",
                 path,
+                "--course",
                 "IS505",
                 "101",
                 "--confirm",

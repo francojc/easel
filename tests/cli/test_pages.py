@@ -60,7 +60,7 @@ def _patch_context():
 def test_pages_list(mock_list):
     mock_list.return_value = MOCK_PAGES
     with _patch_context():
-        result = runner.invoke(app, ["pages", "list", "IS505"])
+        result = runner.invoke(app, ["pages", "list", "--course", "IS505"])
     assert result.exit_code == 0
     assert "Syllabus" in result.output
 
@@ -69,7 +69,7 @@ def test_pages_list(mock_list):
 def test_pages_list_json(mock_list):
     mock_list.return_value = MOCK_PAGES
     with _patch_context():
-        result = runner.invoke(app, ["--format", "json", "pages", "list", "IS505"])
+        result = runner.invoke(app, ["--format", "json", "pages", "list", "--course", "IS505"])
     assert result.exit_code == 0
     assert '"Syllabus"' in result.output
 
@@ -78,7 +78,7 @@ def test_pages_list_json(mock_list):
 def test_pages_list_error(mock_list):
     mock_list.side_effect = CanvasError("forbidden", status_code=403)
     with _patch_context():
-        result = runner.invoke(app, ["pages", "list", "IS505"])
+        result = runner.invoke(app, ["pages", "list", "--course", "IS505"])
     assert result.exit_code == 1
     assert "forbidden" in result.output
 
@@ -90,7 +90,7 @@ def test_pages_list_error(mock_list):
 def test_pages_show(mock_get):
     mock_get.return_value = MOCK_PAGE_DETAIL
     with _patch_context():
-        result = runner.invoke(app, ["pages", "show", "IS505", "syllabus"])
+        result = runner.invoke(app, ["pages", "show", "--course", "IS505", "syllabus"])
     assert result.exit_code == 0
     assert "Syllabus" in result.output
 
@@ -99,7 +99,7 @@ def test_pages_show(mock_get):
 def test_pages_show_error(mock_get):
     mock_get.side_effect = CanvasError("not found", status_code=404)
     with _patch_context():
-        result = runner.invoke(app, ["pages", "show", "IS505", "missing"])
+        result = runner.invoke(app, ["pages", "show", "--course", "IS505", "missing"])
     assert result.exit_code == 1
     assert "not found" in result.output
 
@@ -116,6 +116,7 @@ def test_pages_create(mock_create):
             [
                 "pages",
                 "create",
+                "--course",
                 "IS505",
                 "New Page",
                 "--body",
@@ -130,7 +131,7 @@ def test_pages_create(mock_create):
 def test_pages_create_error(mock_create):
     mock_create.side_effect = CanvasError("invalid", status_code=422)
     with _patch_context():
-        result = runner.invoke(app, ["pages", "create", "IS505", "Bad"])
+        result = runner.invoke(app, ["pages", "create", "--course", "IS505", "Bad"])
     assert result.exit_code == 1
     assert "invalid" in result.output
 
@@ -147,6 +148,7 @@ def test_pages_update(mock_update):
             [
                 "pages",
                 "update",
+                "--course",
                 "IS505",
                 "syllabus",
                 "--title",
@@ -164,7 +166,7 @@ def test_pages_update(mock_update):
 def test_pages_delete(mock_delete):
     mock_delete.return_value = {"url": "syllabus", "deleted": True}
     with _patch_context():
-        result = runner.invoke(app, ["pages", "delete", "IS505", "syllabus"])
+        result = runner.invoke(app, ["pages", "delete", "--course", "IS505", "syllabus"])
     assert result.exit_code == 0
     assert "Deleted" in result.output
 
@@ -173,6 +175,6 @@ def test_pages_delete(mock_delete):
 def test_pages_delete_error(mock_delete):
     mock_delete.side_effect = CanvasError("not found", status_code=404)
     with _patch_context():
-        result = runner.invoke(app, ["pages", "delete", "IS505", "missing"])
+        result = runner.invoke(app, ["pages", "delete", "--course", "IS505", "missing"])
     assert result.exit_code == 1
     assert "not found" in result.output

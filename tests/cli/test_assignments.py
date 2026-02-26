@@ -93,7 +93,7 @@ def _patch_context():
 def test_assignments_list(mock_list):
     mock_list.return_value = MOCK_ASSIGNMENTS
     with _patch_context():
-        result = runner.invoke(app, ["assignments", "list", "IS505"])
+        result = runner.invoke(app, ["assignments", "list", "--course", "IS505"])
     assert result.exit_code == 0
     assert "Homework 1" in result.output
 
@@ -104,7 +104,7 @@ def test_assignments_list_json(mock_list):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["--format", "json", "assignments", "list", "IS505"],
+            ["--format", "json", "assignments", "list", "--course", "IS505"],
         )
     assert result.exit_code == 0
     assert '"Homework 1"' in result.output
@@ -114,7 +114,7 @@ def test_assignments_list_json(mock_list):
 def test_assignments_list_error(mock_list):
     mock_list.side_effect = CanvasError("forbidden", status_code=403)
     with _patch_context():
-        result = runner.invoke(app, ["assignments", "list", "IS505"])
+        result = runner.invoke(app, ["assignments", "list", "--course", "IS505"])
     assert result.exit_code == 1
     assert "forbidden" in result.output
 
@@ -126,7 +126,7 @@ def test_assignments_list_error(mock_list):
 def test_assignments_show(mock_get):
     mock_get.return_value = MOCK_ASSIGNMENT_DETAIL
     with _patch_context():
-        result = runner.invoke(app, ["assignments", "show", "IS505", "101"])
+        result = runner.invoke(app, ["assignments", "show", "--course", "IS505", "101"])
     assert result.exit_code == 0
     assert "101" in result.output
     assert "Homew" in result.output
@@ -136,7 +136,7 @@ def test_assignments_show(mock_get):
 def test_assignments_show_error(mock_get):
     mock_get.side_effect = CanvasError("not found", status_code=404)
     with _patch_context():
-        result = runner.invoke(app, ["assignments", "show", "IS505", "999"])
+        result = runner.invoke(app, ["assignments", "show", "--course", "IS505", "999"])
     assert result.exit_code == 1
     assert "not found" in result.output
 
@@ -150,7 +150,7 @@ def test_assignments_create(mock_create):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assignments", "create", "IS505", "New Assignment", "--points", "50"],
+            ["assignments", "create", "--course", "IS505", "New Assignment", "--points", "50"],
         )
     assert result.exit_code == 0
     assert "New Assignment" in result.output
@@ -162,7 +162,7 @@ def test_assignments_create_error(mock_create):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assignments", "create", "IS505", "Bad"],
+            ["assignments", "create", "--course", "IS505", "Bad"],
         )
     assert result.exit_code == 1
     assert "invalid" in result.output
@@ -177,7 +177,7 @@ def test_assignments_update(mock_update):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assignments", "update", "IS505", "101", "--name", "Updated"],
+            ["assignments", "update", "--course", "IS505", "101", "--name", "Updated"],
         )
     assert result.exit_code == 0
     assert "Updated" in result.output
@@ -190,7 +190,7 @@ def test_assignments_update(mock_update):
 def test_assignments_rubrics(mock_list):
     mock_list.return_value = MOCK_RUBRICS
     with _patch_context():
-        result = runner.invoke(app, ["assignments", "rubrics", "IS505"])
+        result = runner.invoke(app, ["assignments", "rubrics", "--course", "IS505"])
     assert result.exit_code == 0
     assert "Essay Rubric" in result.output
 
@@ -199,7 +199,7 @@ def test_assignments_rubrics(mock_list):
 def test_assignments_rubrics_error(mock_list):
     mock_list.side_effect = CanvasError("forbidden", status_code=403)
     with _patch_context():
-        result = runner.invoke(app, ["assignments", "rubrics", "IS505"])
+        result = runner.invoke(app, ["assignments", "rubrics", "--course", "IS505"])
     assert result.exit_code == 1
     assert "forbidden" in result.output
 
@@ -215,7 +215,7 @@ def test_assignments_rubric(mock_get_assign, mock_get_rubric):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assignments", "rubric", "IS505", "101"],
+            ["assignments", "rubric", "--course", "IS505", "101"],
         )
     assert result.exit_code == 0
     assert "Essay Rubric" in result.output
@@ -231,7 +231,7 @@ def test_assignments_rubric_no_rubric(mock_get_assign):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assignments", "rubric", "IS505", "101"],
+            ["assignments", "rubric", "--course", "IS505", "101"],
         )
     assert result.exit_code == 1
     assert "No rubric" in result.output
@@ -243,7 +243,7 @@ def test_assignments_rubric_error(mock_get_assign):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assignments", "rubric", "IS505", "999"],
+            ["assignments", "rubric", "--course", "IS505", "999"],
         )
     assert result.exit_code == 1
     assert "not found" in result.output
