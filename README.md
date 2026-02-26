@@ -14,8 +14,23 @@ commands, enabling AI-assisted grading workflows via `--format json`.
 ```sh
 git clone https://github.com/francojc/easel.git
 cd easel
-uv sync
 ```
+
+Install `easel` to `~/.local/bin/` so it's available system-wide:
+
+```sh
+uv tool install -e .
+```
+
+The `-e` (editable) flag means changes to the source take effect
+immediately without reinstalling. To update after a `git pull`:
+
+```sh
+uv tool install -e . --force
+```
+
+If you prefer to run from the project directory without a global
+install, use `uv run easel` instead (after `uv sync`).
 
 Set two environment variables for Canvas API access:
 
@@ -30,8 +45,8 @@ from your Canvas account settings under "Approved Integrations."
 Verify the install and connection:
 
 ```sh
-uv run easel --version
-uv run easel --test
+easel --version
+easel --test
 ```
 
 ## Quick start
