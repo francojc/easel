@@ -192,12 +192,14 @@ See [Configuration](#configuration) above for details.
 ### commands
 
 ```
-easel commands install [--overwrite]
+easel commands install [--overwrite] [--local]
 ```
 
 Copies bundled Claude Code skill commands (assess, assignments,
 content, course, discuss, grading) into `~/.claude/commands/`.
-See [Skill commands](#skill-commands) below.
+Pass `--local` to install into the current repo's
+`.claude/commands/` instead. See [Skill commands](#skill-commands)
+below.
 
 ### Global options
 

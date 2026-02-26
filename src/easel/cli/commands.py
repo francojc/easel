@@ -22,20 +22,34 @@ _COMMAND_GROUPS = [
 ]
 
 
+def _get_repo_root() -> Path:
+    """Return the easel repository root (four levels above this file)."""
+    return Path(__file__).resolve().parent.parent.parent.parent
+
+
 @commands_app.command("install")
 def commands_install(
     overwrite: bool = typer.Option(
         False, "--overwrite", help="Overwrite existing files without asking."
+    ),
+    local: bool = typer.Option(
+        False,
+        "--local",
+        help="Install to ./.claude/commands/ instead of ~/.claude/commands/.",
     ),
 ) -> None:
     """Copy bundled skill commands to ~/.claude/commands/.
 
     Installs all command groups: assess, assignments, content, course,
     discuss, and grading. Existing files are skipped unless --overwrite
-    is passed.
+    is passed. Use --local to install into the current repo instead of
+    the global directory.
     """
-    repo_root = Path(__file__).resolve().parent.parent.parent.parent
-    dst_root = Path.home() / ".claude" / "commands"
+    repo_root = _get_repo_root()
+    if local:
+        dst_root = Path.cwd() / ".claude" / "commands"
+    else:
+        dst_root = Path.home() / ".claude" / "commands"
 
     installed: list[str] = []
     skipped: list[str] = []
