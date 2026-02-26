@@ -80,6 +80,30 @@ def test_grading_submissions_error(mock_list):
     assert "forbidden" in result.output
 
 
+@patch("easel.cli.grading.list_submissions", new_callable=AsyncMock)
+def test_grading_submissions_anonymize(mock_list):
+    mock_list.return_value = [
+        {
+            "id": 501,
+            "user_id": 10,
+            "user_name": "",
+            "workflow_state": "submitted",
+            "score": "",
+            "grade": "",
+            "submitted_at": "2026-02-01T12:00:00Z",
+        },
+    ]
+    with _patch_context():
+        result = runner.invoke(
+            app,
+            ["grading", "submissions", "IS505", "101", "--anonymize"],
+        )
+    assert result.exit_code == 0
+    mock_list.assert_called_once()
+    assert mock_list.call_args.kwargs["anonymize"] is True
+    assert "Alice Smith" not in result.output
+
+
 # -- grading show --
 
 
@@ -94,6 +118,29 @@ def test_grading_show(mock_get):
     assert result.exit_code == 0
     assert "501" in result.output
     assert "Alice" in result.output
+
+
+@patch("easel.cli.grading.get_submission", new_callable=AsyncMock)
+def test_grading_show_anonymize(mock_get):
+    mock_get.return_value = {
+        "id": 501,
+        "user_id": 10,
+        "user_name": "",
+        "workflow_state": "graded",
+        "score": 95,
+        "grade": "95",
+        "submitted_at": "2026-02-01T12:00:00Z",
+        "rubric_assessment": {"_8027": {"points": 25}},
+    }
+    with _patch_context():
+        result = runner.invoke(
+            app,
+            ["grading", "show", "IS505", "101", "10", "--anonymize"],
+        )
+    assert result.exit_code == 0
+    mock_get.assert_called_once()
+    assert mock_get.call_args.kwargs["anonymize"] is True
+    assert "Alice Smith" not in result.output
 
 
 @patch("easel.cli.grading.get_submission", new_callable=AsyncMock)

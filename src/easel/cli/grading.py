@@ -27,13 +27,20 @@ async def grading_submissions(
     ctx: typer.Context,
     course: str = typer.Argument(help="Course code or numeric ID."),
     assignment_id: str = typer.Argument(help="Assignment ID."),
+    anonymize: bool = typer.Option(
+        False,
+        "--anonymize",
+        help="Strip PII (user_name) for FERPA compliance.",
+    ),
 ) -> None:
     """List all submissions for an assignment."""
     ectx = get_context(ctx.obj)
     fmt = ctx.obj["format"]
     try:
         course_id = await ectx.cache.resolve(course)
-        data = await list_submissions(ectx.client, course_id, assignment_id)
+        data = await list_submissions(
+            ectx.client, course_id, assignment_id, anonymize=anonymize
+        )
     except CanvasError as exc:
         typer.echo(exc.message, err=True)
         raise typer.Exit(1)
@@ -60,6 +67,11 @@ async def grading_show(
     course: str = typer.Argument(help="Course code or numeric ID."),
     assignment_id: str = typer.Argument(help="Assignment ID."),
     user_id: str = typer.Argument(help="User ID."),
+    anonymize: bool = typer.Option(
+        False,
+        "--anonymize",
+        help="Strip PII (user_name) for FERPA compliance.",
+    ),
 ) -> None:
     """Show a single submission with rubric assessment detail."""
     ectx = get_context(ctx.obj)
@@ -71,6 +83,7 @@ async def grading_show(
             course_id,
             assignment_id,
             user_id,
+            anonymize=anonymize,
         )
     except CanvasError as exc:
         typer.echo(exc.message, err=True)

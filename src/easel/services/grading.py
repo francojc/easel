@@ -15,6 +15,8 @@ async def list_submissions(
     client: CanvasClient,
     course_id: str,
     assignment_id: str,
+    *,
+    anonymize: bool = False,
 ) -> list[dict[str, Any]]:
     """Fetch all submissions for an assignment."""
     try:
@@ -33,7 +35,7 @@ async def list_submissions(
         {
             "id": s["id"],
             "user_id": s.get("user_id", ""),
-            "user_name": (s.get("user") or {}).get("name", ""),
+            "user_name": "" if anonymize else (s.get("user") or {}).get("name", ""),
             "workflow_state": s.get("workflow_state", ""),
             "score": s.get("score", ""),
             "grade": s.get("grade", ""),
@@ -48,6 +50,8 @@ async def get_submission(
     course_id: str,
     assignment_id: str,
     user_id: str,
+    *,
+    anonymize: bool = False,
 ) -> dict[str, Any]:
     """Fetch a single submission with rubric assessment detail."""
     try:
@@ -65,7 +69,7 @@ async def get_submission(
     return {
         "id": s["id"],
         "user_id": s.get("user_id", ""),
-        "user_name": (s.get("user") or {}).get("name", ""),
+        "user_name": "" if anonymize else (s.get("user") or {}).get("name", ""),
         "workflow_state": s.get("workflow_state", ""),
         "score": s.get("score", ""),
         "grade": s.get("grade", ""),

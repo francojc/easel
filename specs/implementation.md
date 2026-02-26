@@ -1,8 +1,8 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** Phase 6 - Polish (COMPLETE)
-**Last Updated:** 2026-02-23
+**Status:** Post-0.1.0 development
+**Last Updated:** 2026-02-25
 
 ## Architecture
 
@@ -128,6 +128,8 @@ easel/
     - **Public Interface:** `list_submissions()`, `get_submission()`,
       `submit_grade()`, `submit_rubric_grade()` -- all async
     - **Dependencies:** core/client.py, services/rubrics.py, CanvasError
+    - **Notes:** `list_submissions()` and `get_submission()` accept
+      `anonymize` kwarg to blank `user_name` for FERPA compliance
 
 11. **cli/assignments.py**
     - **Purpose:** Typer sub-app for assignment and rubric commands
@@ -151,6 +153,10 @@ easel/
       `get_assessment_stats()`, `submit_assessments()`
     - **Dependencies:** core/client.py, services/assignments.py
       (_strip_html), services/grading.py (submit_rubric_grade)
+    - **Notes:** `fetch_submissions_with_content()` accepts
+      `anonymize` kwarg to blank `user_name` and `user_email`
+      for FERPA compliance; blanked values propagate through
+      `build_assessment_structure()` automatically
 
 14. **cli/assessments.py**
     - **Purpose:** Typer sub-app for assessment workflow commands
@@ -359,3 +365,4 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-22 | TOML for global config, YAML for local | TOML suits key-value instructor defaults; YAML matches existing course_parameters schema used by assess skills | Both TOML (unfamiliar to users for course params), both YAML (no stdlib YAML parser) |
 | 2026-02-22 | No service layer for config sub-app | Config commands do local file I/O only (no Canvas API calls); service layer would be unnecessary indirection | Add services/config.py (overkill for pure file ops) |
 | 2026-02-22 | Single asyncio.run() for --test callback | Avoids event loop lifecycle issues; httpx client must be created and closed on the same loop | Separate asyncio.run() calls for test and cleanup (caused crash) |
+| 2026-02-25 | Opt-in `--anonymize` flag strips PII at service layer | FERPA compliance when assessment JSON passes through LLM; simple strip (not reversible mapping) keeps implementation minimal; service-layer stripping follows existing HTML stripping pattern | Default-on anonymization (breaking change for existing workflows), reversible mapping with lookup table (unnecessary complexity, user_id suffices for round-tripping), submission text scanning (out of scope, low risk for structured fields) |

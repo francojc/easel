@@ -161,6 +161,37 @@ def test_assess_setup_with_options(mock_fetch_assign, mock_fetch_subs, tmp_path)
     assert data["metadata"]["formality"] == "formal"
 
 
+@patch(
+    "easel.cli.assessments.fetch_submissions_with_content",
+    new_callable=AsyncMock,
+)
+@patch(
+    "easel.cli.assessments.fetch_assignment_with_rubric",
+    new_callable=AsyncMock,
+)
+def test_assess_setup_anonymize(mock_fetch_assign, mock_fetch_subs, tmp_path):
+    mock_fetch_assign.return_value = MOCK_ASSIGNMENT_DATA
+    mock_fetch_subs.return_value = MOCK_SUBMISSIONS
+    out_path = str(tmp_path / "test_anon.json")
+
+    with _patch_context():
+        result = runner.invoke(
+            app,
+            [
+                "assess",
+                "setup",
+                "IS505",
+                "101",
+                "--output",
+                out_path,
+                "--anonymize",
+            ],
+        )
+    assert result.exit_code == 0
+    mock_fetch_subs.assert_called_once()
+    assert mock_fetch_subs.call_args.kwargs["anonymize"] is True
+
+
 # -- assess load --
 
 

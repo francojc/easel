@@ -62,3 +62,8 @@ patterns easel adapts. Reference only -- no runtime dependency.
 - Event loop lifecycle: never call `asyncio.run()` twice for the same
   httpx client. The client must be created and closed on the same loop.
   See the `--test` callback pattern in app.py.
+- Anonymization (`--anonymize`): opt-in flag on `assess setup`,
+  `grading submissions`, and `grading show`. Strips `user_name` and
+  `user_email` at the service layer. Retains `user_id` (Canvas opaque
+  integer) for grade submission round-tripping. Does not scan
+  submission text.

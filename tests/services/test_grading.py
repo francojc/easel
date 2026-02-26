@@ -68,6 +68,23 @@ async def test_list_submissions_http_error(client):
     assert exc_info.value.status_code == 403
 
 
+async def test_list_submissions_anonymize(client):
+    client.get_paginated.return_value = [
+        {
+            "id": 501,
+            "user_id": 10,
+            "user": {"name": "Alice Smith"},
+            "workflow_state": "submitted",
+            "score": None,
+            "grade": None,
+            "submitted_at": "2026-02-01T12:00:00Z",
+        },
+    ]
+    result = await list_submissions(client, "1", "101", anonymize=True)
+    assert result[0]["user_name"] == ""
+    assert result[0]["user_id"] == 10
+
+
 # -- get_submission --
 
 
@@ -100,6 +117,22 @@ async def test_get_submission_http_error(client):
     with pytest.raises(CanvasError) as exc_info:
         await get_submission(client, "1", "101", "99")
     assert exc_info.value.status_code == 404
+
+
+async def test_get_submission_anonymize(client):
+    client.request.return_value = {
+        "id": 501,
+        "user_id": 10,
+        "user": {"name": "Alice Smith"},
+        "workflow_state": "graded",
+        "score": 95,
+        "grade": "95",
+        "submitted_at": "2026-02-01T12:00:00Z",
+        "rubric_assessment": {"_8027": {"points": 25}},
+    }
+    result = await get_submission(client, "1", "101", "10", anonymize=True)
+    assert result["user_name"] == ""
+    assert result["user_id"] == 10
 
 
 # -- submit_grade --

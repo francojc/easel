@@ -176,6 +176,17 @@ async def test_fetch_submissions_http_error(client):
     assert exc_info.value.status_code == 403
 
 
+async def test_fetch_submissions_anonymize(client):
+    client.get_paginated.return_value = SAMPLE_SUBMISSIONS
+    result = await fetch_submissions_with_content(
+        client, "1", "101", exclude_graded=False, anonymize=True
+    )
+    for sub in result:
+        assert sub["user_name"] == ""
+        assert sub["user_email"] == ""
+    assert result[0]["user_id"] == 10
+
+
 # -- build_assessment_structure --
 
 
@@ -242,6 +253,31 @@ def test_build_assessment_structure():
     assert a["approved"] is False
     assert "_c1" in a["rubric_assessment"]
     assert a["rubric_assessment"]["_c1"]["points"] is None
+
+
+def test_build_assessment_propagates_anonymized_fields():
+    subs = [
+        {
+            "user_id": 10,
+            "user_name": "",
+            "user_email": "",
+            "submission_id": 501,
+            "submitted_at": "2026-02-28T12:00:00Z",
+            "late": False,
+            "word_count": 50,
+            "submission_text": "My essay text.",
+        },
+    ]
+    data = build_assessment_structure(
+        course_id="1",
+        course_name="Test",
+        assignment_data=_sample_assignment_data(),
+        submissions=subs,
+    )
+    a = data["assessments"][0]
+    assert a["user_name"] == ""
+    assert a["user_email"] == ""
+    assert a["user_id"] == 10
 
 
 def test_build_assessment_empty_submissions():

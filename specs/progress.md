@@ -1,16 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** Phase 6 - Polish (COMPLETE)
-**Last Updated:** 2026-02-23
+**Status:** Post-0.1.0 development
+**Last Updated:** 2026-02-25
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** Phase 6 - Polish (COMPLETE)
-- **Phase Progress:** 100% complete
-- **Overall Project Progress:** 100% (all phases complete, ready for 0.1.0)
+- **Current Phase:** Post-0.1.0 feature development
+- **Phase Progress:** Anonymize feature implemented, awaiting commit
+- **Overall Project Progress:** All core phases complete; incremental features in progress
 
 ### Recent Accomplishments
 
@@ -43,11 +43,10 @@
 
 ### Active Work
 
-- Phase 6 (polish) complete: `commands install` CLI, assess skill
-  commands migrated, config sub-app, live smoke tests (17/17),
-  --test event loop bug fixed, shell completion (Typer built-in),
-  README rewritten with full CLI reference and "Extending with AI"
-  section, final documentation pass done
+- `--anonymize` flag for FERPA-compliant PII stripping: implemented
+  in grading and assessment services/CLI, 7 new tests added (234
+  total), all passing. Strips `user_name` and `user_email` fields
+  when enabled; retains `user_id` for grade submission round-tripping.
 
 ## Milestone Tracking
 
@@ -78,11 +77,11 @@
 
 ### Test Results
 
-- **Unit Tests:** 227 passing
+- **Unit Tests:** 234 passing
   - core: config 4, client 11, cache 9, config_files 9
-  - services: courses 9, assignments 14, rubrics 8, grading 10,
-    assessments 22, modules 14, pages 15, discussions 15
-  - cli: courses 8, assignments 13, grading 10, assessments 12,
+  - services: courses 9, assignments 14, rubrics 8, grading 12,
+    assessments 24, modules 14, pages 15, discussions 15
+  - cli: courses 8, assignments 13, grading 13, assessments 13,
     modules 11, pages 12, discussions 12, config 8
   - smoke: 3
 - **Integration Tests:** n/a
@@ -135,7 +134,8 @@
 
 ### In Progress
 
-(none)
+- [x] `--anonymize` flag for FERPA-compliant PII stripping (implemented,
+  awaiting commit)
 
 ### Planned
 
@@ -201,6 +201,7 @@
 
 ### Immediate Actions (Next Session)
 
+- [ ] Commit and tag `--anonymize` feature
 - [ ] Tag 0.1.0 release
 
 ### Medium-term Goals (Next Few Sessions)

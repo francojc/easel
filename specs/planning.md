@@ -1,8 +1,8 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** Complete (Phase 6 done, ready for 0.1.0)
-**Last Updated:** 2026-02-23
+**Status:** Post-0.1.0 development
+**Last Updated:** 2026-02-25
 
 ## Project Overview
 
@@ -39,7 +39,7 @@
 
 - No GUI or TUI beyond formatted terminal output
 - No MCP integration -- easel is a standalone CLI
-- No anonymization, audit logging, or sandbox config (canvas-mcp concerns)
+- No audit logging or sandbox config (canvas-mcp concerns)
 - No runtime dependency on canvas-mcp (reference only)
 
 ## Architecture and Design

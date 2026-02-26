@@ -60,6 +60,11 @@ async def assess_setup(
         "--exclude-graded/--include-graded",
         help="Exclude already-graded submissions.",
     ),
+    anonymize: bool = typer.Option(
+        False,
+        "--anonymize",
+        help="Strip PII (user_name, user_email) for FERPA compliance.",
+    ),
 ) -> None:
     """Fetch assignment data and build an assessment JSON file."""
     ectx = get_context(ctx.obj)
@@ -76,6 +81,7 @@ async def assess_setup(
             course_id,
             assignment_id,
             exclude_graded=exclude_graded,
+            anonymize=anonymize,
         )
 
         data = build_assessment_structure(

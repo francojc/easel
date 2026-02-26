@@ -83,6 +83,7 @@ async def fetch_submissions_with_content(
     assignment_id: str,
     *,
     exclude_graded: bool = True,
+    anonymize: bool = False,
 ) -> list[dict[str, Any]]:
     """Fetch submissions with user info and body text.
 
@@ -121,8 +122,8 @@ async def fetch_submissions_with_content(
         results.append(
             {
                 "user_id": s.get("user_id", ""),
-                "user_name": user.get("name", ""),
-                "user_email": user.get("email", ""),
+                "user_name": "" if anonymize else user.get("name", ""),
+                "user_email": "" if anonymize else user.get("email", ""),
                 "submission_id": s["id"],
                 "submitted_at": submitted_at,
                 "late": late,
