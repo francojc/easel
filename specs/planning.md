@@ -1,8 +1,8 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** v0.1.5 development
-**Last Updated:** 2026-02-25
+**Status:** v0.1.5 released
+**Last Updated:** 2026-03-18
 
 ## Project Overview
 
@@ -27,13 +27,13 @@
 
 #### Goals
 
-- [ ] Full Canvas API coverage for common instructor workflows
+- [x] Full Canvas API coverage for common instructor workflows
       (courses, assignments, rubrics, grading, modules, discussions)
 - [x] Four output formats: table (human), JSON (machine), plain (simple),
       CSV (pipeable)
-- [ ] Scriptable and composable -- exit codes, stderr for errors,
+- [x] Scriptable and composable -- exit codes, stderr for errors,
       stdout for data
-- [ ] Usable as a backend for Claude Code assess/* skills via
+- [x] Usable as a backend for Claude Code assess/* skills via
       `easel <cmd> --format json`
 
 #### Non-Goals
@@ -219,18 +219,18 @@
 
 ### Functional Criteria
 
-- [ ] `easel courses list` returns live data in all three formats
-- [ ] `easel assignments list <course> --format json` works for skills
-- [ ] All implemented commands have service + CLI tests passing
+- [x] `easel courses list` returns live data in all three formats
+- [x] `easel assignments list <course> --format json` works for skills
+- [x] All implemented commands have service + CLI tests passing
 
 ### Quality Criteria
 
-- [ ] ruff check and ruff format pass with no warnings
-- [ ] Test coverage for services and CLI layers
-- [ ] No critical defects in core HTTP/auth handling
+- [x] ruff check and ruff format pass with no warnings
+- [ ] Test coverage measured (pytest-cov not yet added)
+- [x] No critical defects in core HTTP/auth handling
 
 ### Adoption Criteria
 
 - [x] assess/* skills can call easel via Bash instead of MCP tools
-- [ ] `easel --help` documents all available commands
-- [ ] Setup requires only `uv pip install -e .` and a Canvas API token
+- [x] `easel --help` documents all available commands
+- [x] Setup requires only `uv pip install -e .` and a Canvas API token

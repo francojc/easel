@@ -1,8 +1,8 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** v0.1.5 development
-**Last Updated:** 2026-02-25
+**Status:** v0.1.5 released
+**Last Updated:** 2026-03-18
 
 ## Current Status Overview
 
@@ -44,10 +44,7 @@
 
 ### Active Work
 
-- v0.1.5 implemented (pending release):
-  - Issue #8: Added `--format csv` output format (csv.writer to stdout)
-  - Issue #9: `grading submit-rubric` now accepts a file path instead
-    of inline JSON text
+(none)
 
 ## Milestone Tracking
 
@@ -68,7 +65,7 @@
 - [x] v0.1.2: XDG-compliant config system (tagged)
 - [x] v0.1.3: Config-driven defaults (tagged)
 - [x] v0.1.4: Course option fix, issue #6 (tagged)
-- [ ] v0.1.5: CSV output format (#8) + file-based rubric grading (#9)
+- [x] v0.1.5: CSV output format (#8) + file-based rubric grading (#9)
 
 ### At-Risk Milestones
 
@@ -78,7 +75,7 @@
 
 ### Build Health
 
-- **Last Successful Build:** 2026-02-25 (`uv sync` + `uv run pytest tests/`)
+- **Last Successful Build:** 2026-03-18 (`uv sync` + `uv run pytest tests/`)
 - **Build Warnings:** None
 
 ### Test Results
@@ -156,7 +153,7 @@
 
 ### Planned
 
-- [ ] Version bump, changelog, and release tag for v0.1.5
+(none)
 
 ### Deferred or Cut
 
@@ -217,11 +214,12 @@
 
 ### Immediate Actions (Next Session)
 
-- [ ] Bump version to 0.1.5, update CHANGELOG, tag, push
+(none)
 
 ### Medium-term Goals (Next Few Sessions)
 
-(none)
+- Consider adding `pytest-cov` to measure test coverage
+- Triage brainstorm log for v0.1.6 roadmap candidates
 
 ### Decisions Needed
 
@@ -231,16 +229,13 @@
 
 ### Next Release
 
-- **Version:** 0.1.5
-- **Target Date:** TBD
-- **Included Features:** CSV output format (#8), file-based rubric
-  grading (#9)
-- **Release Blockers:** None
+(no release planned)
 
 ### Release History
 
 | Version | Date       | Key Changes                                      |
 |---------|------------|--------------------------------------------------|
+| 0.1.5   | 2026-03-18 | CSV output format (#8), file-based rubric grading (#9) |
 | 0.1.4   | 2026-02-25 | Course changed to --course/-c option (fix #6)    |
 | 0.1.3   | 2026-02-25 | Config-driven defaults, optional course arg      |
 | 0.1.2   | 2026-02-25 | XDG config, TOML local config, --defaults flag   |
