@@ -1,7 +1,7 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** v0.1.5 released
+**Status:** v0.1.6 feature-complete; ready to tag
 **Last Updated:** 2026-03-18
 
 ## Current Status Overview
@@ -42,6 +42,24 @@
   with announcement support), CLI sub-apps for all three, HTML
   stripping in pages and discussions, 210 tests passing, ruff clean
 
+### Recent Accomplishments (this session)
+
+- `rubrics import --csv <path>` command: parses Canvas wide-format CSV
+  into title + criteria, creates rubric via existing `create_rubric`
+- `rubrics attach <rubric_id> <assignment_id>` command: `PUT` association
+  with optional `--use-for-grading`; returns summary dict
+- `parse_rubric_csv` service: positional CSV parsing (avoids
+  `DictReader` duplicate-header issue), validates rubric name
+  uniqueness, numeric points, required columns
+- `attach_rubric` service: wraps `PUT /courses/:id/rubrics/:rubric_id`
+  with `rubric_association` JSON body, raises `CanvasError` on failure
+- `.claude/commands/rubrics/create.md` skill: end-to-end guided workflow
+  (CSV / JSON / interactive), captures rubric ID, offers attach,
+  suggests `/assess:setup` next
+- `assignments/create.md` Step 5 simplified: inline JSON + Option A/B
+  replaced with one-line handoff to `/rubrics:create`
+- 12 new tests (7 service + 5 CLI); 282 total, all passing, ruff clean
+
 ### Active Work
 
 (none)
@@ -66,6 +84,7 @@
 - [x] v0.1.3: Config-driven defaults (tagged)
 - [x] v0.1.4: Course option fix, issue #6 (tagged)
 - [x] v0.1.5: CSV output format (#8) + file-based rubric grading (#9)
+- [ ] v0.1.6: Rubrics subcommand (import CSV, attach, skill) — feature-complete
 
 ### At-Risk Milestones
 
@@ -80,13 +99,13 @@
 
 ### Test Results
 
-- **Unit Tests:** 262 passing
+- **Unit Tests:** 282 passing
   - core: config 4, client 11, cache 9, config_files 9
-  - services: courses 9, assignments 14, rubrics 8, grading 12,
+  - services: courses 9, assignments 14, rubrics 18, grading 12,
     assessments 24, modules 14, pages 15, discussions 15
-  - cli: courses 9, assignments 13, grading 14, assessments 13,
-    modules 11, pages 12, discussions 12, config 8,
-    config_defaults 14, output 6
+  - cli: courses 9, assignments 9, rubrics 15, grading 14,
+    assessments 13, modules 11, pages 12, discussions 12,
+    config 8, config_defaults 14, output 6
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -117,7 +136,12 @@
 - [x] Rubrics service: list, get, bracket-notation form data builder
 - [x] Grading service: list submissions, get submission, submit grade,
   submit rubric grade
-- [x] Assignments CLI: `easel assignments list|show|create|update|rubrics|rubric`
+- [x] Assignments CLI: `easel assignments list|show|create|update`
+- [x] Rubrics CLI: `easel rubrics list|show|create|import|attach`
+- [x] `create_rubric` service: POST with bracket-notation form-data, schema validation
+- [x] `parse_rubric_csv` service: Canvas wide-format CSV → (title, criteria)
+- [x] `attach_rubric` service: PUT rubric_association for assignment linkage
+- [x] `.claude/commands/rubrics/create.md` skill: guided create + attach workflow
 - [x] Grading CLI: `easel grading submissions|show|submit|submit-rubric`
 - [x] Assessment service: fetch assignment+rubric, fetch submissions
   with content, build/load/save/update JSON, stats, submit to Canvas
@@ -214,12 +238,15 @@
 
 ### Immediate Actions (Next Session)
 
-(none)
+- Tag and release v0.1.6
+- Update CHANGELOG.md with v0.1.6 changes
+- Bump version in pyproject.toml to 0.1.6
 
 ### Medium-term Goals (Next Few Sessions)
 
-- Consider adding `pytest-cov` to measure test coverage
-- Triage brainstorm log for v0.1.6 roadmap candidates
+- Add `pytest-cov` to measure test coverage
+- Triage v0.1.7 roadmap: consider announcement threading, module
+  item CRUD, or batch grading improvements
 
 ### Decisions Needed
 
@@ -235,6 +262,7 @@
 
 | Version | Date       | Key Changes                                      |
 |---------|------------|--------------------------------------------------|
+| 0.1.6   | —          | Rubrics sub-app: import CSV, attach, skill; 282 tests |
 | 0.1.5   | 2026-03-18 | CSV output format (#8), file-based rubric grading (#9) |
 | 0.1.4   | 2026-02-25 | Course changed to --course/-c option (fix #6)    |
 | 0.1.3   | 2026-02-25 | Config-driven defaults, optional course arg      |

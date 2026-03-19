@@ -3,6 +3,32 @@
 All notable changes to easel are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.6] - 2026-03-18
+
+### Added
+
+- `easel rubrics` sub-app with five commands: `list`, `show <id>`,
+  `create --file <path>`, `import --csv <path>`, `attach <rubric_id> <assignment_id>`
+- `create_rubric` service: validates criteria schema before any network
+  call, encodes bracket-notation form-data, raises `CanvasError` on HTTP
+  errors
+- `parse_rubric_csv` service: parses Canvas wide-format CSV template into
+  `(title, criteria)` using positional column slicing; handles variable-length
+  rating triplets, validates rubric name uniqueness and numeric points
+- `attach_rubric` service: `PUT /courses/:id/rubrics/:rubric_id` with
+  `rubric_association` body; optional `use_for_grading` flag
+- `.claude/commands/rubrics/create.md` skill: guided end-to-end workflow
+  (CSV / JSON / interactive), captures rubric ID, offers attachment,
+  suggests `/assess:setup` as next step
+- 12 new tests (7 service + 5 CLI); 282 total
+
+### Changed
+
+- `assignments rubrics` and `assignments rubric` commands removed from
+  `easel assignments`; all rubric commands now live under `easel rubrics`
+- `assignments/create.md` Step 5 simplified: inline JSON example and
+  Option A/B branching replaced with a one-line handoff to `/rubrics:create`
+
 ## [0.1.5] - 2026-02-25
 
 ### Added
@@ -117,6 +143,7 @@ Initial release. Full Canvas LMS CLI for instructor workflows.
 - `--test` flag for Canvas API connectivity check
 - 234 tests passing across services and CLI layers
 
+[0.1.6]: https://github.com/francojc/easel/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/francojc/easel/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/francojc/easel/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/francojc/easel/compare/v0.1.2...v0.1.3

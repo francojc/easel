@@ -1,7 +1,7 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** v0.1.5 released
+**Status:** v0.1.6 feature-complete; ready to tag
 **Last Updated:** 2026-03-18
 
 ## Project Overview
@@ -97,8 +97,9 @@
 ### Phase 3: Assignments + Rubrics + Grading (COMPLETE)
 
 - [x] Assignments service (list, get, create, update) with HTML stripping
-- [x] Assignments CLI (list, show, create, update, rubrics, rubric)
-- [x] Rubrics service (list, get, bracket-notation form data builder)
+- [x] Assignments CLI (list, show, create, update)
+- [x] Rubrics service (list, get, create, parse_rubric_csv, attach_rubric)
+- [x] Rubrics CLI (`easel rubrics list|show|create|import|attach`)
 - [x] Grading service (submissions, get, submit grade, submit rubric grade)
 - [x] Grading CLI (submissions, show, submit, submit-rubric)
 - [x] Tests: 14 assignments svc, 8 rubrics svc, 10 grading svc,
@@ -166,6 +167,23 @@
 - [x] Fixes greedy positional parsing where required args were
       swallowed by optional `course` (Issue #6)
 - [x] Updated all CLI tests to use `--course` flag
+
+### v0.1.6: Rubrics Subcommand (COMPLETE)
+
+- [x] `easel rubrics` sub-app replacing `assignments rubrics|rubric`
+- [x] `rubrics list` — list all course rubrics
+- [x] `rubrics show <id>` — show rubric by direct ID (no assignment needed)
+- [x] `rubrics create --file <path>` — create rubric from JSON file
+- [x] `rubrics import --csv <path>` — create rubric from Canvas wide-format CSV
+- [x] `rubrics attach <rubric_id> <assignment_id>` — associate rubric with
+      assignment via `PUT` with `rubric_association` body
+- [x] `parse_rubric_csv` service: positional CSV parsing, validates columns
+      and numeric points, handles variable-length rating triplets
+- [x] `attach_rubric` service: wraps Canvas PUT endpoint, raises CanvasError
+- [x] `.claude/commands/rubrics/create.md` skill: CSV/JSON/guided paths,
+      capture rubric ID, offer attach, suggest `/assess:setup`
+- [x] `assignments/create.md` Step 5 simplified: hands off to `/rubrics:create`
+- [x] 282 tests total, ruff clean
 
 ### v0.1.5: Output and Usability Improvements (COMPLETE)
 

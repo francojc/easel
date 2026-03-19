@@ -105,26 +105,9 @@ Use `AskUserQuestion`:
 - "Does this assignment need a rubric?"
 - Options: ["Yes", "No"]
 
-**If yes**: Provide guidance since rubric creation has API limitations:
-
-```
-Rubric Note
------------
-
-The Canvas API supports rubric creation but the process involves multiple
-steps and associations. For now, attach rubrics through the Canvas web UI:
-
-  1. Open the assignment in Canvas
-  2. Click "+ Rubric" at the bottom
-  3. Define criteria and rating levels
-  4. Save the rubric
-
-Once the rubric is attached, you can use /assess:setup to initialize
-rubric-based grading workflows from the CLI.
-
-To verify the rubric was attached:
-  uv run easel assignments rubric {canvas_course_id} {assignment_id}
-```
+**If yes**: Run the `/rubrics:create` skill now.
+It will guide rubric creation and offer to attach it to this assignment
+(ID: {assignment_id}).
 
 ## Step 6: Display Summary
 

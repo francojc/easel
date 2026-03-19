@@ -8,9 +8,12 @@ import pytest
 from easel.core.client import CanvasClient
 from easel.services import CanvasError
 from easel.services.rubrics import (
+    attach_rubric,
     build_rubric_assessment_form_data,
+    create_rubric,
     get_rubric,
     list_rubrics,
+    parse_rubric_csv,
 )
 
 
@@ -128,3 +131,148 @@ def test_build_form_data_with_rating_id():
 
     keys = [k for k, _ in pairs]
     assert "rubric_assessment[_8027][rating_id]" in keys
+
+
+# -- create_rubric --
+
+
+VALID_CRITERIA = [
+    {
+        "description": "Thesis",
+        "points": 25,
+        "ratings": [
+            {"description": "Excellent", "points": 25},
+            {"description": "Poor", "points": 0},
+        ],
+    }
+]
+
+
+async def test_create_rubric(client):
+    client.request.return_value = {
+        "rubric": {
+            "id": 10,
+            "title": "New Rubric",
+            "points_possible": 25,
+            "data": [{"id": "_abc"}],
+        }
+    }
+
+    result = await create_rubric(client, "1", "New Rubric", VALID_CRITERIA)
+    assert result["title"] == "New Rubric"
+    assert result["criteria_count"] == 1
+
+    call_args = client.request.call_args
+    assert call_args[0][0] == "post"
+    form_data = call_args[1]["form_data"]
+    keys_values = dict(form_data)
+    assert keys_values.get("rubric[title]") == "New Rubric"
+    assert (
+        keys_values.get("rubric[criteria][0][description]") == "Thesis"
+    )
+
+
+async def test_create_rubric_http_error(client):
+    client.request.side_effect = httpx.HTTPStatusError(
+        "error",
+        request=httpx.Request("POST", "https://canvas.test/api/v1/courses/1/rubrics"),
+        response=httpx.Response(422, text="unprocessable"),
+    )
+    with pytest.raises(CanvasError) as exc_info:
+        await create_rubric(client, "1", "New Rubric", VALID_CRITERIA)
+    assert exc_info.value.status_code == 422
+
+
+async def test_create_rubric_empty_criteria(client):
+    with pytest.raises(ValueError):
+        await create_rubric(client, "1", "New Rubric", [])
+    client.request.assert_not_called()
+
+
+# -- parse_rubric_csv --
+
+CSV_HEADER = (
+    "Rubric Name,Criteria Name,Criteria Description,Criteria Enable Range,"
+    "Rating Name,Rating Description,Rating Points,"
+    "Rating Name,Rating Description,Rating Points"
+)
+CSV_ROW = "Essay Rubric,Thesis,Strong central argument,false,Excellent,Full marks,25,Poor,Needs work,0"
+
+
+def test_parse_rubric_csv(tmp_path):
+    f = tmp_path / "rubric.csv"
+    f.write_text(f"{CSV_HEADER}\n{CSV_ROW}\n")
+    title, criteria = parse_rubric_csv(str(f))
+    assert title == "Essay Rubric"
+    assert len(criteria) == 1
+    assert criteria[0]["description"] == "Thesis"
+    assert criteria[0]["points"] == 25
+    assert any(r["description"] == "Excellent" for r in criteria[0]["ratings"])
+
+
+def test_parse_rubric_csv_multiple_criteria(tmp_path):
+    row2 = "Essay Rubric,Evidence,Use of sources,false,Strong,Good evidence,10,Weak,Little evidence,0"
+    f = tmp_path / "rubric.csv"
+    f.write_text(f"{CSV_HEADER}\n{CSV_ROW}\n{row2}\n")
+    title, criteria = parse_rubric_csv(str(f))
+    assert title == "Essay Rubric"
+    assert len(criteria) == 2
+
+
+def test_parse_rubric_csv_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        parse_rubric_csv("/no/such/file.csv")
+
+
+def test_parse_rubric_csv_invalid_points(tmp_path):
+    bad_row = "Essay Rubric,Thesis,Description,false,Excellent,Full marks,BADVAL"
+    f = tmp_path / "rubric.csv"
+    f.write_text(f"{CSV_HEADER}\n{bad_row}\n")
+    with pytest.raises(ValueError, match="Non-numeric points"):
+        parse_rubric_csv(str(f))
+
+
+def test_parse_rubric_csv_multiple_rubric_names(tmp_path):
+    row2 = "Other Rubric,Evidence,Sources,false,Strong,Good,10,Weak,Poor,0"
+    f = tmp_path / "rubric.csv"
+    f.write_text(f"{CSV_HEADER}\n{CSV_ROW}\n{row2}\n")
+    with pytest.raises(ValueError, match="Multiple rubric names"):
+        parse_rubric_csv(str(f))
+
+
+# -- attach_rubric --
+
+
+async def test_attach_rubric(client):
+    client.request.return_value = {
+        "rubric": {"id": 5},
+        "rubric_association": {
+            "association_id": "101",
+            "association_type": "Assignment",
+            "use_for_grading": False,
+            "purpose": "grading",
+        },
+    }
+
+    result = await attach_rubric(client, "1", "5", "101")
+    assert result["rubric_id"] == "5"
+    assert result["assignment_id"] == "101"
+    assert result["purpose"] == "grading"
+
+    call_args = client.request.call_args
+    assert call_args[0][0] == "put"
+    assert "/rubrics/5" in call_args[0][1]
+    body = call_args[1]["data"]
+    assert body["rubric_association"]["association_id"] == "101"
+    assert body["rubric_association"]["association_type"] == "Assignment"
+
+
+async def test_attach_rubric_http_error(client):
+    client.request.side_effect = httpx.HTTPStatusError(
+        "error",
+        request=httpx.Request("PUT", "https://canvas.test/api/v1/courses/1/rubrics/5"),
+        response=httpx.Response(404, text="not found"),
+    )
+    with pytest.raises(CanvasError) as exc_info:
+        await attach_rubric(client, "1", "5", "101")
+    assert exc_info.value.status_code == 404

@@ -128,13 +128,38 @@ easel assignments list [--course COURSE]
 easel assignments show [--course COURSE] <assignment-id>
 easel assignments create [--course COURSE] <name> [--points N] [--due ISO] [--publish]
 easel assignments update [--course COURSE] <assignment-id> [--name ...] [--points N]
-easel assignments rubrics [--course COURSE]
-easel assignments rubric [--course COURSE] <assignment-id>
 ```
 
-Create, update, list, and inspect assignments. `rubrics` lists all
-rubrics for a course; `rubric` shows the detailed rubric for a
-specific assignment.
+Create, update, list, and inspect assignments.
+
+### rubrics
+
+```
+easel rubrics list [--course COURSE]
+easel rubrics show [--course COURSE] <rubric-id>
+easel rubrics create [--course COURSE] --file <path>
+```
+
+List, inspect, and create rubrics. `show` looks up a rubric by its
+direct ID. `create` reads a JSON file with `title` and `criteria`
+fields and posts a new rubric to Canvas. Example JSON:
+
+```json
+{
+  "title": "Essay Rubric",
+  "criteria": [
+    {
+      "description": "Thesis",
+      "points": 25,
+      "ratings": [
+        {"description": "Excellent", "points": 25},
+        {"description": "Needs work", "points": 10},
+        {"description": "Missing", "points": 0}
+      ]
+    }
+  ]
+}
+```
 
 ### grading
 

@@ -32,31 +32,6 @@ MOCK_ASSIGNMENT_DETAIL = {
     "rubric_settings": {"id": 5, "points_possible": 10},
 }
 
-MOCK_RUBRICS = [
-    {
-        "id": 5,
-        "title": "Essay Rubric",
-        "points_possible": 100,
-        "criteria_count": 2,
-    },
-]
-
-MOCK_RUBRIC_DETAIL = {
-    "id": 5,
-    "title": "Essay Rubric",
-    "points_possible": 100,
-    "criteria": [
-        {
-            "id": "_8027",
-            "description": "Thesis",
-            "points": 25,
-            "ratings": [
-                {"id": "r1", "description": "Excellent", "points": 25},
-            ],
-        },
-    ],
-}
-
 MOCK_CREATED = {
     "id": 201,
     "name": "New Assignment",
@@ -183,67 +158,3 @@ def test_assignments_update(mock_update):
     assert "Updated" in result.output
 
 
-# -- assignments rubrics --
-
-
-@patch("easel.cli.assignments.list_rubrics", new_callable=AsyncMock)
-def test_assignments_rubrics(mock_list):
-    mock_list.return_value = MOCK_RUBRICS
-    with _patch_context():
-        result = runner.invoke(app, ["assignments", "rubrics", "--course", "IS505"])
-    assert result.exit_code == 0
-    assert "Essay Rubric" in result.output
-
-
-@patch("easel.cli.assignments.list_rubrics", new_callable=AsyncMock)
-def test_assignments_rubrics_error(mock_list):
-    mock_list.side_effect = CanvasError("forbidden", status_code=403)
-    with _patch_context():
-        result = runner.invoke(app, ["assignments", "rubrics", "--course", "IS505"])
-    assert result.exit_code == 1
-    assert "forbidden" in result.output
-
-
-# -- assignments rubric --
-
-
-@patch("easel.cli.assignments.get_rubric", new_callable=AsyncMock)
-@patch("easel.cli.assignments.get_assignment", new_callable=AsyncMock)
-def test_assignments_rubric(mock_get_assign, mock_get_rubric):
-    mock_get_assign.return_value = MOCK_ASSIGNMENT_DETAIL
-    mock_get_rubric.return_value = MOCK_RUBRIC_DETAIL
-    with _patch_context():
-        result = runner.invoke(
-            app,
-            ["assignments", "rubric", "--course", "IS505", "101"],
-        )
-    assert result.exit_code == 0
-    assert "Essay Rubric" in result.output
-    assert "Thesis" in result.output
-
-
-@patch("easel.cli.assignments.get_assignment", new_callable=AsyncMock)
-def test_assignments_rubric_no_rubric(mock_get_assign):
-    mock_get_assign.return_value = {
-        **MOCK_ASSIGNMENT_DETAIL,
-        "rubric_settings": None,
-    }
-    with _patch_context():
-        result = runner.invoke(
-            app,
-            ["assignments", "rubric", "--course", "IS505", "101"],
-        )
-    assert result.exit_code == 1
-    assert "No rubric" in result.output
-
-
-@patch("easel.cli.assignments.get_assignment", new_callable=AsyncMock)
-def test_assignments_rubric_error(mock_get_assign):
-    mock_get_assign.side_effect = CanvasError("not found", status_code=404)
-    with _patch_context():
-        result = runner.invoke(
-            app,
-            ["assignments", "rubric", "--course", "IS505", "999"],
-        )
-    assert result.exit_code == 1
-    assert "not found" in result.output

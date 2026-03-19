@@ -20,6 +20,7 @@ from easel.cli.discussions import discussions_app
 from easel.cli.grading import grading_app
 from easel.cli.modules import modules_app
 from easel.cli.pages import pages_app
+from easel.cli.rubrics import rubrics_app
 
 app = typer.Typer(
     name="easel",
@@ -35,6 +36,7 @@ app.add_typer(discussions_app)
 app.add_typer(grading_app)
 app.add_typer(modules_app)
 app.add_typer(pages_app)
+app.add_typer(rubrics_app)
 
 
 def _version_callback(value: bool) -> None:
