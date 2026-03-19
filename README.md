@@ -130,7 +130,9 @@ easel assignments create [--course COURSE] <name> [--points N] [--due ISO] [--pu
 easel assignments update [--course COURSE] <assignment-id> [--name ...] [--points N]
 ```
 
-Create, update, list, and inspect assignments.
+Create, update, list, and inspect assignments. For interactive guided
+creation with defaults, validation, and rubric handoff, see
+`/assignments:create`.
 
 ### rubrics
 
@@ -138,11 +140,19 @@ Create, update, list, and inspect assignments.
 easel rubrics list [--course COURSE]
 easel rubrics show [--course COURSE] <rubric-id>
 easel rubrics create [--course COURSE] --file <path>
+easel rubrics import [--course COURSE] --csv <path>
+easel rubrics attach [--course COURSE] <rubric-id> <assignment-id> [--use-for-grading]
 ```
 
-List, inspect, and create rubrics. `show` looks up a rubric by its
-direct ID. `create` reads a JSON file with `title` and `criteria`
-fields and posts a new rubric to Canvas. Example JSON:
+List, inspect, create, and attach rubrics. `show` looks up a rubric by
+its direct ID. `create` reads a JSON file with `title` and `criteria`
+fields. `import` reads a Canvas-format CSV file (the wide-format
+template exported from Canvas). `attach` associates an existing rubric
+with an assignment; pass `--use-for-grading` to map rubric scores to
+the assignment grade. For guided format selection (CSV/JSON/interactive)
+and automatic create → attach sequencing, see `/rubrics:create`.
+
+Example JSON for `create`:
 
 ```json
 {
@@ -171,7 +181,9 @@ easel grading submit-rubric [--course COURSE] <assignment-id> <user-id> <file> [
 ```
 
 View submissions, inspect individual student work, and post grades.
-`submit-rubric` reads rubric criterion scores from a JSON file.
+`submit-rubric` reads rubric criterion scores from a JSON file. For
+distribution stats and missing-submission flags across a cohort, see
+`/grading:overview`.
 
 ### assess
 
@@ -185,7 +197,9 @@ easel assess submit <file> [--course COURSE] <assignment-id> [--confirm]
 Full rubric-based assessment workflow: fetch assignment data into a
 local JSON file, update individual scores, and submit approved grades
 back to Canvas. Submit runs in dry-run mode by default; pass
-`--confirm` to post grades.
+`--confirm` to post grades. These commands are building blocks; for
+the full AI grading pipeline use `/assess:setup` → `/assess:ai-pass`
+→ `/assess:refine` → `/assess:submit`.
 
 ### modules
 
@@ -208,6 +222,8 @@ easel pages delete [--course COURSE] <page-url>
 ```
 
 Pages are identified by their URL slug (e.g., `syllabus-spring-2026`).
+To publish a local Markdown file with automatic HTML conversion and
+module placement, see `/content:publish`.
 
 ### discussions
 
@@ -220,6 +236,8 @@ easel discussions update [--course COURSE] <topic-id> [--title ...] [--message .
 
 Pass `--announcements` to list only announcements. Use `--announcement`
 when creating to post an announcement rather than a discussion topic.
+For AI-drafted announcement text with tone matching and an approval
+loop, see `/discuss:announce`.
 
 ### config
 
@@ -272,28 +290,37 @@ emails as returned by the Canvas API.
 
 ## Skill commands
 
-easel ships Claude Code skill commands that automate multi-step
-instructor workflows. Install them with:
+Some easel commands are self-contained: you know the inputs, you run
+the command, you get the result. `courses list`, `assignments show`,
+`modules create`, and most read/write operations fall into this
+category — no skill needed.
+
+Other commands are most useful as building blocks. The skill commands
+below orchestrate sequences of easel calls, inject AI reasoning
+(drafting, scoring, normalizing), and manage state across steps.
+`--format json` is what makes this work: skills parse structured
+output from one command and feed it into the next.
+
+Install all skills with:
 
 ```sh
 easel commands install
 ```
 
-This copies Markdown command files into `~/.claude/commands/` across
-six groups:
+This copies Markdown command files into `~/.claude/commands/`. Once
+installed, invoke them from Claude Code (e.g., `/assess:setup`,
+`/course:overview`).
 
-| Group         | Commands                                      |
-|---------------|-----------------------------------------------|
-| `assess`      | setup, ai-pass, refine, submit                |
-| `assignments` | create                                        |
-| `content`     | publish                                       |
-| `course`      | setup, overview                               |
-| `discuss`     | announce                                      |
-| `grading`     | overview                                      |
-
-Once installed, invoke them from Claude Code (e.g., `/assess:setup`,
-`/course:overview`). Skills call easel via `--format json` and parse
-the structured output for downstream processing.
+| Skill | CLI commands used | What it does |
+|---|---|---|
+| `/assess:setup` → `/assess:ai-pass` → `/assess:refine` → `/assess:submit` | `assess setup/load/update/submit` | Full AI grading pipeline: fetch submissions → AI-evaluate against rubric → normalize scores → post to Canvas |
+| `/assignments:create` | `assignments create` | Interactive parameter collection with defaults, validation, and rubric handoff |
+| `/rubrics:create` | `rubrics create/import/attach` | Guides format choice (CSV/JSON/interactive), sequences create → attach |
+| `/discuss:announce` | `discussions create --announcement` | AI-drafted announcement text with tone/formality matching and approval loop |
+| `/content:publish` | `pages create` | Markdown → HTML conversion, existing-page detection, module placement |
+| `/grading:overview` | `grading submissions` | Distribution stats (mean, median, quartiles) and missing-submission flags across the cohort |
+| `/course:overview` | `courses show`, `assignments list`, `modules list` | Unified dashboard: enrollment, upcoming deadlines, content counts |
+| `/course:setup` | `--test`, `courses show/enrollments`, `config init` | First-time course initialization with guided config creation |
 
 ### Writing custom skills
 
