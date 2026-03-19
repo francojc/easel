@@ -2,17 +2,61 @@
 
 from __future__ import annotations
 
+import io
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import docx
 import httpx
+from pypdf import PdfReader
 
 from easel.core.client import CanvasClient
 from easel.services import CanvasError
 from easel.services.assignments import _strip_html
 from easel.services.grading import submit_rubric_grade
+
+
+def _extract_docx_text(data: bytes) -> str:
+    doc = docx.Document(io.BytesIO(data))
+    return "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+
+
+def _extract_pdf_text(data: bytes) -> str:
+    reader = PdfReader(io.BytesIO(data))
+    parts = []
+    for page in reader.pages:
+        t = page.extract_text()
+        if t:
+            parts.append(t)
+    return "\n".join(parts)
+
+
+async def _extract_attachment_text(
+    client: CanvasClient, attachment: dict
+) -> str:
+    """Download one Canvas attachment and return its plain text."""
+    content_type = attachment.get("content-type", "")
+    url = attachment.get("url", "")
+    filename = attachment.get("filename", "")
+    if not url:
+        return f"[attachment: {filename} — no download URL]"
+    try:
+        data = await client.download(url)
+    except Exception as exc:
+        return f"[attachment: {filename} — download failed: {exc}]"
+    if "wordprocessingml" in content_type or filename.endswith(".docx"):
+        try:
+            return _extract_docx_text(data)
+        except Exception as exc:
+            return f"[attachment: {filename} — DOCX parse failed: {exc}]"
+    if content_type == "application/pdf" or filename.endswith(".pdf"):
+        try:
+            return _extract_pdf_text(data)
+        except Exception as exc:
+            return f"[attachment: {filename} — PDF parse failed: {exc}]"
+    return f"[attachment: {filename} ({content_type}) — text extraction not supported]"
 
 
 async def fetch_assignment_with_rubric(
@@ -94,7 +138,7 @@ async def fetch_submissions_with_content(
     try:
         subs = await client.get_paginated(
             f"/courses/{course_id}/assignments/{assignment_id}/submissions",
-            params={"include[]": ["user", "submission_comments"]},
+            params={"include[]": ["user", "submission_comments", "attachments"]},
         )
     except httpx.HTTPStatusError as exc:
         raise CanvasError(
@@ -111,9 +155,22 @@ async def fetch_submissions_with_content(
         if exclude_graded and state == "graded":
             continue
 
-        body = s.get("body") or ""
-        text = _strip_html(body)
-        word_count = len(text.split()) if text else 0
+        sub_type = s.get("submission_type") or ""
+
+        if sub_type == "online_text_entry":
+            text = _strip_html(s.get("body") or "")
+        elif sub_type == "online_upload":
+            attachments = s.get("attachments") or []
+            parts = []
+            for att in attachments:
+                parts.append(await _extract_attachment_text(client, att))
+            text = "\n\n".join(parts)
+        elif sub_type == "online_url":
+            text = f"[url submission: {s.get('url', '')}]"
+        else:
+            text = f"[submission type: {sub_type or 'unknown'}]"
+
+        word_count = len(text.split()) if text.strip() else 0
 
         user = s.get("user") or {}
         submitted_at = s.get("submitted_at", "")

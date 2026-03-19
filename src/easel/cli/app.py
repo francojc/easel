@@ -27,16 +27,16 @@ app = typer.Typer(
     help="Canvas LMS CLI — manage courses, assignments, grading, "
     "and content from the terminal.",
 )
-app.add_typer(assess_app)
-app.add_typer(assignments_app)
-app.add_typer(commands_app)
 app.add_typer(config_app)
+app.add_typer(commands_app)
 app.add_typer(courses_app)
-app.add_typer(discussions_app)
-app.add_typer(grading_app)
 app.add_typer(modules_app)
 app.add_typer(pages_app)
+app.add_typer(assignments_app)
+app.add_typer(discussions_app)
 app.add_typer(rubrics_app)
+app.add_typer(assess_app)
+app.add_typer(grading_app)
 
 
 def _version_callback(value: bool) -> None:

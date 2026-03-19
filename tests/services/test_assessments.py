@@ -1,10 +1,13 @@
 """Tests for easel.services.assessments."""
 
+import io
 import json
 from unittest.mock import AsyncMock
 
+import docx
 import httpx
 import pytest
+from pypdf import PdfWriter
 
 from easel.core.client import CanvasClient
 from easel.services import CanvasError
@@ -462,3 +465,174 @@ async def test_submit_assessments_handles_errors(client):
     result = await submit_assessments(client, "1", "101", data)
     assert result["total_submitted"] == 0
     assert result["total_failed"] == 1
+
+
+# -- online_upload / attachment extraction --
+
+
+def _make_docx_bytes(paragraphs: list[str]) -> bytes:
+    document = docx.Document()
+    for p in paragraphs:
+        document.add_paragraph(p)
+    buf = io.BytesIO()
+    document.save(buf)
+    return buf.getvalue()
+
+
+def _make_pdf_bytes(text: str) -> bytes:
+    writer = PdfWriter()
+    writer.add_blank_page(width=612, height=792)
+    buf = io.BytesIO()
+    writer.write(buf)
+    return buf.getvalue()
+
+
+def _upload_submission(
+    user_id: int,
+    sub_id: int,
+    attachments: list[dict],
+    workflow_state: str = "submitted",
+) -> dict:
+    return {
+        "id": sub_id,
+        "user_id": user_id,
+        "user": {"name": f"User{user_id}", "email": f"u{user_id}@test.edu"},
+        "workflow_state": workflow_state,
+        "submission_type": "online_upload",
+        "body": None,
+        "url": None,
+        "submitted_at": "2026-03-01T12:00:00Z",
+        "late": False,
+        "submission_comments": [],
+        "attachments": attachments,
+    }
+
+
+async def test_online_upload_docx(client):
+    docx_bytes = _make_docx_bytes(["Hello world", "Second paragraph"])
+    client.download = AsyncMock(return_value=docx_bytes)
+    client.get_paginated.return_value = [
+        _upload_submission(
+            10,
+            601,
+            [
+                {
+                    "filename": "essay.docx",
+                    "content-type": (
+                        "application/vnd.openxmlformats-officedocument"
+                        ".wordprocessingml.document"
+                    ),
+                    "url": "https://canvas.test/files/1/download",
+                }
+            ],
+        )
+    ]
+    result = await fetch_submissions_with_content(client, "1", "101")
+    assert len(result) == 1
+    text = result[0]["submission_text"]
+    assert "Hello world" in text
+    assert "Second paragraph" in text
+    assert result[0]["word_count"] > 0
+
+
+async def test_online_upload_pdf(client):
+    pdf_bytes = _make_pdf_bytes("PDF page content")
+    client.download = AsyncMock(return_value=pdf_bytes)
+    client.get_paginated.return_value = [
+        _upload_submission(
+            10,
+            602,
+            [
+                {
+                    "filename": "report.pdf",
+                    "content-type": "application/pdf",
+                    "url": "https://canvas.test/files/2/download",
+                }
+            ],
+        )
+    ]
+    result = await fetch_submissions_with_content(client, "1", "101")
+    assert len(result) == 1
+    # blank PDF produces no text but should not raise
+    assert isinstance(result[0]["submission_text"], str)
+
+
+async def test_online_upload_unsupported_type(client):
+    client.download = AsyncMock(return_value=b"binary content")
+    client.get_paginated.return_value = [
+        _upload_submission(
+            10,
+            603,
+            [
+                {
+                    "filename": "data.xlsx",
+                    "content-type": "application/vnd.ms-excel",
+                    "url": "https://canvas.test/files/3/download",
+                }
+            ],
+        )
+    ]
+    result = await fetch_submissions_with_content(client, "1", "101")
+    assert "text extraction not supported" in result[0]["submission_text"]
+    assert "data.xlsx" in result[0]["submission_text"]
+
+
+async def test_online_upload_download_failure(client):
+    client.download = AsyncMock(side_effect=Exception("connection reset"))
+    client.get_paginated.return_value = [
+        _upload_submission(
+            10,
+            604,
+            [
+                {
+                    "filename": "essay.docx",
+                    "content-type": (
+                        "application/vnd.openxmlformats-officedocument"
+                        ".wordprocessingml.document"
+                    ),
+                    "url": "https://canvas.test/files/4/download",
+                }
+            ],
+        )
+    ]
+    result = await fetch_submissions_with_content(client, "1", "101")
+    assert "download failed" in result[0]["submission_text"]
+    assert "essay.docx" in result[0]["submission_text"]
+
+
+async def test_online_url_submission(client):
+    client.get_paginated.return_value = [
+        {
+            "id": 605,
+            "user_id": 10,
+            "user": {"name": "Alice", "email": "alice@test.edu"},
+            "workflow_state": "submitted",
+            "submission_type": "online_url",
+            "body": None,
+            "url": "https://example.com/project",
+            "submitted_at": "2026-03-01T12:00:00Z",
+            "late": False,
+            "submission_comments": [],
+        }
+    ]
+    result = await fetch_submissions_with_content(client, "1", "101")
+    assert result[0]["submission_text"] == "[url submission: https://example.com/project]"
+
+
+async def test_unknown_submission_type(client):
+    client.get_paginated.return_value = [
+        {
+            "id": 606,
+            "user_id": 10,
+            "user": {"name": "Alice", "email": "alice@test.edu"},
+            "workflow_state": "submitted",
+            "submission_type": "media_recording",
+            "body": None,
+            "url": None,
+            "submitted_at": "2026-03-01T12:00:00Z",
+            "late": False,
+            "submission_comments": [],
+        }
+    ]
+    result = await fetch_submissions_with_content(client, "1", "101")
+    assert "media_recording" in result[0]["submission_text"]

@@ -121,6 +121,16 @@ class CanvasClient:
 
         return all_results
 
+    async def download(self, url: str) -> bytes:
+        """Download a binary resource from an absolute URL.
+
+        Uses the same auth headers as the rest of the client.
+        Raises httpx.HTTPStatusError on non-2xx responses.
+        """
+        response = await self._client.get(url)
+        response.raise_for_status()
+        return response.content
+
     async def test_connection(self) -> tuple[bool, str]:
         """Test the Canvas API connection and token validity.
 
