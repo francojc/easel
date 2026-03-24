@@ -3,6 +3,20 @@
 All notable changes to easel are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.8] - 2026-03-24
+
+### Fixed
+
+- PDF text extraction now collapses inter-word newlines into spaces via
+  `_normalize_extracted_text()`. `pypdf` emits a newline at every glyph
+  boundary in positional PDF layouts, producing fragmented
+  `\nword\n \nword\n` output; the normalizer folds single-newline runs
+  into a single space while preserving real paragraph breaks (double
+  newlines)
+- Assessment JSON files now written with `ensure_ascii=False` so accented
+  and non-Latin characters (e.g. `í`, `é`, `ñ`) are stored as literal
+  UTF-8 rather than `\uXXXX` escape sequences
+
 ## [0.1.7] - 2026-03-24
 
 ### Added
@@ -177,6 +191,8 @@ Initial release. Full Canvas LMS CLI for instructor workflows.
 - `--test` flag for Canvas API connectivity check
 - 234 tests passing across services and CLI layers
 
+[0.1.8]: https://github.com/francojc/easel/compare/v0.1.7...v0.1.8
+[0.1.7]: https://github.com/francojc/easel/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/francojc/easel/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/francojc/easel/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/francojc/easel/compare/v0.1.3...v0.1.4

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,24 @@ def _extract_docx_text(data: bytes) -> str:
     return "\n".join(p.text for p in doc.paragraphs if p.text.strip())
 
 
+def _normalize_extracted_text(text: str) -> str:
+    """Collapse whitespace artifacts from PDF/DOCX extraction.
+
+    Converters often emit a newline (or newline + space) between every token.
+    Collapse those runs into a single space, then restore paragraph breaks
+    (two or more consecutive blank lines → one blank line).
+    """
+    # Replace sequences of whitespace that contain at least one newline with a
+    # single space, UNLESS the sequence contains two or more newlines (a real
+    # paragraph break).
+    text = re.sub(r"(?<!\n)\n[ \t]*(?!\n)", " ", text)
+    # Collapse multiple spaces
+    text = re.sub(r" {2,}", " ", text)
+    # Normalize paragraph breaks to a single blank line
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
 def _extract_pdf_text(data: bytes) -> str:
     reader = PdfReader(io.BytesIO(data))
     parts = []
@@ -30,7 +49,7 @@ def _extract_pdf_text(data: bytes) -> str:
         t = page.extract_text()
         if t:
             parts.append(t)
-    return "\n".join(parts)
+    return _normalize_extracted_text("\n".join(parts))
 
 
 async def _extract_attachment_text(client: CanvasClient, attachment: dict) -> str:
@@ -318,7 +337,7 @@ def save_assessment(
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        json.dumps(data, indent=2, default=str) + "\n",
+        json.dumps(data, indent=2, default=str, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
     return path
