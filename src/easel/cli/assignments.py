@@ -18,9 +18,7 @@ from easel.services.assignments import (
     update_assignment,
 )
 
-assignments_app = typer.Typer(
-    name="assignments", help="Manage Canvas assignments."
-)
+assignments_app = typer.Typer(name="assignments", help="Manage Canvas assignments.")
 
 
 @assignments_app.command("list")
@@ -151,5 +149,3 @@ async def assignments_update(
     finally:
         await ectx.close()
     format_output(data, fmt)
-
-

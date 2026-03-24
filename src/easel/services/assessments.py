@@ -33,9 +33,7 @@ def _extract_pdf_text(data: bytes) -> str:
     return "\n".join(parts)
 
 
-async def _extract_attachment_text(
-    client: CanvasClient, attachment: dict
-) -> str:
+async def _extract_attachment_text(client: CanvasClient, attachment: dict) -> str:
     """Download one Canvas attachment and return its plain text."""
     content_type = attachment.get("content-type", "")
     url = attachment.get("url", "")

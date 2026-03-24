@@ -1,7 +1,7 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** v0.1.6 complete (tagged); v0.1.7 in progress
+**Status:** v0.1.7 complete
 **Last Updated:** 2026-03-24
 
 ## Current Status Overview
@@ -64,10 +64,19 @@
   now installs `rubrics/create.md`
 - 288 total tests, all passing, ruff clean
 
+### Recent Accomplishments (v0.1.7)
+
+- `.pi/skills/` directory with 11 SKILL.md files (Pi Agent Skills format)
+  converted from all existing Claude Code skill commands
+- `easel commands install --pi` installs skills to `./.pi/skills/`
+- `easel commands install --pi --global` installs to `~/.pi/agent/skills/`
+- Mutual-exclusion guards: `--pi`+`--local` and `--global` without `--pi`
+- Claude install logic refactored into `_install_claude_commands()` for symmetry
+- 6 new tests; 294 total, all passing, ruff clean
+
 ### Active Work
 
-- v0.1.7: Pi Agent Skills support — `.pi/skills/` files and
-  `easel commands install --pi` flag
+(none)
 
 ## Milestone Tracking
 
@@ -90,7 +99,7 @@
 - [x] v0.1.4: Course option fix, issue #6 (tagged)
 - [x] v0.1.5: CSV output format (#8) + file-based rubric grading (#9)
 - [x] v0.1.6: Rubrics subcommand (import CSV, attach, skill, DOCX/PDF extraction) — complete
-- [ ] v0.1.7: Pi Agent Skills support — in progress
+- [x] v0.1.7: Pi Agent Skills support — complete
 
 ### At-Risk Milestones
 
@@ -105,13 +114,13 @@
 
 ### Test Results
 
-- **Unit Tests:** 288 passing
+- **Unit Tests:** 294 passing
   - core: config 4, client 11, cache 9, config_files 9
   - services: courses 9, assignments 14, rubrics 18, grading 12,
     assessments 30, modules 14, pages 15, discussions 15
   - cli: courses 9, assignments 9, rubrics 15, grading 14,
     assessments 13, modules 11, pages 12, discussions 12,
-    config 8, config_defaults 14, output 6
+    config 8, config_defaults 14, commands 10, output 6
   - smoke: 3
 - **Integration Tests:** n/a
 - **Test Coverage:** Not yet measured
@@ -151,6 +160,11 @@
 - [x] DOCX/PDF attachment text extraction: `_extract_attachment_text()` downloads
   and parses `.docx`/`.pdf` Canvas attachments into plain text for assessment JSON;
   `python-docx` and `pypdf` runtime dependencies added
+- [x] `.pi/skills/` directory with 11 SKILL.md files (Pi Agent Skills format)
+- [x] `easel commands install --pi` and `--pi --global` flags
+- [x] `_install_pi_skills()` and `_install_claude_commands()` helpers in
+  `cli/commands.py`; mutual-exclusion guards for `--pi`/`--local` and
+  `--global` without `--pi`
 - [x] Grading CLI: `easel grading submissions|show|submit|submit-rubric`
 - [x] Assessment service: fetch assignment+rubric, fetch submissions
   with content, build/load/save/update JSON, stats, submit to Canvas
@@ -284,7 +298,7 @@
 
 | Version | Date       | Key Changes                                              |
 |---------|------------|----------------------------------------------------------|
-| 0.1.7   | —          | Pi Agent Skills: --pi flag, .pi/skills/, 294 tests       |
+| 0.1.7   | 2026-03-24 | Pi Agent Skills: --pi flag, .pi/skills/, 294 tests       |
 | 0.1.6   | 2026-03-24 | Rubrics sub-app, DOCX/PDF extraction, commands fix; 288 tests |
 | 0.1.5   | 2026-03-18 | CSV output format (#8), file-based rubric grading (#9)   |
 | 0.1.4   | 2026-02-25 | Course changed to --course/-c option (fix #6)            |

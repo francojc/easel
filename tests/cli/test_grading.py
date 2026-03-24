@@ -176,7 +176,17 @@ def test_grading_submit_with_comment(mock_submit):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit", "--course", "IS505", "101", "10", "85", "--comment", "Nice work"],
+            [
+                "grading",
+                "submit",
+                "--course",
+                "IS505",
+                "101",
+                "10",
+                "85",
+                "--comment",
+                "Nice work",
+            ],
         )
     assert result.exit_code == 0
     mock_submit.assert_called_once()
@@ -232,7 +242,15 @@ def test_grading_submit_rubric_file_not_found():
     with _patch_context():
         result = runner.invoke(
             app,
-            ["grading", "submit-rubric", "--course", "IS505", "101", "10", "/nonexistent/rubric.json"],
+            [
+                "grading",
+                "submit-rubric",
+                "--course",
+                "IS505",
+                "101",
+                "10",
+                "/nonexistent/rubric.json",
+            ],
         )
     assert result.exit_code == 1
     assert "File not found" in result.output

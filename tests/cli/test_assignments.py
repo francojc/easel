@@ -125,7 +125,15 @@ def test_assignments_create(mock_create):
     with _patch_context():
         result = runner.invoke(
             app,
-            ["assignments", "create", "--course", "IS505", "New Assignment", "--points", "50"],
+            [
+                "assignments",
+                "create",
+                "--course",
+                "IS505",
+                "New Assignment",
+                "--points",
+                "50",
+            ],
         )
     assert result.exit_code == 0
     assert "New Assignment" in result.output
@@ -156,5 +164,3 @@ def test_assignments_update(mock_update):
         )
     assert result.exit_code == 0
     assert "Updated" in result.output
-
-

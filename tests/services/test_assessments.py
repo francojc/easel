@@ -616,7 +616,9 @@ async def test_online_url_submission(client):
         }
     ]
     result = await fetch_submissions_with_content(client, "1", "101")
-    assert result[0]["submission_text"] == "[url submission: https://example.com/project]"
+    assert (
+        result[0]["submission_text"] == "[url submission: https://example.com/project]"
+    )
 
 
 async def test_unknown_submission_type(client):

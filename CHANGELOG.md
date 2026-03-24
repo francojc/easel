@@ -3,7 +3,30 @@
 All notable changes to easel are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [0.1.6] - 2026-03-18
+## [0.1.7] - 2026-03-24
+
+### Added
+
+- `.pi/skills/` directory with 11 pre-converted Pi Agent Skills (`SKILL.md`)
+  covering all existing Claude Code skill commands: `assess-setup`,
+  `assess-ai-pass`, `assess-refine`, `assess-submit`, `assignments-create`,
+  `content-publish`, `course-overview`, `course-setup`, `discuss-announce`,
+  `grading-overview`, `rubrics-create`
+- `easel commands install --pi` installs Pi skills to `./.pi/skills/` (local)
+- `easel commands install --pi --global` installs to `~/.pi/agent/skills/`
+- `--global` flag on `commands install` (Pi-only; raises error without `--pi`)
+- Mutual-exclusion guard: `--pi` and `--local` raise an error (different
+  harnesses and different directory conventions)
+- 6 new tests in `tests/cli/test_commands.py`; 294 total
+
+### Changed
+
+- `commands install` help text updated: "Install agent skill commands
+  (Claude Code or Pi)."
+- Claude install logic refactored into `_install_claude_commands()` for
+  symmetry with new `_install_pi_skills()`
+
+## [0.1.6] - 2026-03-24
 
 ### Added
 

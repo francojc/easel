@@ -1,7 +1,7 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** v0.1.6 feature-complete; v0.1.7 planned
+**Status:** v0.1.7 complete
 **Last Updated:** 2026-03-24
 
 ## Project Overview
@@ -194,26 +194,26 @@
       copies `rubrics/create.md` to the target commands directory
 - [x] 288 tests total, ruff clean
 
-### v0.1.7: Pi Agent Skills Support (PLANNED)
+### v0.1.7: Pi Agent Skills Support (COMPLETE)
 
 Add native support for the Pi coding agent harness alongside existing
 Claude Code slash-command support. Ship both formats in the repo
 (Option A) and extend `easel commands install` with a `--pi` flag.
 
-- [ ] Add `.pi/skills/` directory with pre-converted `SKILL.md` files
+- [x] Add `.pi/skills/` directory with pre-converted `SKILL.md` files
       for all 11 commands (assess-setup, assess-ai-pass, assess-refine,
       assess-submit, assignments-create, content-publish, course-overview,
       course-setup, discuss-announce, grading-overview, rubrics-create)
-- [ ] Extend `cli/commands.py`: add `--pi` and `--global` flags,
+- [x] Extend `cli/commands.py`: add `--pi` and `--global` flags,
       `_install_pi_skills()` helper, refactor existing Claude path into
       `_install_claude_commands()` for symmetry
-- [ ] `--pi` defaults to local install (`./.pi/skills/` in cwd);
+- [x] `--pi` defaults to local install (`./.pi/skills/` in cwd);
       `--global` installs to `~/.pi/agent/skills/`
-- [ ] Mutual-exclusion validation: `--pi` and `--local` are incompatible;
+- [x] Mutual-exclusion validation: `--pi` and `--local` are incompatible;
       `--global` is only valid with `--pi`
-- [ ] 6 new tests in `tests/cli/test_commands.py` covering local, global,
+- [x] 6 new tests in `tests/cli/test_commands.py` covering local, global,
       skip-existing, overwrite, and both validation errors
-- [ ] Target: 288 tests total, ruff clean
+- [x] 294 tests total, ruff clean
 
 #### CLI interface (new behaviour)
 
@@ -298,5 +298,5 @@ commands which work identically under either harness.
 - [x] assess/* skills can call easel via Bash instead of MCP tools
 - [x] `easel --help` documents all available commands
 - [x] Setup requires only `uv pip install -e .` and a Canvas API token
-- [ ] Pi users can install skills with `easel commands install --pi`
+- [x] Pi users can install skills with `easel commands install --pi`
       and use them without manual format conversion

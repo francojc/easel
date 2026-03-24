@@ -253,13 +253,21 @@ See [Configuration](#configuration) above for details.
 
 ```
 easel commands install [--overwrite] [--local]
+easel commands install --pi [--overwrite]
+easel commands install --pi --global [--overwrite]
 ```
 
-Copies bundled Claude Code skill commands (assess, assignments,
-content, course, discuss, grading) into `~/.claude/commands/`.
-Pass `--local` to install into the current repo's
-`.claude/commands/` instead. See [Skill commands](#skill-commands)
-below.
+Installs bundled skill commands for either Claude Code or Pi.
+
+| Invocation | Target |
+|---|---|
+| `easel commands install` | `~/.claude/commands/` (Claude, global) |
+| `easel commands install --local` | `./.claude/commands/` (Claude, project) |
+| `easel commands install --pi` | `./.pi/skills/` (Pi, project) |
+| `easel commands install --pi --global` | `~/.pi/agent/skills/` (Pi, global) |
+
+Pass `--overwrite` to replace existing files. See
+[Skill commands](#skill-commands) below.
 
 ### Global options
 
@@ -304,12 +312,21 @@ output from one command and feed it into the next.
 Install all skills with:
 
 ```sh
+# Claude Code (global)
 easel commands install
+
+# Pi Agent Skills (project-local)
+easel commands install --pi
 ```
 
-This copies Markdown command files into `~/.claude/commands/`. Once
-installed, invoke them from Claude Code (e.g., `/assess:setup`,
-`/course:overview`).
+For Claude Code, this copies Markdown command files into
+`~/.claude/commands/`. Once installed, invoke them from Claude Code
+(e.g., `/assess:setup`, `/course:overview`).
+
+For Pi, this copies `SKILL.md` files into `./.pi/skills/`. Once
+installed, the skills are available to the Pi coding agent from that
+project tree. Use `--pi --global` to install to `~/.pi/agent/skills/`
+for user-wide availability.
 
 | Skill | CLI commands used | What it does |
 |---|---|---|

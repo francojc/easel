@@ -167,9 +167,7 @@ async def test_create_rubric(client):
     form_data = call_args[1]["form_data"]
     keys_values = dict(form_data)
     assert keys_values.get("rubric[title]") == "New Rubric"
-    assert (
-        keys_values.get("rubric[criteria][0][description]") == "Thesis"
-    )
+    assert keys_values.get("rubric[criteria][0][description]") == "Thesis"
 
 
 async def test_create_rubric_http_error(client):

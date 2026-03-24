@@ -1,7 +1,7 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** v0.1.6 complete; v0.1.7 in progress
+**Status:** v0.1.7 complete
 **Last Updated:** 2026-03-24
 
 ## Architecture

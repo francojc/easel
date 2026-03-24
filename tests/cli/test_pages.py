@@ -69,7 +69,9 @@ def test_pages_list(mock_list):
 def test_pages_list_json(mock_list):
     mock_list.return_value = MOCK_PAGES
     with _patch_context():
-        result = runner.invoke(app, ["--format", "json", "pages", "list", "--course", "IS505"])
+        result = runner.invoke(
+            app, ["--format", "json", "pages", "list", "--course", "IS505"]
+        )
     assert result.exit_code == 0
     assert '"Syllabus"' in result.output
 
@@ -166,7 +168,9 @@ def test_pages_update(mock_update):
 def test_pages_delete(mock_delete):
     mock_delete.return_value = {"url": "syllabus", "deleted": True}
     with _patch_context():
-        result = runner.invoke(app, ["pages", "delete", "--course", "IS505", "syllabus"])
+        result = runner.invoke(
+            app, ["pages", "delete", "--course", "IS505", "syllabus"]
+        )
     assert result.exit_code == 0
     assert "Deleted" in result.output
 

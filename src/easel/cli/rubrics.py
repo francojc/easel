@@ -139,9 +139,7 @@ async def rubrics_import(
     course: Optional[str] = typer.Option(
         None, "--course", "-c", help="Course code or numeric ID. Falls back to config."
     ),
-    csv_path: str = typer.Option(
-        ..., "--csv", help="Path to Canvas rubric CSV file."
-    ),
+    csv_path: str = typer.Option(..., "--csv", help="Path to Canvas rubric CSV file."),
 ) -> None:
     """Create a rubric from a Canvas-format CSV file."""
     try:

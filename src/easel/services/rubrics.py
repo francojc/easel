@@ -93,9 +93,7 @@ async def create_rubric(
     for i, c in enumerate(criteria):
         for field in ("description", "points", "ratings"):
             if field not in c:
-                raise ValueError(
-                    f"criteria[{i}] missing required field '{field}'"
-                )
+                raise ValueError(f"criteria[{i}] missing required field '{field}'")
 
     pairs: list[tuple[str, str]] = [("rubric[title]", title)]
     for i, c in enumerate(criteria):
@@ -201,9 +199,7 @@ def parse_rubric_csv(path: str) -> tuple[str, list[dict[str, Any]]]:
         for t in range(num_triplets):
             base = fixed_count + t * 3
             r_name = padded[base].strip() if base < len(padded) else ""
-            r_pts_str = (
-                padded[base + 2].strip() if base + 2 < len(padded) else ""
-            )
+            r_pts_str = padded[base + 2].strip() if base + 2 < len(padded) else ""
 
             if not r_name and not r_pts_str:
                 continue

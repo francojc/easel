@@ -75,7 +75,9 @@ def test_modules_list(mock_list):
 def test_modules_list_json(mock_list):
     mock_list.return_value = MOCK_MODULES
     with _patch_context():
-        result = runner.invoke(app, ["--format", "json", "modules", "list", "--course", "IS505"])
+        result = runner.invoke(
+            app, ["--format", "json", "modules", "list", "--course", "IS505"]
+        )
     assert result.exit_code == 0
     assert '"Week 1"' in result.output
 

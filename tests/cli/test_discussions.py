@@ -169,7 +169,9 @@ def test_discussions_create_announcement(mock_create):
 def test_discussions_create_error(mock_create):
     mock_create.side_effect = CanvasError("invalid", status_code=422)
     with _patch_context():
-        result = runner.invoke(app, ["discussions", "create", "--course", "IS505", "Bad"])
+        result = runner.invoke(
+            app, ["discussions", "create", "--course", "IS505", "Bad"]
+        )
     assert result.exit_code == 1
     assert "invalid" in result.output
 
