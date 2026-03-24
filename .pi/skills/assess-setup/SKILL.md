@@ -175,8 +175,9 @@ This allows subsequent commands to auto-discover the assessment file.
 
 ## Important Notes
 
-- Supports `online_upload` submission types with automatic text extraction from DOCX and PDF files
+- Supports `online_upload` submission types with automatic text extraction from DOCX and PDF files (redirects followed for Canvas → S3 attachment URLs)
 - Supports `online_text_entry` submission types
+- Supports `discussion_topic` submission types — fetches each student's discussion entries (HTML message + any file attachments) automatically
 - Automatically skips students who haven't submitted
 - **Excludes already-graded submissions by default** to prevent overwriting existing grades
 - **FERPA COMPLIANCE: Enrollment filtering enabled** - Only includes submissions from students enrolled in the specified course, preventing cross-section contamination in cross-listed assignments

@@ -105,12 +105,16 @@ async def fetch_assignment_with_rubric(
             ],
         }
 
+    discussion = a.get("discussion_topic") or {}
+    discussion_topic_id = str(discussion["id"]) if discussion.get("id") else None
+
     return {
         "assignment_id": a["id"],
         "assignment_name": a.get("name", ""),
         "description": _strip_html(a.get("description", "") or ""),
         "due_at": a.get("due_at", ""),
         "points_possible": a.get("points_possible", 0),
+        "discussion_topic_id": discussion_topic_id,
         "rubric": {
             "total_points": total_points,
             "criteria_count": len(criteria),
@@ -136,7 +140,14 @@ async def fetch_submissions_with_content(
     try:
         subs = await client.get_paginated(
             f"/courses/{course_id}/assignments/{assignment_id}/submissions",
-            params={"include[]": ["user", "submission_comments", "attachments"]},
+            params={
+                "include[]": [
+                    "user",
+                    "submission_comments",
+                    "attachments",
+                    "discussion_entries",
+                ]
+            },
         )
     except httpx.HTTPStatusError as exc:
         raise CanvasError(
@@ -165,6 +176,19 @@ async def fetch_submissions_with_content(
             text = "\n\n".join(parts)
         elif sub_type == "online_url":
             text = f"[url submission: {s.get('url', '')}]"
+        elif sub_type == "discussion_topic":
+            # Canvas returns the student's discussion entries when
+            # include[]=discussion_entries is requested.  Each entry
+            # has a HTML `message` and an optional `attachments` list.
+            entries = s.get("discussion_entries") or []
+            parts = []
+            for entry in entries:
+                msg = _strip_html(entry.get("message") or "")
+                if msg:
+                    parts.append(msg)
+                for att in entry.get("attachments") or []:
+                    parts.append(await _extract_attachment_text(client, att))
+            text = "\n\n".join(parts)
         else:
             text = f"[submission type: {sub_type or 'unknown'}]"
 

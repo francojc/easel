@@ -125,9 +125,11 @@ class CanvasClient:
         """Download a binary resource from an absolute URL.
 
         Uses the same auth headers as the rest of the client.
+        Follows redirects so Canvas file attachments (which redirect
+        to pre-signed S3 URLs) are fetched correctly.
         Raises httpx.HTTPStatusError on non-2xx responses.
         """
-        response = await self._client.get(url)
+        response = await self._client.get(url, follow_redirects=True)
         response.raise_for_status()
         return response.content
 
