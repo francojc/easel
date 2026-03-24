@@ -20,7 +20,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - `.claude/commands/rubrics/create.md` skill: guided end-to-end workflow
   (CSV / JSON / interactive), captures rubric ID, offers attachment,
   suggests `/assess:setup` as next step
-- 12 new tests (7 service + 5 CLI); 282 total
+- DOCX and PDF attachment text extraction in the assessment service:
+  `_extract_docx_text()`, `_extract_pdf_text()`, `_extract_attachment_text()`;
+  submission fetch now includes `attachments` in Canvas API params so
+  file-upload submissions are included in assessment JSON
+- `python-docx` and `pypdf` added as runtime dependencies
+- 18 new tests (7 service + 5 CLI + 6 assessment attachment); 288 total
 
 ### Changed
 
@@ -28,6 +33,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   `easel assignments`; all rubric commands now live under `easel rubrics`
 - `assignments/create.md` Step 5 simplified: inline JSON example and
   Option A/B branching replaced with a one-line handoff to `/rubrics:create`
+
+### Fixed
+
+- `rubrics` command group missing from `_COMMAND_GROUPS` in
+  `cli/commands.py`; `easel commands install` now copies
+  `rubrics/create.md` to the target commands directory
 
 ## [0.1.5] - 2026-02-25
 

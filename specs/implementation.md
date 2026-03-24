@@ -1,8 +1,8 @@
 # Development Implementation Details
 
 **Project:** easel
-**Status:** v0.1.5 development
-**Last Updated:** 2026-02-25
+**Status:** v0.1.6 complete; v0.1.7 in progress
+**Last Updated:** 2026-03-24
 
 ## Architecture
 
@@ -49,7 +49,27 @@ easel/
 │       ├── modules.py
 │       ├── pages.py
 │       ├── discussions.py
-│       └── commands.py    # Commands sub-app (install)
+│       └── commands.py    # Commands sub-app (install, --pi)
+├── .claude/commands/     # Claude Code slash-command format
+│   ├── assess/           # setup, ai-pass, refine, submit
+│   ├── assignments/      # create
+│   ├── content/          # publish
+│   ├── course/           # overview, setup
+│   ├── discuss/          # announce
+│   ├── grading/          # overview
+│   └── rubrics/          # create
+├── .pi/skills/           # Pi Agent Skills format (v0.1.7)
+│   ├── assess-setup/SKILL.md
+│   ├── assess-ai-pass/SKILL.md
+│   ├── assess-refine/SKILL.md
+│   ├── assess-submit/SKILL.md
+│   ├── assignments-create/SKILL.md
+│   ├── content-publish/SKILL.md
+│   ├── course-overview/SKILL.md
+│   ├── course-setup/SKILL.md
+│   ├── discuss-announce/SKILL.md
+│   ├── grading-overview/SKILL.md
+│   └── rubrics-create/SKILL.md
 ├── tests/
 │   ├── conftest.py       # Shared fixtures
 │   ├── services/         # Service tests (mock CanvasClient)
@@ -153,9 +173,17 @@ easel/
       `build_assessment_structure()`, `load_assessment()`,
       `save_assessment()`, `update_assessment_record()`,
       `get_assessment_stats()`, `submit_assessments()`
+    - **Private helpers:** `_extract_docx_text()`, `_extract_pdf_text()`,
+      `_extract_attachment_text()` — download Canvas file attachments
+      and return plain text for `.docx` and `.pdf` files;
+      unsupported types return a bracketed placeholder string
     - **Dependencies:** core/client.py, services/assignments.py
-      (_strip_html), services/grading.py (submit_rubric_grade)
-    - **Notes:** `fetch_submissions_with_content()` accepts
+      (_strip_html), services/grading.py (submit_rubric_grade),
+      python-docx, pypdf
+    - **Notes:** `fetch_submissions_with_content()` requests
+      `include[]=attachments` from Canvas and calls
+      `_extract_attachment_text()` for each attachment so file-upload
+      submissions appear as text in assessment JSON. Accepts
       `anonymize` kwarg to blank `user_name` and `user_email`
       for FERPA compliance; blanked values propagate through
       `build_assessment_structure()` automatically
@@ -239,6 +267,33 @@ easel/
     - **Notes:** Checks local config first, then global. Explicit CLI
       arguments always win. `resolve_course()` exits with code 1 if
       no course is available from any source.
+
+24. **cli/commands.py** *(v0.1.7 additions)*
+    - **Purpose:** Install agent skill commands in Claude Code or Pi format
+    - **Public Interface:** `commands_app` with `install` command; flags
+      `--overwrite`, `--local`, `--pi`, `--global`
+    - **Dependencies:** pathlib, shutil
+    - **Notes:** `_install_claude_commands()` handles the existing Claude
+      path (refactored from inline logic for symmetry). `_install_pi_skills()`
+      copies `.pi/skills/{name}/SKILL.md` from the repo root to either
+      `./.pi/skills/` (default) or `~/.pi/agent/skills/` (`--global`).
+      `_PI_SKILL_NAMES` lists the 11 skill directory names. Validation
+      guards: `--pi` and `--local` are mutually exclusive; `--global`
+      requires `--pi`.
+
+25. **`.pi/skills/` (static files, v0.1.7)**
+    - **Purpose:** Pre-converted Pi Agent Skills versions of all 11
+      Claude Code commands; shipped in the repo and installed via
+      `easel commands install --pi`
+    - **Format:** Each skill is a directory named `{group}-{command}`
+      containing a single `SKILL.md` with minimal frontmatter (`name`,
+      `description`) and the original command body verbatim
+    - **Naming:** `{group}/{file}.md` → `{group}-{file}/SKILL.md`
+      (e.g., `assess/ai-pass.md` → `assess-ai-pass/SKILL.md`)
+    - **Notes:** Body content is copied verbatim from the Claude
+      originals. `args`, `argument-hint`, and `allowed-tools` frontmatter
+      fields are dropped (Pi has no equivalent). Keeping both formats in
+      the repo avoids runtime conversion and makes each format reviewable.
 
 ### Data Model
 
@@ -383,3 +438,6 @@ uv run pytest tests/ --cov=src/easel
 | 2026-02-25 | `course` changed from positional Argument to `--course`/`-c` Option | Optional positional args greedily consume required args (Typer/Click limitation). Named option eliminates ambiguity. | Keep positional with workaround ordering (fragile), make course required (bad UX with config fallback) |
 | 2026-02-25 | CSV output via `csv.writer` to `sys.stdout` (not Rich console) | CSV must be pipe-friendly with no ANSI markup. Writing directly to stdout keeps output clean for `> file.csv` and `\| cut -f2`. | Rich CSV rendering (adds markup), custom string builder (csv module handles quoting correctly) |
 | 2026-02-25 | `submit-rubric` accepts file path instead of inline JSON | Assessment JSON is typically in a file from the assess workflow. File path is easier to use and avoids shell quoting issues with complex JSON. | Keep inline JSON (poor UX for large assessments), accept both file and inline (ambiguous, over-engineered) |
+| 2026-03-24 | Ship both Claude and Pi skill formats in the repo (Option A) | Avoids runtime conversion logic; both formats are reviewable in the repo; install command stays a simple copy with no frontmatter parsing. Files are small and change infrequently. | Convert at install time (simpler repo structure but adds a conversion code-path and a potential failure mode); ship Pi format only (breaks existing Claude users) |
+| 2026-03-24 | `--pi` defaults to local (`./.pi/skills/`), `--global` opt-in | Pi discovers skills from `.pi/skills/` in the project tree, so cwd is the natural default. This mirrors how Pi skills are used in practice and avoids accidental global installs. | Mirror Claude's `--local` default-to-global pattern (inverts Pi conventions); always require explicit scope flag (extra friction) |
+| 2026-03-24 | `--local` remains Claude-only; `--pi` and `--local` are mutually exclusive | The two flags target different harnesses and different directory conventions. Allowing both would be ambiguous and serve no real use case. | Reuse `--local` for Pi local installs (confusing: same flag, different paths); silent ignore of conflicting flags (hides user mistakes) |

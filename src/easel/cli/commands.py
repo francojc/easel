@@ -19,6 +19,7 @@ _COMMAND_GROUPS = [
     "course",
     "discuss",
     "grading",
+    "rubrics",
 ]
 
 

@@ -1,8 +1,8 @@
 # Development Project Planning
 
 **Project:** easel
-**Status:** v0.1.6 feature-complete; ready to tag
-**Last Updated:** 2026-03-18
+**Status:** v0.1.6 feature-complete; v0.1.7 planned
+**Last Updated:** 2026-03-24
 
 ## Project Overview
 
@@ -35,6 +35,8 @@
       stdout for data
 - [x] Usable as a backend for Claude Code assess/* skills via
       `easel <cmd> --format json`
+- [ ] Native support for Pi coding agent via Agent Skills format
+      (`.pi/skills/`) alongside the existing Claude Code format
 
 #### Non-Goals
 
@@ -183,7 +185,51 @@
 - [x] `.claude/commands/rubrics/create.md` skill: CSV/JSON/guided paths,
       capture rubric ID, offer attach, suggest `/assess:setup`
 - [x] `assignments/create.md` Step 5 simplified: hands off to `/rubrics:create`
-- [x] 282 tests total, ruff clean
+- [x] DOCX/PDF attachment text extraction in assessment service:
+      `_extract_attachment_text()` downloads and parses `.docx`/`.pdf`
+      attachments; submission fetch includes `attachments` param so
+      file-upload submissions appear in assessment JSON
+- [x] `python-docx` and `pypdf` added as runtime dependencies
+- [x] Fix: `rubrics` added to `_COMMAND_GROUPS` so `easel commands install`
+      copies `rubrics/create.md` to the target commands directory
+- [x] 288 tests total, ruff clean
+
+### v0.1.7: Pi Agent Skills Support (PLANNED)
+
+Add native support for the Pi coding agent harness alongside existing
+Claude Code slash-command support. Ship both formats in the repo
+(Option A) and extend `easel commands install` with a `--pi` flag.
+
+- [ ] Add `.pi/skills/` directory with pre-converted `SKILL.md` files
+      for all 11 commands (assess-setup, assess-ai-pass, assess-refine,
+      assess-submit, assignments-create, content-publish, course-overview,
+      course-setup, discuss-announce, grading-overview, rubrics-create)
+- [ ] Extend `cli/commands.py`: add `--pi` and `--global` flags,
+      `_install_pi_skills()` helper, refactor existing Claude path into
+      `_install_claude_commands()` for symmetry
+- [ ] `--pi` defaults to local install (`./.pi/skills/` in cwd);
+      `--global` installs to `~/.pi/agent/skills/`
+- [ ] Mutual-exclusion validation: `--pi` and `--local` are incompatible;
+      `--global` is only valid with `--pi`
+- [ ] 6 new tests in `tests/cli/test_commands.py` covering local, global,
+      skip-existing, overwrite, and both validation errors
+- [ ] Target: 288 tests total, ruff clean
+
+#### CLI interface (new behaviour)
+
+```
+easel commands install              # Claude → ~/.claude/commands/ (unchanged)
+easel commands install --local      # Claude → ./.claude/commands/ (unchanged)
+easel commands install --pi         # Pi     → ./.pi/skills/       (new)
+easel commands install --pi --global# Pi     → ~/.pi/agent/skills/ (new)
+```
+
+#### Pi skill naming convention
+
+Each Claude `{group}/{file}.md` maps to a `{group}-{file}/SKILL.md`
+directory with a minimal frontmatter header (`name`, `description`).
+Body content is copied verbatim — the instructions call `easel` CLI
+commands which work identically under either harness.
 
 ### v0.1.5: Output and Usability Improvements (COMPLETE)
 
@@ -252,3 +298,5 @@
 - [x] assess/* skills can call easel via Bash instead of MCP tools
 - [x] `easel --help` documents all available commands
 - [x] Setup requires only `uv pip install -e .` and a Canvas API token
+- [ ] Pi users can install skills with `easel commands install --pi`
+      and use them without manual format conversion

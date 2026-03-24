@@ -1,17 +1,16 @@
 # Development Project Progress
 
 **Project:** easel
-**Status:** v0.1.6 feature-complete; ready to tag
-**Last Updated:** 2026-03-18
+**Status:** v0.1.6 complete (tagged); v0.1.7 in progress
+**Last Updated:** 2026-03-24
 
 ## Current Status Overview
 
 ### Development Phase
 
-- **Current Phase:** v0.1.5 feature development
-- **Phase Progress:** v0.1.5 features implemented (CSV output, file-based
-  rubric grading); ready for version bump, changelog, and release tag
-- **Overall Project Progress:** v0.1.0–v0.1.4 released; v0.1.5 code complete
+- **Current Phase:** v0.1.7 planning
+- **Phase Progress:** v0.1.6 feature-complete; v0.1.7 spec written, not yet implemented
+- **Overall Project Progress:** v0.1.0–v0.1.5 released; v0.1.6 code complete
 
 ### Recent Accomplishments
 
@@ -42,7 +41,7 @@
   with announcement support), CLI sub-apps for all three, HTML
   stripping in pages and discussions, 210 tests passing, ruff clean
 
-### Recent Accomplishments (this session)
+### Recent Accomplishments (v0.1.6)
 
 - `rubrics import --csv <path>` command: parses Canvas wide-format CSV
   into title + criteria, creates rubric via existing `create_rubric`
@@ -58,11 +57,17 @@
   suggests `/assess:setup` next
 - `assignments/create.md` Step 5 simplified: inline JSON + Option A/B
   replaced with one-line handoff to `/rubrics:create`
-- 12 new tests (7 service + 5 CLI); 282 total, all passing, ruff clean
+- DOCX/PDF attachment text extraction: `_extract_attachment_text()`
+  downloads Canvas file attachments and returns plain text for `.docx`
+  and `.pdf`; `python-docx` and `pypdf` added as runtime dependencies
+- Fix: `rubrics` added to `_COMMAND_GROUPS` so `easel commands install`
+  now installs `rubrics/create.md`
+- 288 total tests, all passing, ruff clean
 
 ### Active Work
 
-(none)
+- v0.1.7: Pi Agent Skills support — `.pi/skills/` files and
+  `easel commands install --pi` flag
 
 ## Milestone Tracking
 
@@ -84,7 +89,8 @@
 - [x] v0.1.3: Config-driven defaults (tagged)
 - [x] v0.1.4: Course option fix, issue #6 (tagged)
 - [x] v0.1.5: CSV output format (#8) + file-based rubric grading (#9)
-- [ ] v0.1.6: Rubrics subcommand (import CSV, attach, skill) — feature-complete
+- [x] v0.1.6: Rubrics subcommand (import CSV, attach, skill, DOCX/PDF extraction) — complete
+- [ ] v0.1.7: Pi Agent Skills support — in progress
 
 ### At-Risk Milestones
 
@@ -94,15 +100,15 @@
 
 ### Build Health
 
-- **Last Successful Build:** 2026-03-18 (`uv sync` + `uv run pytest tests/`)
+- **Last Successful Build:** 2026-03-24 (`uv sync` + `uv run pytest tests/`)
 - **Build Warnings:** None
 
 ### Test Results
 
-- **Unit Tests:** 282 passing
+- **Unit Tests:** 288 passing
   - core: config 4, client 11, cache 9, config_files 9
   - services: courses 9, assignments 14, rubrics 18, grading 12,
-    assessments 24, modules 14, pages 15, discussions 15
+    assessments 30, modules 14, pages 15, discussions 15
   - cli: courses 9, assignments 9, rubrics 15, grading 14,
     assessments 13, modules 11, pages 12, discussions 12,
     config 8, config_defaults 14, output 6
@@ -142,6 +148,9 @@
 - [x] `parse_rubric_csv` service: Canvas wide-format CSV → (title, criteria)
 - [x] `attach_rubric` service: PUT rubric_association for assignment linkage
 - [x] `.claude/commands/rubrics/create.md` skill: guided create + attach workflow
+- [x] DOCX/PDF attachment text extraction: `_extract_attachment_text()` downloads
+  and parses `.docx`/`.pdf` Canvas attachments into plain text for assessment JSON;
+  `python-docx` and `pypdf` runtime dependencies added
 - [x] Grading CLI: `easel grading submissions|show|submit|submit-rubric`
 - [x] Assessment service: fetch assignment+rubric, fetch submissions
   with content, build/load/save/update JSON, stats, submit to Canvas
@@ -177,7 +186,14 @@
 
 ### Planned
 
-(none)
+- [ ] Pi Agent Skills support (`--pi` flag on `easel commands install`)
+  - `.pi/skills/` directory with 11 pre-converted `SKILL.md` files
+  - `_install_pi_skills()` in `cli/commands.py`; refactor Claude path
+    into `_install_claude_commands()` for symmetry
+  - `--pi` (local default) and `--pi --global` install paths
+  - Mutual-exclusion guards: `--pi`+`--local` error; `--global` without
+    `--pi` error
+  - 6 new tests in `tests/cli/test_commands.py`
 
 ### Deferred or Cut
 
@@ -241,12 +257,15 @@
 - Tag and release v0.1.6
 - Update CHANGELOG.md with v0.1.6 changes
 - Bump version in pyproject.toml to 0.1.6
+- Begin v0.1.7: create `.pi/skills/` with converted SKILL.md files
 
 ### Medium-term Goals (Next Few Sessions)
 
+- Implement `--pi` flag and `_install_pi_skills()` in `cli/commands.py`
+- Add 6 Pi install tests to `tests/cli/test_commands.py`
 - Add `pytest-cov` to measure test coverage
-- Triage v0.1.7 roadmap: consider announcement threading, module
-  item CRUD, or batch grading improvements
+- Consider announcement threading, module item CRUD, or batch grading
+  improvements for a later release
 
 ### Decisions Needed
 
@@ -256,16 +275,20 @@
 
 ### Next Release
 
-(no release planned)
+**v0.1.7** — Pi Agent Skills support
+- `easel commands install --pi` installs skills to `.pi/skills/`
+- `easel commands install --pi --global` installs to `~/.pi/agent/skills/`
+- Ships 11 pre-converted `SKILL.md` files in `.pi/skills/`
 
 ### Release History
 
-| Version | Date       | Key Changes                                      |
-|---------|------------|--------------------------------------------------|
-| 0.1.6   | —          | Rubrics sub-app: import CSV, attach, skill; 282 tests |
-| 0.1.5   | 2026-03-18 | CSV output format (#8), file-based rubric grading (#9) |
-| 0.1.4   | 2026-02-25 | Course changed to --course/-c option (fix #6)    |
-| 0.1.3   | 2026-02-25 | Config-driven defaults, optional course arg      |
-| 0.1.2   | 2026-02-25 | XDG config, TOML local config, --defaults flag   |
-| 0.1.1   | 2026-02-25 | --anonymize flag, expanded skill commands        |
-| 0.1.0   | 2026-02-23 | Initial release (all core phases)                |
+| Version | Date       | Key Changes                                              |
+|---------|------------|----------------------------------------------------------|
+| 0.1.7   | —          | Pi Agent Skills: --pi flag, .pi/skills/, 294 tests       |
+| 0.1.6   | 2026-03-24 | Rubrics sub-app, DOCX/PDF extraction, commands fix; 288 tests |
+| 0.1.5   | 2026-03-18 | CSV output format (#8), file-based rubric grading (#9)   |
+| 0.1.4   | 2026-02-25 | Course changed to --course/-c option (fix #6)            |
+| 0.1.3   | 2026-02-25 | Config-driven defaults, optional course arg              |
+| 0.1.2   | 2026-02-25 | XDG config, TOML local config, --defaults flag           |
+| 0.1.1   | 2026-02-25 | --anonymize flag, expanded skill commands                |
+| 0.1.0   | 2026-02-23 | Initial release (all core phases)                        |
